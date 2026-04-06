@@ -1,12 +1,32 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ParticleBackground from './components/ParticleBackground';
 import { motion } from 'motion/react';
-import { Compass, Rewind, Map, Crosshair } from 'lucide-react';
+import { Compass, Rewind, Map, Crosshair, Maximize, Minimize } from 'lucide-react';
 
 const BASE_TIMELINE_URL = "https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=v2%3A2PACX-1vSBFI7hOMRksTKM_VI393NMw66SVlvvkLiAkyfTgQ_l_k5VptvqcSsc08M9Adnqb7apGgnPOJIQXPgl&font=Default&lang=zh-cn&hash_bookmark=true&initial_zoom=2&theme=contrast&width=100%25&height=1020";
 
 export default function App() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      wrapperRef.current?.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
+    }
+  };
 
   const goToEvent = (hash: string) => {
     if (iframeRef.current) {
@@ -59,14 +79,29 @@ export default function App() {
         >
           {/* Decorative elements around timeline */}
           <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-blue-600 rounded-2xl blur opacity-20"></div>
-          <div className="relative bg-gray-900/60 p-2 rounded-2xl border border-gray-700/50 backdrop-blur-xl shadow-2xl h-[800px] lg:h-[1050px]">
+          <div 
+            ref={wrapperRef}
+            className={`relative bg-gray-900/60 backdrop-blur-xl shadow-2xl ${
+              isFullscreen 
+                ? 'w-full h-full p-0 rounded-none border-none' 
+                : 'p-2 rounded-2xl border border-gray-700/50 h-[800px] lg:h-[1050px]'
+            }`}
+          >
+            <button 
+              onClick={toggleFullscreen}
+              className="absolute top-4 right-4 z-10 p-2 bg-gray-800/80 hover:bg-teal-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
+              title={isFullscreen ? "退出全螢幕" : "全螢幕模式"}
+            >
+              {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+            </button>
             <iframe 
               ref={iframeRef}
               src={BASE_TIMELINE_URL}
               width="100%" 
               height="100%" 
               frameBorder="0"
-              className="w-full h-full rounded-xl"
+              allowFullScreen
+              className={`w-full h-full ${isFullscreen ? 'rounded-none' : 'rounded-xl'}`}
               title="Game Timeline"
             ></iframe>
           </div>
