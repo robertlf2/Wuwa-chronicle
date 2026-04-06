@@ -1,0 +1,5 @@
+{
+  "name": "Game Timeline Explorer",
+  "description": "A game data page with an embedded Timeline.js and interactive particle background.",
+  "requestFramePermissions": []
+}
