@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ParticleBackground from './components/ParticleBackground';
 import MusicPlayer from './components/MusicPlayer';
 import QuickNav from './components/QuickNav';
+import ZoomSlider from './components/ZoomSlider';
 import { motion } from 'motion/react';
 import { Compass, Rewind, Map, Crosshair, Maximize, Minimize } from 'lucide-react';
 
@@ -11,6 +12,7 @@ export default function App() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(100);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -91,6 +93,7 @@ export default function App() {
           >
             <MusicPlayer isFullscreen={isFullscreen} />
             <QuickNav onNavigate={goToEvent} isFullscreen={isFullscreen} />
+            <ZoomSlider zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} isFullscreen={isFullscreen} />
             <button 
               onClick={toggleFullscreen}
               className="absolute top-4 right-4 z-10 p-2 bg-gray-800/80 hover:bg-teal-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
@@ -98,16 +101,22 @@ export default function App() {
             >
               {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
             </button>
-            <iframe 
-              ref={iframeRef}
-              src={BASE_TIMELINE_URL}
-              width="100%" 
-              height="100%" 
-              frameBorder="0"
-              allowFullScreen
-              className={`w-full h-full ${isFullscreen ? 'rounded-none' : 'rounded-xl'}`}
-              title="Game Timeline"
-            ></iframe>
+            <div className={`w-full h-full overflow-hidden relative ${isFullscreen ? 'rounded-none' : 'rounded-xl'}`}>
+              <iframe 
+                ref={iframeRef}
+                src={BASE_TIMELINE_URL}
+                style={{
+                  width: `${10000 / zoomLevel}%`,
+                  height: `${10000 / zoomLevel}%`,
+                  transform: `scale(${zoomLevel / 100})`,
+                  transformOrigin: 'top left',
+                  border: 'none'
+                }}
+                allowFullScreen
+                className="absolute top-0 left-0"
+                title="Game Timeline"
+              ></iframe>
+            </div>
           </div>
         </motion.div>
       </main>
