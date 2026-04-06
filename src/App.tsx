@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ParticleBackground from './components/ParticleBackground';
+import MusicPlayer from './components/MusicPlayer';
+import QuickNav from './components/QuickNav';
 import { motion } from 'motion/react';
 import { Compass, Rewind, Map, Crosshair, Maximize, Minimize } from 'lucide-react';
 
@@ -87,6 +89,8 @@ export default function App() {
                 : 'p-2 rounded-2xl border border-gray-700/50 h-[800px] lg:h-[1050px]'
             }`}
           >
+            <MusicPlayer isFullscreen={isFullscreen} />
+            <QuickNav onNavigate={goToEvent} isFullscreen={isFullscreen} />
             <button 
               onClick={toggleFullscreen}
               className="absolute top-4 right-4 z-10 p-2 bg-gray-800/80 hover:bg-teal-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
@@ -104,43 +108,6 @@ export default function App() {
               className={`w-full h-full ${isFullscreen ? 'rounded-none' : 'rounded-xl'}`}
               title="Game Timeline"
             ></iframe>
-          </div>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="bg-gray-900/40 border border-gray-700/50 backdrop-blur-md rounded-2xl p-6 shadow-xl"
-        >
-          <div className="flex items-center gap-2 mb-6 border-b border-gray-700/50 pb-4">
-            <Map className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-xl font-semibold text-gray-200">快速導覽索引</h2>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <button 
-              onClick={() => goToEvent('')}
-              className="group relative px-4 py-3 bg-gray-800/50 hover:bg-gray-700/80 border border-gray-600/50 hover:border-teal-500/50 rounded-xl transition-all duration-300 overflow-hidden flex flex-col items-center justify-center gap-2 cursor-pointer"
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <Rewind className="w-5 h-5 text-gray-400 group-hover:text-teal-400 transition-colors" />
-              <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">起點 (標題)</span>
-            </button>
-
-            {placeholderEvents.map((event, index) => (
-              <button 
-                key={index}
-                onClick={() => goToEvent(event.id)}
-                className="group relative px-4 py-3 bg-gray-800/50 hover:bg-gray-700/80 border border-gray-600/50 hover:border-cyan-500/50 rounded-xl transition-all duration-300 overflow-hidden flex flex-col items-center justify-center gap-2 cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <Crosshair className="w-5 h-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
-                <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors text-center line-clamp-1">
-                  {event.title}
-                </span>
-              </button>
-            ))}
           </div>
         </motion.div>
       </main>
