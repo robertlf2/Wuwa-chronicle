@@ -14,14 +14,14 @@ const ZoomSlider: React.FC<ZoomSliderProps> = ({ zoomLevel, setZoomLevel, isFull
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3 px-4 py-2.5 bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.15)]"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-full shadow-[0_0_15px_rgba(34,211,238,0.15)]"
       >
         <button 
           onClick={() => setZoomLevel(Math.max(50, zoomLevel - 10))} 
           className="text-gray-400 hover:text-cyan-400 transition-colors p-1"
           title="縮小"
         >
-          <ZoomOut className="w-4 h-4" />
+          <ZoomOut className="w-3.5 h-3.5" />
         </button>
         
         <input 
@@ -31,7 +31,7 @@ const ZoomSlider: React.FC<ZoomSliderProps> = ({ zoomLevel, setZoomLevel, isFull
           step="5"
           value={zoomLevel} 
           onChange={(e) => setZoomLevel(Number(e.target.value))}
-          className="w-32 md:w-48 h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+          className="w-24 md:w-32 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-400"
           title="調整縮放比例"
         />
         
@@ -40,10 +40,10 @@ const ZoomSlider: React.FC<ZoomSliderProps> = ({ zoomLevel, setZoomLevel, isFull
           className="text-gray-400 hover:text-cyan-400 transition-colors p-1"
           title="放大"
         >
-          <ZoomIn className="w-4 h-4" />
+          <ZoomIn className="w-3.5 h-3.5" />
         </button>
         
-        <div className="w-12 text-right text-xs font-medium text-cyan-400 tracking-wider">
+        <div className="w-9 text-right text-[10px] font-medium text-cyan-400 tracking-wider">
           {zoomLevel}%
         </div>
       </motion.div>
