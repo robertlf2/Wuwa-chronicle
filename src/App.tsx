@@ -4,9 +4,19 @@ import MusicPlayer from './components/MusicPlayer';
 import QuickNav from './components/QuickNav';
 import ZoomSlider from './components/ZoomSlider';
 import { motion } from 'motion/react';
-import { Compass, Rewind, Map, Crosshair, Maximize, Minimize } from 'lucide-react';
+import { Compass, Rewind, Map, Crosshair, Maximize, Minimize, Smartphone } from 'lucide-react';
 
-const BASE_TIMELINE_URL = "https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=v2%3A2PACX-1vSBFI7hOMRksTKM_VI393NMw66SVlvvkLiAkyfTgQ_l_k5VptvqcSsc08M9Adnqb7apGgnPOJIQXPgl&font=Default&lang=zh-cn&hash_bookmark=true&initial_zoom=2&theme=contrast&width=100%25&height=1020";
+const customCss = `
+.tl-timenav { background-color: #082f49 !important; }
+.tl-timeaxis { background-color: rgba(12, 74, 110, 0.8) !important; }
+.tl-timeaxis-tick-text { color: #7dd3fc !important; }
+.tl-timenav-item h2, .tl-timenav-item h3 { color: #bae6fd !important; }
+.tl-timenav-line { background-color: #0ea5e9 !important; }
+.tl-timenav-item.tl-active h2, .tl-timenav-item.tl-active h3 { color: #ffffff !important; }
+.tl-timenav-item.tl-active .tl-timenav-item-marker { background-color: #38bdf8 !important; }
+`;
+const cssDataUri = `data:text/css;charset=utf-8,${encodeURIComponent(customCss)}`;
+const BASE_TIMELINE_URL = `https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=v2%3A2PACX-1vSBFI7hOMRksTKM_VI393NMw66SVlvvkLiAkyfTgQ_l_k5VptvqcSsc08M9Adnqb7apGgnPOJIQXPgl&font=Default&lang=zh-cn&hash_bookmark=true&initial_zoom=2&theme=contrast&width=100%25&height=1020&css=${encodeURIComponent(cssDataUri)}`;
 
 export default function App() {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -94,6 +104,12 @@ export default function App() {
             <MusicPlayer isFullscreen={isFullscreen} />
             <QuickNav onNavigate={goToEvent} isFullscreen={isFullscreen} />
             <ZoomSlider zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} isFullscreen={isFullscreen} />
+            <button 
+              className="absolute top-4 left-4 z-10 p-2 bg-gray-800/80 hover:bg-purple-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
+              title="手機版視圖"
+            >
+              <Smartphone className="w-5 h-5" />
+            </button>
             <button 
               onClick={toggleFullscreen}
               className="absolute top-4 right-4 z-10 p-2 bg-gray-800/80 hover:bg-teal-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"

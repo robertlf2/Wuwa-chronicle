@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Compass, X, Crosshair, Rewind, Smartphone } from 'lucide-react';
+import { Compass, X, Crosshair, Rewind } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface QuickNavProps {
@@ -80,26 +80,15 @@ const QuickNav: React.FC<QuickNavProps> = ({ onNavigate, isFullscreen = false })
       </AnimatePresence>
 
       {!isOpen && (
-        <div className="flex items-center gap-3">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(true)}
-            className="p-3 bg-gray-800/90 hover:bg-cyan-600/90 text-cyan-400 hover:text-white rounded-full backdrop-blur-md border border-gray-600/50 shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all flex items-center justify-center group"
-            title="開啟快速導覽"
-          >
-            <Compass className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
-          </motion.button>
-          
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="p-3 bg-gray-800/90 hover:bg-purple-600/90 text-purple-400 hover:text-white rounded-full backdrop-blur-md border border-gray-600/50 shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all flex items-center justify-center group"
-            title="手機版視圖"
-          >
-            <Smartphone className="w-5 h-5" />
-          </motion.button>
-        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsOpen(true)}
+          className="p-3 bg-gray-800/90 hover:bg-cyan-600/90 text-cyan-400 hover:text-white rounded-full backdrop-blur-md border border-gray-600/50 shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all flex items-center justify-center group"
+          title="開啟快速導覽"
+        >
+          <Compass className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" />
+        </motion.button>
       )}
     </div>
   );
