@@ -28,8 +28,18 @@ export default function App() {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
+    
+    const handleContextMenu = (e: MouseEvent) => {
+      e.preventDefault();
+    };
+
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('contextmenu', handleContextMenu);
+    
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
   }, []);
 
   const toggleFullscreen = () => {
@@ -58,7 +68,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen text-gray-100 font-sans selection:bg-cyan-500/30">
+    <div className="min-h-screen text-gray-100 font-sans selection:bg-cyan-500/30 select-none">
       <ParticleBackground />
       
       <main className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-12 relative z-10">
@@ -72,7 +82,9 @@ export default function App() {
             src="https://duk.tw/1ndC0B.png" 
             alt="極地科考隊" 
             referrerPolicy="no-referrer"
-            className="w-full max-w-3xl h-auto mb-2 drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] object-contain scale-x-110"
+            draggable="false"
+            onContextMenu={(e) => e.preventDefault()}
+            className="w-full max-w-3xl h-auto mb-2 drop-shadow-[0_0_30px_rgba(255,255,255,0.15)] object-contain scale-x-110 pointer-events-none select-none"
           />
           <p 
             className="text-gray-200 max-w-2xl mx-auto text-2xl md:text-3xl tracking-[0.25em] font-black"
@@ -105,7 +117,7 @@ export default function App() {
             <QuickNav onNavigate={goToEvent} isFullscreen={isFullscreen} />
             <ZoomSlider zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} isFullscreen={isFullscreen} />
             <button 
-              className="absolute top-4 left-4 z-10 p-2 bg-gray-800/80 hover:bg-purple-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
+              className="absolute top-4 right-16 z-10 p-2 bg-gray-800/80 hover:bg-purple-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
               title="手機版視圖"
             >
               <Smartphone className="w-5 h-5" />
@@ -132,6 +144,13 @@ export default function App() {
                 className="absolute top-0 left-0"
                 title="Game Timeline"
               ></iframe>
+              
+              {/* 防護圖層：僅覆蓋右側圖片區域，避開左右導覽箭頭與左側文字區 */}
+              <div 
+                className="absolute top-0 z-[5] cursor-default"
+                style={{ left: '50%', right: '8%', height: '75%' }}
+                onContextMenu={(e) => e.preventDefault()}
+              ></div>
             </div>
           </div>
         </motion.div>
