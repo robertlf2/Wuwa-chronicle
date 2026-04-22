@@ -4,7 +4,7 @@ import MusicPlayer from './components/MusicPlayer';
 import QuickNav from './components/QuickNav';
 import ZoomSlider from './components/ZoomSlider';
 import { motion } from 'motion/react';
-import { Compass, Rewind, Map, Crosshair, Maximize, Minimize, Smartphone } from 'lucide-react';
+import { Compass, Rewind, Map, Crosshair, Maximize, Minimize, Smartphone, Search } from 'lucide-react';
 
 const customCss = `
 .tl-timenav { background-color: #082f49 !important; }
@@ -23,6 +23,8 @@ export default function App() {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(100);
+  const [isMagnifierActive, setIsMagnifierActive] = useState(false);
+  const [magnifierPos, setMagnifierPos] = useState({ x: 50, y: 50, show: false });
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -117,6 +119,13 @@ export default function App() {
             <QuickNav onNavigate={goToEvent} isFullscreen={isFullscreen} />
             <ZoomSlider zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} isFullscreen={isFullscreen} />
             <button 
+              onClick={() => setIsMagnifierActive(!isMagnifierActive)}
+              className={`absolute top-4 right-28 z-10 p-2 rounded-lg backdrop-blur-md border transition-all shadow-lg ${isMagnifierActive ? 'bg-cyan-600/90 border-cyan-400 text-white shadow-[0_0_15px_rgba(34,211,238,0.4)]' : 'bg-gray-800/80 hover:bg-cyan-500/80 text-gray-200 hover:text-white border-gray-600/50'}`}
+              title="圖片放大鏡模式"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+            <button 
               className="absolute top-4 right-16 z-10 p-2 bg-gray-800/80 hover:bg-purple-500/80 text-gray-200 hover:text-white rounded-lg backdrop-blur-md border border-gray-600/50 transition-all shadow-lg"
               title="手機版視圖"
             >
@@ -130,26 +139,53 @@ export default function App() {
               {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
             </button>
             <div className={`w-full h-full overflow-hidden relative ${isFullscreen ? 'rounded-none' : 'rounded-xl'}`}>
-              <iframe 
-                ref={iframeRef}
-                src={BASE_TIMELINE_URL}
-                style={{
-                  width: `${10000 / zoomLevel}%`,
-                  height: `${10000 / zoomLevel}%`,
-                  transform: `scale(${zoomLevel / 100})`,
-                  transformOrigin: 'top left',
-                  border: 'none'
+              <motion.div
+                className="w-full h-full origin-top-left"
+                animate={{
+                  scale: isMagnifierActive && magnifierPos.show ? 2.5 : 1,
+                  transformOrigin: `${magnifierPos.x}% ${magnifierPos.y}%`
                 }}
-                allowFullScreen
-                className="absolute top-0 left-0"
-                title="Game Timeline"
-              ></iframe>
+                transition={{
+                  scale: { duration: 0.3, ease: 'easeOut' },
+                  transformOrigin: { duration: 0.05, ease: 'linear' }
+                }}
+              >
+                <iframe 
+                  ref={iframeRef}
+                  src={BASE_TIMELINE_URL}
+                  style={{
+                    width: `${10000 / zoomLevel}%`,
+                    height: `${10000 / zoomLevel}%`,
+                    transform: `scale(${zoomLevel / 100})`,
+                    transformOrigin: 'top left',
+                    border: 'none'
+                  }}
+                  allowFullScreen
+                  className="absolute top-0 left-0"
+                  title="Game Timeline"
+                ></iframe>
+              </motion.div>
               
               {/* 防護圖層：僅覆蓋右側圖片區域，避開左右導覽箭頭與左側文字區 */}
               <div 
-                className="absolute top-0 z-[5] cursor-default"
+                className={`absolute top-0 z-[5] ${isMagnifierActive ? 'cursor-zoom-in' : 'cursor-default'}`}
                 style={{ left: '50%', right: '8%', height: '75%' }}
                 onContextMenu={(e) => e.preventDefault()}
+                onMouseEnter={() => {
+                  if (isMagnifierActive) setMagnifierPos(p => ({ ...p, show: true }));
+                }}
+                onMouseLeave={() => {
+                  setMagnifierPos(p => ({ ...p, show: false }));
+                }}
+                onMouseMove={(e) => {
+                  if (!isMagnifierActive) return;
+                  const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                  if (rect) {
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setMagnifierPos({ x, y, show: true });
+                  }
+                }}
               ></div>
             </div>
           </div>
