@@ -229,6 +229,30 @@ export default function App() {
             </div>
           </div>
         </motion.div>
+
+        <motion.div 
+          className="flex justify-center mt-20 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <motion.a 
+            href="https://discord.gg/C3bDvM9HUQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05, filter: 'brightness(1.15)' }}
+            whileTap={{ scale: 0.95 }}
+            className="relative group cursor-pointer block"
+          >
+            <img 
+              src="https://i.meee.com.tw/AeS7X1I.png" 
+              alt="Join Discord" 
+              className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
+              referrerPolicy="no-referrer"
+              draggable="false"
+            />
+          </motion.a>
+        </motion.div>
       </main>
     </div>
   );
