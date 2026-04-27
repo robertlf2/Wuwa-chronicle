@@ -3,8 +3,8 @@ import ParticleBackground from './components/ParticleBackground';
 import MusicPlayer from './components/MusicPlayer';
 import QuickNav from './components/QuickNav';
 import ZoomSlider from './components/ZoomSlider';
-import { motion } from 'motion/react';
-import { Compass, Rewind, Map, Crosshair, Maximize, Minimize, Smartphone, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Compass, Rewind, Map, Crosshair, Maximize, Minimize, Smartphone, Search, X } from 'lucide-react';
 
 const customCss = `
 .tl-timenav { background-color: #082f49 !important; }
@@ -25,6 +25,7 @@ export default function App() {
   const [zoomLevel, setZoomLevel] = useState(100);
   const [isMagnifierActive, setIsMagnifierActive] = useState(false);
   const [magnifierPos, setMagnifierPos] = useState({ x: 50, y: 50, show: false });
+  const [isImageOverlayOpen, setIsImageOverlayOpen] = useState(false);
 
   useEffect(() => {
     const handleFullscreenChange = () => {
@@ -231,7 +232,7 @@ export default function App() {
         </motion.div>
 
         <motion.div 
-          className="flex justify-center mt-20 mb-8"
+          className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-12 mt-20 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
@@ -252,8 +253,65 @@ export default function App() {
               draggable="false"
             />
           </motion.a>
+
+          <motion.a 
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsImageOverlayOpen(true);
+            }}
+            whileHover={{ scale: 1.05, filter: 'brightness(1.15)' }}
+            whileTap={{ scale: 0.95 }}
+            className="relative group cursor-pointer block"
+          >
+            <img 
+              src="https://duk.tw/3h2KvR.png" 
+              alt="New Button" 
+              className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
+              referrerPolicy="no-referrer"
+              draggable="false"
+            />
+          </motion.a>
         </motion.div>
       </main>
+
+      {/* Image Overlay Modal */}
+      <AnimatePresence>
+        {isImageOverlayOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-md flex items-center justify-center py-8 md:py-12"
+            onClick={() => setIsImageOverlayOpen(false)}
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-[1920px] px-[14px] md:px-[52px] h-[800px] lg:h-[1050px] flex justify-center mx-auto my-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setIsImageOverlayOpen(false)}
+                className="absolute -top-4 right-6 md:-top-6 md:right-16 lg:right-20 p-2 text-white/70 hover:text-white bg-black/50 hover:bg-black/80 rounded-full transition-all border border-cyan-500/20 hover:border-cyan-500/50 z-50 shadow-lg"
+              >
+                <X className="w-8 h-8 md:w-10 md:h-10" />
+              </button>
+              <div className="w-full h-full relative cursor-auto">
+                <img 
+                  src="https://live.staticflickr.com/65535/55234482161_4c69a6032f_b.jpg"
+                  alt="Enlarged Info"
+                  className="w-full h-full object-contain bg-[#051120] rounded-2xl shadow-[0_0_40px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30 p-1.5"
+                  referrerPolicy="no-referrer"
+                  draggable="false"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
