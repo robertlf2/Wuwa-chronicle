@@ -73,12 +73,12 @@ export default function App() {
     <div className="min-h-screen text-gray-100 font-sans selection:bg-cyan-500/30 select-none">
       <ParticleBackground />
       
-      <main className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-12 relative z-10">
+      <main className="w-full max-w-[1920px] mx-auto py-12 relative z-10 overflow-x-hidden">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-4 flex flex-col items-center"
+          className="text-center mb-4 flex flex-col items-center px-4 md:px-8"
         >
           <img 
             src="https://duk.tw/1ndC0B.png" 
@@ -103,18 +103,57 @@ export default function App() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-12 relative"
+          className={`mb-12 relative ${isFullscreen ? '' : 'px-[14px] md:px-[52px]'}`}
         >
+          {/* Hardware Handles placed in the padding area */}
+          {!isFullscreen && (
+            <>
+                <div className="absolute top-1/2 -translate-y-1/2 left-0 w-[18px] md:w-[56px] h-[60%] md:h-[80%] bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-l-2xl md:rounded-l-3xl border-l-[2px] md:border-l-[4px] border-white/90 shadow-[-8px_0_20px_rgba(0,0,0,0.6),inset_3px_0_8px_rgba(255,255,255,1)] z-20 flex flex-col items-center justify-center gap-6 md:gap-10 transition-all duration-300">
+                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
+                  <div className="w-2 md:w-3.5 h-4 md:h-6 bg-blue-500 rounded-full shadow-[0_0_12px_#3b82f6,inset_0_2px_4px_rgba(255,255,255,0.8)] border border-blue-300 animate-breathe"></div>
+                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
+                </div>
+                
+                <div className="absolute top-1/2 -translate-y-1/2 right-0 w-[18px] md:w-[56px] h-[60%] md:h-[80%] bg-gradient-to-l from-gray-300 via-gray-100 to-gray-400 rounded-r-2xl md:rounded-r-3xl border-r-[2px] md:border-r-[4px] border-white/90 shadow-[8px_0_20px_rgba(0,0,0,0.6),inset_-3px_0_8px_rgba(255,255,255,1)] z-20 flex flex-col items-center justify-center gap-6 md:gap-10 transition-all duration-300">
+                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_-1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
+                  <div className="w-2 md:w-3.5 h-4 md:h-6 bg-blue-500 rounded-full shadow-[0_0_12px_#3b82f6,inset_0_2px_4px_rgba(255,255,255,0.8)] border border-blue-300 animate-breathe"></div>
+                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_-1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
+                </div>
+            </>
+          )}
+
           {/* Decorative elements around timeline */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-teal-500 to-blue-600 rounded-2xl blur opacity-20"></div>
+          <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 to-blue-600/20 rounded-2xl blur-lg opacity-50 pointer-events-none"></div>
+          
           <div 
             ref={wrapperRef}
-            className={`relative bg-gray-900/60 backdrop-blur-xl shadow-2xl ${
+            className={`relative bg-[#051120]/90 backdrop-blur-xl ${
               isFullscreen 
                 ? 'w-full h-full p-0 rounded-none border-none' 
-                : 'p-2 rounded-2xl border border-gray-700/50 h-[800px] lg:h-[1050px]'
+                : 'p-1.5 rounded-2xl border border-cyan-800/80 h-[800px] lg:h-[1050px] shadow-[0_0_40px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
             }`}
           >
+            {/* Holographic Projection overlay inside wrapperRef */}
+            {!isFullscreen && (
+              <>
+                <div className="absolute inset-0 border-2 md:border-[3px] border-cyan-400/50 rounded-2xl pointer-events-none z-[6] shadow-[inset_0_0_30px_rgba(34,211,238,0.2)] mix-blend-screen"></div>
+                
+                {/* HUD Corners */}
+                <div className="absolute top-0 left-0 w-8 md:w-16 h-8 md:h-16 border-t-2 md:border-t-4 border-l-2 md:border-l-4 border-cyan-300 pointer-events-none z-[6] rounded-tl-2xl shadow-[0_0_15px_rgba(34,211,238,0.6),inset_0_0_15px_rgba(34,211,238,0.4)]"></div>
+                <div className="absolute top-0 right-0 w-8 md:w-16 h-8 md:h-16 border-t-2 md:border-t-4 border-r-2 md:border-r-4 border-cyan-300 pointer-events-none z-[6] rounded-tr-2xl shadow-[0_0_15px_rgba(34,211,238,0.6),inset_0_0_15px_rgba(34,211,238,0.4)]"></div>
+                <div className="absolute bottom-0 left-0 w-8 md:w-16 h-8 md:h-16 border-b-2 md:border-b-4 border-l-2 md:border-l-4 border-cyan-300 pointer-events-none z-[6] rounded-bl-2xl shadow-[0_0_15px_rgba(34,211,238,0.6),inset_0_0_15px_rgba(34,211,238,0.4)]"></div>
+                <div className="absolute bottom-0 right-0 w-8 md:w-16 h-8 md:h-16 border-b-2 md:border-b-4 border-r-2 md:border-r-4 border-cyan-300 pointer-events-none z-[6] rounded-br-2xl shadow-[0_0_15px_rgba(34,211,238,0.6),inset_0_0_15px_rgba(34,211,238,0.4)]"></div>
+                
+                {/* Holographic Datapoints */}
+                <div className="absolute top-4 left-8 text-[10px] text-cyan-300/90 font-mono tracking-widest pointer-events-none z-[6] hidden md:block drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">CRITICAL ALERT // PROTOCOL.ENGAGED</div>
+                <div className="absolute bottom-4 right-8 text-[10px] text-cyan-300/90 font-mono tracking-widest pointer-events-none z-[6] hidden md:block drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">SYSTEM // NOMINAL</div>
+                <div className="absolute -left-[1px] top-1/4 w-[3px] h-32 bg-cyan-400/90 shadow-[0_0_12px_rgba(34,211,238,0.9)] z-[6] pointer-events-none"></div>
+                <div className="absolute -right-[1px] bottom-1/4 w-[3px] h-32 bg-cyan-400/90 shadow-[0_0_12px_rgba(34,211,238,0.9)] z-[6] pointer-events-none"></div>
+                
+                {/* Overlay Scanning Lines */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(34,211,238,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none z-[6] rounded-2xl"></div>
+              </>
+            )}
             <MusicPlayer isFullscreen={isFullscreen} />
             <QuickNav onNavigate={goToEvent} isFullscreen={isFullscreen} />
             <ZoomSlider zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} isFullscreen={isFullscreen} />
