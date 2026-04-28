@@ -74,7 +74,7 @@ export default function App() {
     <div className="min-h-screen text-gray-100 font-sans selection:bg-cyan-500/30 select-none">
       <ParticleBackground />
       
-      <main className="w-full max-w-[1920px] mx-auto py-12 relative z-10 overflow-x-hidden">
+      <main className="w-[98%] mx-auto py-12 relative z-10 overflow-x-hidden">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -104,7 +104,7 @@ export default function App() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className={`mb-12 relative ${isFullscreen ? '' : 'px-[14px] md:px-[52px]'}`}
+          className={`mb-12 relative ${isFullscreen ? '' : 'px-[1%]'}`}
         >
           {/* Hardware Handles placed in the padding area */}
           {!isFullscreen && (
@@ -266,7 +266,24 @@ export default function App() {
           >
             <img 
               src="https://duk.tw/3h2KvR.png" 
-              alt="New Button" 
+              alt="Info Button" 
+              className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
+              referrerPolicy="no-referrer"
+              draggable="false"
+            />
+          </motion.a>
+
+          <motion.a 
+            href="https://wutheringwaves.kurogames-ads.com/download/?lang=zh-tw&page_id=EMC0E72eMV&&utm_source=pc_googleadwords_int&utm_campaign=search&campaignid=23372120541&adgroupid=191271495598&keyword=%E9%B3%B4%E6%BD%AE&device=c&ad_id=788847232761&channel=g&gad_source=1&gad_campaignid=23372120541&gbraid=0AAAAABbLAwh7U5Fzc7_mLYRhB1hLeTCte&gclid=Cj0KCQjwkrzPBhCqARIsAJN460k9J2QGqOWx8LrZplIOgCBpLqtnY1dHNR1m1o_pIRn--lw9d6LUsooaAqQfEALw_wcB"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05, filter: 'brightness(1.15)' }}
+            whileTap={{ scale: 0.95 }}
+            className="relative group cursor-pointer block"
+          >
+            <img 
+              src="https://i.meee.com.tw/mblHiOy.png" 
+              alt="Download Button" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
               draggable="false"
