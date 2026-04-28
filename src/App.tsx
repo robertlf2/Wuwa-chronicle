@@ -86,7 +86,7 @@ export default function App() {
           className="text-center mb-4 flex flex-col items-center px-4 md:px-8"
         >
           <img 
-            src="/Wuwa-chronicle/assets/images/title.png" 
+            src="https://duk.tw/1ndC0B.png" 
             alt="極地科考隊" 
             referrerPolicy="no-referrer"
             draggable="false"
@@ -252,7 +252,7 @@ export default function App() {
             className="relative group cursor-pointer block"
           >
             <img 
-              src="/Wuwa-chronicle/assets/images/JoinDc.png" 
+              src="https://duk.tw/WDJYhN.png" 
               alt="Join Discord" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
@@ -271,7 +271,7 @@ export default function App() {
             className="relative group cursor-pointer block"
           >
             <img 
-              src="/Wuwa-chronicle/assets/images/InfoButton.png" 
+              src="https://duk.tw/hcteNK.png" 
               alt="Info Button" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
@@ -288,7 +288,7 @@ export default function App() {
             className="relative group cursor-pointer block"
           >
             <img 
-              src="/Wuwa-chronicle/assets/images/DownloadButton.png" 
+              src="https://duk.tw/C6JE2d.png" 
               alt="Download Button" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
