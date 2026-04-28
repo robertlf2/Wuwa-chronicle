@@ -14,6 +14,10 @@ const customCss = `
 .tl-timenav-line { background-color: #0ea5e9 !important; }
 .tl-timenav-item.tl-active h2, .tl-timenav-item.tl-active h3 { color: #ffffff !important; }
 .tl-timenav-item.tl-active .tl-timenav-item-marker { background-color: #38bdf8 !important; }
+.metal-brushed {
+  background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 4px 100%;
+}
 `;
 const cssDataUri = `data:text/css;charset=utf-8,${encodeURIComponent(customCss)}`;
 const BASE_TIMELINE_URL = `https://cdn.knightlab.com/libs/timeline3/latest/embed/index.html?source=v2%3A2PACX-1vSBFI7hOMRksTKM_VI393NMw66SVlvvkLiAkyfTgQ_l_k5VptvqcSsc08M9Adnqb7apGgnPOJIQXPgl&font=Default&lang=zh-cn&hash_bookmark=true&initial_zoom=2&theme=contrast&width=100%25&height=1020&css=${encodeURIComponent(cssDataUri)}`;
@@ -26,8 +30,16 @@ export default function App() {
   const [isMagnifierActive, setIsMagnifierActive] = useState(false);
   const [magnifierPos, setMagnifierPos] = useState({ x: 50, y: 50, show: false });
   const [isImageOverlayOpen, setIsImageOverlayOpen] = useState(false);
+  
+  // Resizable state
+  const [dimensions, setDimensions] = useState({ width: 0, height: 1050 });
+  const isResizing = useRef<string | null>(null);
+  const startPos = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   useEffect(() => {
+    // Initialize width
+    setDimensions(prev => ({ ...prev, width: window.innerWidth * 0.96 }));
+
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -39,11 +51,72 @@ export default function App() {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('contextmenu', handleContextMenu);
     
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if (!isResizing.current) return;
+
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+      const deltaX = clientX - startPos.current.x;
+      const deltaY = clientY - startPos.current.y;
+      
+      let newWidth = startPos.current.w;
+      let newHeight = startPos.current.h;
+
+      // In a centered layout, dragging one side affects both if we want to stay centered 
+      // OR we just adjust the total width and flex handles the centering.
+      // For a better "feel", dragging right adds deltaX, dragging left subtracts deltaX.
+      if (isResizing.current.includes('right')) newWidth = startPos.current.w + deltaX * (isResizing.current === 'right' ? 1 : 2);
+      if (isResizing.current.includes('left')) newWidth = startPos.current.w - deltaX * (isResizing.current === 'left' ? 1 : 2);
+      if (isResizing.current.includes('bottom')) newHeight = startPos.current.h + deltaY;
+      if (isResizing.current.includes('top')) newHeight = startPos.current.h - deltaY;
+
+      // Constraints
+      newWidth = Math.max(320, Math.min(newWidth, window.innerWidth * 0.98));
+      newHeight = Math.max(300, Math.min(newHeight, 1800));
+
+      setDimensions({ width: newWidth, height: newHeight });
+    };
+
+    const handleEnd = () => {
+      isResizing.current = null;
+      document.body.style.cursor = 'default';
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('contextmenu', handleContextMenu);
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleEnd);
     };
   }, []);
+
+  const startResize = (e: React.MouseEvent | React.TouchEvent, direction: string) => {
+    // Only handle left click for mouse
+    if ('button' in e && e.button !== 0) return;
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    isResizing.current = direction;
+    startPos.current = {
+      x: clientX,
+      y: clientY,
+      w: dimensions.width,
+      h: dimensions.height
+    };
+    
+    document.body.style.cursor = direction.includes('top') || direction.includes('bottom') 
+      ? (direction.includes('left') || direction.includes('right') ? direction + '-resize' : 'ns-resize')
+      : 'ew-resize';
+  };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -104,21 +177,23 @@ export default function App() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className={`mb-12 relative ${isFullscreen ? '' : 'px-[1%]'}`}
+          className={`mb-12 relative flex justify-center ${isFullscreen ? '' : 'px-[40px] md:px-[80px]'}`}
         >
-          {/* Hardware Handles placed in the padding area */}
+          {/* Hardware Handles placed outside the content */}
           {!isFullscreen && (
             <>
-                <div className="absolute top-1/2 -translate-y-1/2 left-0 w-[18px] md:w-[56px] h-[60%] md:h-[80%] bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-l-2xl md:rounded-l-3xl border-l-[2px] md:border-l-[4px] border-white/90 shadow-[-8px_0_20px_rgba(0,0,0,0.6),inset_3px_0_8px_rgba(255,255,255,1)] z-20 flex flex-col items-center justify-center gap-6 md:gap-10 transition-all duration-300">
-                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
-                  <div className="w-2 md:w-3.5 h-4 md:h-6 bg-blue-500 rounded-full shadow-[0_0_12px_#3b82f6,inset_0_2px_4px_rgba(255,255,255,0.8)] border border-blue-300 animate-breathe"></div>
-                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
+                <div className="absolute top-1/2 -translate-y-1/2 left-2 md:left-4 w-[28px] md:w-[64px] h-[60%] md:h-[80%] bg-gradient-to-r from-gray-500 via-gray-200 to-gray-600 rounded-l-2xl md:rounded-l-3xl border-l-[3px] md:border-l-[5px] border-white/90 shadow-[-12px_0_35px_rgba(0,0,0,0.8),inset_5px_0_12px_rgba(255,255,255,1)] z-20 flex flex-col items-center justify-center gap-6 md:gap-10 transition-all duration-300 overflow-hidden">
+                  <div className="absolute inset-0 metal-brushed opacity-30 pointer-events-none"></div>
+                  <div className="relative w-2 md:w-4 h-[35%] bg-gray-600/50 rounded-full shadow-[inset_2px_2px_8px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.7)] border border-white/20"></div>
+                  <div className="relative w-3 md:w-5 h-6 md:h-8 bg-cyan-500 rounded-full shadow-[0_0_20px_#06b6d4,inset_0_2px_6px_rgba(255,255,255,0.9)] border-2 border-cyan-300 animate-pulse"></div>
+                  <div className="relative w-2 md:w-4 h-[35%] bg-gray-600/50 rounded-full shadow-[inset_2px_2px_8px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.7)] border border-white/20"></div>
                 </div>
                 
-                <div className="absolute top-1/2 -translate-y-1/2 right-0 w-[18px] md:w-[56px] h-[60%] md:h-[80%] bg-gradient-to-l from-gray-300 via-gray-100 to-gray-400 rounded-r-2xl md:rounded-r-3xl border-r-[2px] md:border-r-[4px] border-white/90 shadow-[8px_0_20px_rgba(0,0,0,0.6),inset_-3px_0_8px_rgba(255,255,255,1)] z-20 flex flex-col items-center justify-center gap-6 md:gap-10 transition-all duration-300">
-                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_-1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
-                  <div className="w-2 md:w-3.5 h-4 md:h-6 bg-blue-500 rounded-full shadow-[0_0_12px_#3b82f6,inset_0_2px_4px_rgba(255,255,255,0.8)] border border-blue-300 animate-breathe"></div>
-                  <div className="w-1.5 md:w-3 h-16 md:h-32 bg-gray-400/80 rounded-full shadow-[inset_-1px_1px_5px_rgba(0,0,0,0.6),0_1px_1px_rgba(255,255,255,0.9)]"></div>
+                <div className="absolute top-1/2 -translate-y-1/2 right-2 md:right-4 w-[28px] md:w-[64px] h-[60%] md:h-[80%] bg-gradient-to-l from-gray-500 via-gray-200 to-gray-600 rounded-r-2xl md:rounded-r-3xl border-r-[3px] md:border-r-[5px] border-white/90 shadow-[12px_0_35px_rgba(0,0,0,0.8),inset_-5px_0_12px_rgba(255,255,255,1)] z-20 flex flex-col items-center justify-center gap-6 md:gap-10 transition-all duration-300 overflow-hidden">
+                  <div className="absolute inset-0 metal-brushed opacity-30 pointer-events-none"></div>
+                  <div className="relative w-2 md:w-4 h-[35%] bg-gray-600/50 rounded-full shadow-[inset_-2px_2px_8px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.7)] border border-white/20"></div>
+                  <div className="relative w-3 md:w-5 h-6 md:h-8 bg-cyan-500 rounded-full shadow-[0_0_20px_#06b6d4,inset_0_2px_6px_rgba(255,255,255,0.9)] border-2 border-cyan-300 animate-pulse"></div>
+                  <div className="relative w-2 md:w-4 h-[35%] bg-gray-600/50 rounded-full shadow-[inset_-2px_2px_8px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.7)] border border-white/20"></div>
                 </div>
             </>
           )}
@@ -131,9 +206,48 @@ export default function App() {
             className={`relative bg-[#051120]/90 backdrop-blur-xl ${
               isFullscreen 
                 ? 'w-full h-full p-0 rounded-none border-none' 
-                : 'p-1.5 rounded-2xl border border-cyan-800/80 h-[800px] lg:h-[1050px] shadow-[0_0_40px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
+                : 'p-1.5 rounded-2xl border border-cyan-800/80 shadow-[0_0_40px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
             }`}
+            style={!isFullscreen ? { width: dimensions.width, height: dimensions.height } : {}}
           >
+            {/* Resizing Handles */}
+            {!isFullscreen && (
+              <>
+                <div 
+                  onMouseDown={(e) => startResize(e, 'top-left')}
+                  onTouchStart={(e) => startResize(e, 'top-left')}
+                  className="absolute top-0 left-0 w-8 md:w-12 h-8 md:h-12 cursor-nwse-resize z-30 group"
+                >
+                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-tl-2xl border-t-2 border-l-2 border-cyan-400 trasition-opacity"></div>
+                </div>
+                <div 
+                  onMouseDown={(e) => startResize(e, 'top-right')}
+                  onTouchStart={(e) => startResize(e, 'top-right')}
+                  className="absolute top-0 right-0 w-8 md:w-12 h-8 md:h-12 cursor-nesw-resize z-30 group"
+                >
+                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-tr-2xl border-t-2 border-r-2 border-cyan-400 trasition-opacity"></div>
+                </div>
+                <div 
+                  onMouseDown={(e) => startResize(e, 'bottom-left')}
+                  onTouchStart={(e) => startResize(e, 'bottom-left')}
+                  className="absolute bottom-0 left-0 w-8 md:w-12 h-8 md:h-12 cursor-nesw-resize z-30 group"
+                >
+                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-bl-2xl border-b-2 border-l-2 border-cyan-400 trasition-opacity"></div>
+                </div>
+                <div 
+                  onMouseDown={(e) => startResize(e, 'bottom-right')}
+                  onTouchStart={(e) => startResize(e, 'bottom-right')}
+                  className="absolute bottom-0 right-0 w-8 md:w-12 h-8 md:h-12 cursor-nwse-resize z-30 group"
+                >
+                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-br-2xl border-b-2 border-r-2 border-cyan-400 trasition-opacity"></div>
+                </div>
+                {/* Visual Resize Indicator Hint */}
+                <div className="absolute bottom-2 right-2 w-4 h-4 text-cyan-400/50 pointer-events-none z-20 md:block hidden">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="21" x2="14" y2="21"/><line x1="21" y1="21" x2="21" y2="14"/><line x1="21" y1="21" x2="12" y2="12"/></svg>
+                </div>
+              </>
+            )}
+
             {/* Holographic Projection overlay inside wrapperRef */}
             {!isFullscreen && (
               <>
