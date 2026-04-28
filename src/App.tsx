@@ -3,6 +3,7 @@ import ParticleBackground from './components/ParticleBackground';
 import MusicPlayer from './components/MusicPlayer';
 import QuickNav from './components/QuickNav';
 import ZoomSlider from './components/ZoomSlider';
+import FontPreviewer from './components/FontPreviewer';
 import { motion, AnimatePresence } from 'motion/react';
 import { Compass, Rewind, Map, Crosshair, Maximize, Minimize, Smartphone, Search, X } from 'lucide-react';
 
@@ -152,8 +153,8 @@ export default function App() {
                 <div className="absolute bottom-0 right-0 w-8 md:w-16 h-8 md:h-16 border-b-2 md:border-b-4 border-r-2 md:border-r-4 border-cyan-300 pointer-events-none z-[6] rounded-br-2xl shadow-[0_0_15px_rgba(34,211,238,0.6),inset_0_0_15px_rgba(34,211,238,0.4)]"></div>
                 
                 {/* Holographic Datapoints */}
-                <div className="absolute top-4 left-8 text-[10px] text-cyan-300/90 font-mono tracking-widest pointer-events-none z-[6] hidden md:block drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">CRITICAL ALERT // PROTOCOL.ENGAGED</div>
-                <div className="absolute bottom-4 right-8 text-[10px] text-cyan-300/90 font-mono tracking-widest pointer-events-none z-[6] hidden md:block drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]">SYSTEM // NOMINAL</div>
+                <div className="absolute top-4 left-8 text-sm text-cyan-300/90 font-mono tracking-widest pointer-events-none z-[6] hidden md:block drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]" style={{ fontFamily: 'Solaris3' }}>CRITICAL ALERT // PROTOCOL.ENGAGED</div>
+                <div className="absolute bottom-4 right-8 text-sm text-cyan-300/90 font-mono tracking-widest pointer-events-none z-[6] hidden md:block drop-shadow-[0_0_5px_rgba(34,211,238,0.8)]" style={{ fontFamily: 'Solaris3' }}>SYSTEM // NOMINAL</div>
                 <div className="absolute -left-[1px] top-1/4 w-[3px] h-32 bg-cyan-400/90 shadow-[0_0_12px_rgba(34,211,238,0.9)] z-[6] pointer-events-none"></div>
                 <div className="absolute -right-[1px] bottom-1/4 w-[3px] h-32 bg-cyan-400/90 shadow-[0_0_12px_rgba(34,211,238,0.9)] z-[6] pointer-events-none"></div>
                 
@@ -296,6 +297,15 @@ export default function App() {
             />
           </motion.a>
         </motion.div>
+
+        <FontPreviewer />
+
+        {/* Global Footer */}
+        <footer className="mt-12 mb-8 flex flex-col items-center gap-2 opacity-50">
+          <div className="h-px w-32 bg-cyan-900/30 mb-2"></div>
+          <p className="text-xs text-gray-400 tracking-[0.2em]">僅供娛樂 // 版權歸庫洛遊戲 Kuro Games所有</p>
+          <p className="text-[10px] font-mono text-gray-600 uppercase tracking-widest" style={{ fontFamily: 'Solaris3' }}>SOLARIS_CHRONICLE_PROJECT // VER.26.04</p>
+        </footer>
       </main>
 
       {/* Image Overlay Modal */}

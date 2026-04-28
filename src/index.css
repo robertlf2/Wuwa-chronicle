@@ -1,6 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --font-solaris: "Solaris3", sans-serif;
+}
+
+@font-face {
+  font-family: 'Solaris3';
+  src: url('/fonts/Solaris-3 Script.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @keyframes slowBreathe {
   0%, 100% { opacity: 1; transform: scale(1); filter: brightness(1.2); }
   50% { opacity: 0.3; transform: scale(0.98); filter: brightness(0.8); }
