@@ -86,7 +86,7 @@ export default function App() {
           className="text-center mb-4 flex flex-col items-center px-4 md:px-8"
         >
           <img 
-            src="/Wuwa-chronicle/assets/images/title.png" 
+            src="/assets/images/title.png" 
             alt="極地科考隊" 
             referrerPolicy="no-referrer"
             draggable="false"
