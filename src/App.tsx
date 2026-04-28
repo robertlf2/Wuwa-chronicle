@@ -30,16 +30,8 @@ export default function App() {
   const [isMagnifierActive, setIsMagnifierActive] = useState(false);
   const [magnifierPos, setMagnifierPos] = useState({ x: 50, y: 50, show: false });
   const [isImageOverlayOpen, setIsImageOverlayOpen] = useState(false);
-  
-  // Resizable state
-  const [dimensions, setDimensions] = useState({ width: 0, height: 1050 });
-  const isResizing = useRef<string | null>(null);
-  const startPos = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   useEffect(() => {
-    // Initialize width
-    setDimensions(prev => ({ ...prev, width: window.innerWidth * 0.96 }));
-
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -51,72 +43,11 @@ export default function App() {
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('contextmenu', handleContextMenu);
     
-    const handleMove = (e: MouseEvent | TouchEvent) => {
-      if (!isResizing.current) return;
-
-      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-      const deltaX = clientX - startPos.current.x;
-      const deltaY = clientY - startPos.current.y;
-      
-      let newWidth = startPos.current.w;
-      let newHeight = startPos.current.h;
-
-      // In a centered layout, dragging one side affects both if we want to stay centered 
-      // OR we just adjust the total width and flex handles the centering.
-      // For a better "feel", dragging right adds deltaX, dragging left subtracts deltaX.
-      if (isResizing.current.includes('right')) newWidth = startPos.current.w + deltaX * (isResizing.current === 'right' ? 1 : 2);
-      if (isResizing.current.includes('left')) newWidth = startPos.current.w - deltaX * (isResizing.current === 'left' ? 1 : 2);
-      if (isResizing.current.includes('bottom')) newHeight = startPos.current.h + deltaY;
-      if (isResizing.current.includes('top')) newHeight = startPos.current.h - deltaY;
-
-      // Constraints
-      newWidth = Math.max(320, Math.min(newWidth, window.innerWidth * 0.98));
-      newHeight = Math.max(300, Math.min(newHeight, 1800));
-
-      setDimensions({ width: newWidth, height: newHeight });
-    };
-
-    const handleEnd = () => {
-      isResizing.current = null;
-      document.body.style.cursor = 'default';
-    };
-
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchmove', handleMove, { passive: false });
-    window.addEventListener('touchend', handleEnd);
-    
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('contextmenu', handleContextMenu);
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('mouseup', handleEnd);
-      window.removeEventListener('touchmove', handleMove);
-      window.removeEventListener('touchend', handleEnd);
     };
   }, []);
-
-  const startResize = (e: React.MouseEvent | React.TouchEvent, direction: string) => {
-    // Only handle left click for mouse
-    if ('button' in e && e.button !== 0) return;
-    
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-    isResizing.current = direction;
-    startPos.current = {
-      x: clientX,
-      y: clientY,
-      w: dimensions.width,
-      h: dimensions.height
-    };
-    
-    document.body.style.cursor = direction.includes('top') || direction.includes('bottom') 
-      ? (direction.includes('left') || direction.includes('right') ? direction + '-resize' : 'ns-resize')
-      : 'ew-resize';
-  };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -203,51 +134,12 @@ export default function App() {
           
           <div 
             ref={wrapperRef}
-            className={`relative bg-[#051120]/90 backdrop-blur-xl ${
+            className={`relative bg-[#051120]/90 backdrop-blur-xl w-full ${
               isFullscreen 
-                ? 'w-full h-full p-0 rounded-none border-none' 
-                : 'p-1.5 rounded-2xl border border-cyan-800/80 shadow-[0_0_40px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
+                ? 'h-full p-0 rounded-none border-none' 
+                : 'p-1.5 rounded-2xl border border-cyan-800/80 h-[800px] lg:h-[1050px] shadow-[0_0_40px_rgba(6,182,212,0.15)] ring-1 ring-cyan-500/30'
             }`}
-            style={!isFullscreen ? { width: dimensions.width, height: dimensions.height } : {}}
           >
-            {/* Resizing Handles */}
-            {!isFullscreen && (
-              <>
-                <div 
-                  onMouseDown={(e) => startResize(e, 'top-left')}
-                  onTouchStart={(e) => startResize(e, 'top-left')}
-                  className="absolute top-0 left-0 w-8 md:w-12 h-8 md:h-12 cursor-nwse-resize z-30 group"
-                >
-                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-tl-2xl border-t-2 border-l-2 border-cyan-400 trasition-opacity"></div>
-                </div>
-                <div 
-                  onMouseDown={(e) => startResize(e, 'top-right')}
-                  onTouchStart={(e) => startResize(e, 'top-right')}
-                  className="absolute top-0 right-0 w-8 md:w-12 h-8 md:h-12 cursor-nesw-resize z-30 group"
-                >
-                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-tr-2xl border-t-2 border-r-2 border-cyan-400 trasition-opacity"></div>
-                </div>
-                <div 
-                  onMouseDown={(e) => startResize(e, 'bottom-left')}
-                  onTouchStart={(e) => startResize(e, 'bottom-left')}
-                  className="absolute bottom-0 left-0 w-8 md:w-12 h-8 md:h-12 cursor-nesw-resize z-30 group"
-                >
-                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-bl-2xl border-b-2 border-l-2 border-cyan-400 trasition-opacity"></div>
-                </div>
-                <div 
-                  onMouseDown={(e) => startResize(e, 'bottom-right')}
-                  onTouchStart={(e) => startResize(e, 'bottom-right')}
-                  className="absolute bottom-0 right-0 w-8 md:w-12 h-8 md:h-12 cursor-nwse-resize z-30 group"
-                >
-                  <div className="w-full h-full opacity-0 group-hover:opacity-100 bg-cyan-400/20 rounded-br-2xl border-b-2 border-r-2 border-cyan-400 trasition-opacity"></div>
-                </div>
-                {/* Visual Resize Indicator Hint */}
-                <div className="absolute bottom-2 right-2 w-4 h-4 text-cyan-400/50 pointer-events-none z-20 md:block hidden">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="21" y1="21" x2="14" y2="21"/><line x1="21" y1="21" x2="21" y2="14"/><line x1="21" y1="21" x2="12" y2="12"/></svg>
-                </div>
-              </>
-            )}
-
             {/* Holographic Projection overlay inside wrapperRef */}
             {!isFullscreen && (
               <>
