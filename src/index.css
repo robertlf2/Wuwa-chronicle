@@ -7,7 +7,7 @@
 
 @font-face {
   font-family: 'Solaris3';
-  src: url('/fonts/Solaris-3 Script.ttf') format('truetype');
+  src: url('./fonts/Solaris-3-Script.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
