@@ -252,7 +252,7 @@ export default function App() {
             className="relative group cursor-pointer block"
           >
             <img 
-              src="https://i.meee.com.tw/AeS7X1I.png" 
+              src="https://duk.tw/WDJYhN.png" 
               alt="Join Discord" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
@@ -271,7 +271,7 @@ export default function App() {
             className="relative group cursor-pointer block"
           >
             <img 
-              src="https://duk.tw/3h2KvR.png" 
+              src="https://duk.tw/hcteNK.png" 
               alt="Info Button" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
@@ -288,7 +288,7 @@ export default function App() {
             className="relative group cursor-pointer block"
           >
             <img 
-              src="https://i.meee.com.tw/mblHiOy.png" 
+              src="https://duk.tw/C6JE2d.png" 
               alt="Download Button" 
               className="w-full max-w-[320px] md:max-w-[420px] h-auto drop-shadow-[0_0_15px_rgba(59,130,246,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(59,130,246,0.8)] transition-all duration-300 pointer-events-none"
               referrerPolicy="no-referrer"
