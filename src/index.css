@@ -7,9 +7,10 @@
 
 @font-face {
   font-family: 'Solaris3';
-  src: url('https://cdn.jsdelivr.net/gh/robertlf2/Wuwa-chronicle@main/src/assets/Solaris3-C9VPWAh2.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+  /* 優先順序 1：嘗試讀取 GitHub Pages 的絕對路徑（確保部署後必成） */
+  src: url('https://robertlf2.github.io/Wuwa-chronicle/src/assets/Solaris3-C9VPWAh2.ttf') format('truetype'),
+       /* 優先順序 2：嘗試讀取本地相對路徑（確保 AI Studio 預覽正常） */
+       url('src/assets/Solaris3-C9VPWAh2.ttf') format('truetype');
   font-display: swap;
 }
 
