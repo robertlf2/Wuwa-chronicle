@@ -299,13 +299,6 @@ export default function App() {
         </motion.div>
 
         <FontPreviewer />
-
-        {/* Global Footer */}
-        <footer className="mt-12 mb-8 flex flex-col items-center gap-2 opacity-50">
-          <div className="h-px w-32 bg-cyan-900/30 mb-2"></div>
-          <p className="text-xs text-gray-400 tracking-[0.2em]">僅供娛樂 // 版權歸庫洛遊戲 Kuro Games所有</p>
-          <p className="text-[10px] font-mono text-gray-600 uppercase tracking-widest" style={{ fontFamily: 'Solaris3' }}>SOLARIS_CHRONICLE_PROJECT // VER.26.04</p>
-        </footer>
       </main>
 
       {/* Image Overlay Modal */}

@@ -197,11 +197,6 @@ export default function FontPreviewer() {
           </div>
         </div>
 
-        {/* Footer Notice */}
-        <div className="mt-8 flex flex-col items-center gap-1 opacity-40">
-          <p className="text-[10px] text-gray-500 tracking-[0.2em]">僅供娛樂 // 版權歸庫洛遊戲 Kuro Games所有</p>
-          <p className="text-[8px] font-mono text-gray-700 uppercase" style={{ fontFamily: fontName }}>FAN_MADE_PROJECT_FOR_COMMUNITY</p>
-        </div>
       </div>
     </motion.div>
   );
