@@ -7,10 +7,12 @@
 
 @font-face {
   font-family: 'Solaris3';
-  /* 優先順序 1：嘗試讀取 GitHub Pages 的絕對路徑（確保部署後必成） */
-  src: url('https://robertlf2.github.io/Wuwa-chronicle/src/assets/Solaris3-C9VPWAh2.ttf') format('truetype'),
-       /* 優先順序 2：嘗試讀取本地相對路徑（確保 AI Studio 預覽正常） */
-       url('src/assets/Solaris3-C9VPWAh2.ttf') format('truetype');
+  /* 優先順序 1：本地路徑（從 public/fonts 讀取，跨環境最穩定） */
+  src: url('/fonts/Solaris3-C9VPWAh2.ttf') format('truetype'),
+       /* 優先順序 2：GitHub CDN */
+       url('https://cdn.jsdelivr.net/gh/robertlf2/Wuwa-chronicle@main/src/assets/Solaris3-C9VPWAh2.ttf') format('truetype'),
+       /* 優先順序 3：Dropbox 直連 */
+       url('https://dl.dropboxusercontent.com/scl/fi/kyo4ncu1aze796ddargju/Solaris3-C9VPWAh2.ttf?rlkey=de65tae7684s7i585138k83xd&st=56vjctax&raw=1') format('truetype');
   font-display: swap;
 }
 

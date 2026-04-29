@@ -3,15 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script>
-      (function() {
-        const path = window.location.pathname;
-        const base = path.endsWith('/') ? path : path.substring(0, path.lastIndexOf('/') + 1);
-        const baseTag = document.createElement('base');
-        baseTag.href = base;
-        document.head.appendChild(baseTag);
-      })();
-    </script>
     <title>My Google AI Studio App</title>
   </head>
   <body>
