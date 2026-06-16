@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=M+PLUS+Rounded+1c:wght@400;700&family=Zen+Maru+Gothic:wght@400;700&family=Kiwi+Maru:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-jitin: "WuWa-Jitin", sans-serif;
+  --font-ragunna: "WuWa-Ragunna", sans-serif;
+  --font-septimont: "WuWa-Septimont", sans-serif;
+  --font-lahairoi: "WuWa-LahaiRoi", sans-serif;
+}
+
+@font-face {
+  font-family: 'WuWa-Jitin';
+  src: url('/fonts/WuWa jitin-sans.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'WuWa-Ragunna';
+  src: url('/fonts/WuWa Ragunna Decorated.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'WuWa-Septimont';
+  src: url('/fonts/WuWa Septimont Digital.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'WuWa-LahaiRoi';
+  src: url('/fonts/WuWa Lahai-Roi Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.bg-grid-pattern { 
+  background-size: 100px 100%; 
+  background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px); 
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.45); /* Highly visible cyan accent for scrollbar */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.75); /* Cyan hover state */
+}
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 211, 238, 0.45) rgba(0, 0, 0, 0.35);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+body {
+  @apply bg-[#0f0f12] text-[#e0e0e0] font-sans;
+}
+
+.bg-scanlines {
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 50%
+  );
+  background-size: 100% 4px;
+}
+
+@keyframes spin-pulse {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+}
+
+.animate-spin-pulse {
+  animation: spin-pulse 4s linear infinite;
+}
+
+.rich-text {
+  @apply text-base text-gray-300 leading-snug tracking-normal;
+}
+.rich-text h1 { @apply font-serif font-light text-white text-3xl my-2; }
+.rich-text h2 { @apply font-serif font-light text-white text-2xl my-2; }
+.rich-text h3 { @apply font-serif font-light text-white text-xl my-1; }
+.rich-text p { @apply my-1 leading-snug; }
+.rich-text ul { @apply list-disc list-inside my-1; }
+.rich-text ol { @apply list-decimal list-inside my-1; }
+.rich-text strong, .rich-text b { @apply font-bold text-white; }
+.rich-text a { @apply text-orange-500 underline decoration-orange-500 underline-offset-4; }
+.rich-text blockquote { @apply border-l-2 border-orange-500/30 pl-6 italic my-4 text-gray-400; }

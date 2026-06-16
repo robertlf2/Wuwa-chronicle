@@ -1,0 +1,8 @@
+{
+  "name": "Game Lore Timeline",
+  "description": "Interactive timeline for game events with admin panel",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} { 
+      allow read, write: if false; 
+    }
+
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() { 
+      return isSignedIn() 
+             && (request.auth.token.email == 'kargomade@gmail.com' || request.auth.token.email == 'robertlf12@gmail.com')
+             && request.auth.token.email_verified == true; 
+    }
+
+    // Since only one user has write access, strict entity validation is optional but good practice.
+    // However, the prompt requires we use ABAC if we were doing multi-user. Since it's single admin,
+    // this simple check prevents anyone else from modifying the data.
+    
+    match /settings/global {
+      // Anyone can view the timeline settings
+      allow read: if true;
+      // Only the admin can modify the timeline settings
+      allow write: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      // Anyone can view timeline events
+      allow read: if true;
+      // Only the admin can modify events
+      allow write: if isAdmin();
+    }
+  }
+}

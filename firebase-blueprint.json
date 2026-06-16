@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "TimelineData": {
+      "title": "TimelineData",
+      "description": "Global settings for the timeline",
+      "type": "object",
+      "properties": {
+        "timelineBackground": { "type": "string" },
+        "titlePageEnabled": { "type": "boolean" },
+        "titlePageTitle": { "type": "string" },
+        "titlePageSubtitle": { "type": "string" },
+        "titlePageImage": { "type": "string" },
+        "axisLabels": { "type": "array" }
+      }
+    },
+    "TimelineEvent": {
+      "title": "TimelineEvent",
+      "description": "An event on the timeline",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "mediaType": { "type": "string" },
+        "mediaUrl": { "type": "string" },
+        "content": { "type": "string" },
+        "referenceImages": { "type": "array" },
+        "backgroundColor": { "type": "string" },
+        "category": { "type": "string" },
+        "categoryColor": { "type": "string" },
+        "titleSize": { "type": "number" },
+        "customDateText": { "type": "string" },
+        "positionX": { "type": "number" },
+        "characterTags": { "type": "array" },
+        "regionTags": { "type": "array" },
+        "mainStoryTags": { "type": "array" }
+      }
+    }
+  },
+  "firestore": {
+    "/settings/global": {
+      "schema": { "$ref": "TimelineData" },
+      "description": "Timeline global settings"
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "TimelineEvent" },
+      "description": "Timeline events collection"
+    }
+  }
+}
