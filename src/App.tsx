@@ -189,7 +189,7 @@ function TimelineLayout({ data }: { data: any }) {
 
       {/* Header */}
       <div className="mb-8 text-center relative z-10 px-4 md:px-8">
-        <img src="/images/title.png" alt="鳴潮編年史" className="h-48 md:h-72 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] object-contain" />
+        <img src="./images/title.png" alt="鳴潮編年史" className="h-48 md:h-72 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] object-contain" />
         <p className="text-white font-bold tracking-[0.5em] text-2xl md:text-3xl uppercase drop-shadow-md" style={{ fontFamily: '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif' }}>我們生而眺望</p>
       </div>
 
@@ -518,7 +518,7 @@ function TimelineLayout({ data }: { data: any }) {
           <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#5865f2]" />
           
           <img 
-            src="/images/JoinDc.png" 
+            src="./images/JoinDc.png" 
             alt="Join Discord" 
             className="h-12 md:h-16 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
             referrerPolicy="no-referrer"
@@ -539,7 +539,7 @@ function TimelineLayout({ data }: { data: any }) {
           <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400" />
 
           <img 
-            src="/images/DownloadButton.png" 
+            src="./images/DownloadButton.png" 
             alt="Download Game" 
             className="h-12 md:h-16 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
             referrerPolicy="no-referrer"
@@ -566,13 +566,16 @@ export default function App() {
     return <div className="flex h-screen items-center justify-center text-gray-500 bg-[#08080a]">Loading timeline data...</div>;
   }
 
+  const basename = window.location.pathname.startsWith('/Wuwa-chronicle') ? '/Wuwa-chronicle' : '/';
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <div className="relative min-h-screen">
         <Starfield />
         <Routes>
           <Route path="/" element={<TimelineLayout data={data} />} />
           <Route path="/admin" element={<AdminPanel data={data} onSave={saveData} />} />
+          <Route path="*" element={<TimelineLayout data={data} />} />
         </Routes>
       </div>
     </BrowserRouter>

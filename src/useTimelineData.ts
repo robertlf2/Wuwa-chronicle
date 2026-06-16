@@ -14,7 +14,7 @@ export function useTimelineData() {
       } else {
         // Fallback to fetch from existing local server once on first ever load
         // so data isn't lost if Firebase is empty.
-        const res = await fetch('/api/timeline');
+        const res = await fetch('./api/timeline');
         if (res.ok) {
           const json = await res.json();
           setData(json);
