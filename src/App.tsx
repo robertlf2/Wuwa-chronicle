@@ -197,26 +197,14 @@ function TimelineLayout({ data }: { data: any }) {
       <div 
         ref={containerRef}
         className={cn(
-          "w-full max-w-full relative flex items-center justify-center transition-all duration-300 z-40",
-          isFullscreen ? "h-screen max-w-none rounded-none" : "w-full aspect-[16/9]"
+          "relative flex items-center justify-center transition-all duration-300 z-40",
+          isFullscreen ? "w-full h-screen max-w-none rounded-none" : "w-[calc(100%-10px)] max-w-full aspect-[16/9] mx-[5px]"
         )}
       >
         
         {/* Left Sci-fi Border Handle */}
         <div className="w-10 md:w-12 h-[80%] rounded-l-2xl bg-gradient-to-b from-[#b0b8c4] via-[#e5e7eb] to-[#b0b8c4] shadow-[inset_-2px_0_10px_rgba(0,0,0,0.5),inset_2px_0_10px_rgba(255,255,255,0.8)] flex flex-col items-center justify-center relative border-y-2 border-l-2 border-[#fff] z-10 -mr-1 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] flex-shrink-0">
-          {/* Home / Title Button */}
-          {data.titlePageEnabled && (
-            <button
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent('timeline-show-title-page'));
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              title="Return to Title"
-              className="absolute left-1/2 -translate-x-1/2 top-4 z-20 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-cyan-600 hover:text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)] transition-all cursor-pointer bg-black/10 rounded-full hover:bg-black/20 border border-black/10"
-            >
-              <Home size={16} />
-            </button>
-          )}
+          {/* Home / Title Button removed */}
 
           {/* Action Button */}
           {titlePageOpen ? null : prevEvent ? (

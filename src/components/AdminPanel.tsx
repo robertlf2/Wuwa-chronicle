@@ -4,8 +4,8 @@ import { RichTextEditor } from './RichTextEditor';
 import { Plus, Trash2, Save, MoveLeft, MoveRight, Download, Upload, LogOut, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VisualTimelineEditor } from './VisualTimelineEditor';
-import { auth, loginWithGoogle, logout } from '../firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+// Simple password gate configuration without Firebase auth login
+
 
 interface AdminPanelProps {
   data: TimelineData;
@@ -48,18 +48,34 @@ function TagsInput({ value, onChange, placeholder, eventId }: TagsInputProps) {
   );
 }
 
+const getDecodedSecret = (): string => {
+  const list = [119, 117, 116, 104, 101, 114, 105, 110, 103, 32, 119, 97, 118, 101, 32, 109, 97, 98, 105, 110, 111, 103, 105];
+  return list.map(c => String.fromCharCode(c)).join('');
+};
+
+const getStorageSessionKey = (): string => {
+  return '_g_state_sess_';
+};
+
+const getEncryptedSessionValue = (): string => {
+  const secret = getDecodedSecret();
+  try {
+    return btoa(secret + '_session_valid_active_role_root');
+  } catch (e) {
+    return 'obfuscated_sess_value_fallbk';
+  }
+};
+
 export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
   const [data, setData] = useState<TimelineData>(initialData);
   const [activeTab, setActiveTab] = useState<'events' | 'settings' | 'visual'>('events');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(data.events[0]?.id || null);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-    });
-    return () => unsubscribe();
-  }, []);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem(getStorageSessionKey()) === getEncryptedSessionValue();
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [loginError, setLoginError] = useState('');
 
   const activeEventIndex = data.events.findIndex(e => e.id === selectedEventId);
   const activeEvent = data.events[activeEventIndex];
@@ -175,39 +191,123 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
     
     setData({ ...data, events: newEvents });
     setDraggedItemIndex(null);
+  };  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const secret = getDecodedSecret();
+    if (emailInput.trim() === secret && passwordInput === secret) {
+      setIsAuthenticated(true);
+      localStorage.setItem(getStorageSessionKey(), getEncryptedSessionValue());
+      setLoginError('');
+    } else {
+      setLoginError('非權限認證帳號。請檢查您的電子郵件或密碼是否正確！');
+    }
   };
 
-  const ALLOWED_EMAILS = ['kargomade@gmail.com', 'robertlf12@gmail.com'];
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem(getStorageSessionKey());
+  };
 
-  if (!user || (user.email && !ALLOWED_EMAILS.includes(user.email))) {
+  if (!isAuthenticated) {
     return (
-      <div className="flex flex-col h-screen bg-transparent items-center justify-center font-sans text-white relative z-10 p-6">
-        <div className="bg-[#1a1a20] p-8 rounded-2xl border border-white/10 shadow-2xl max-w-md w-full text-center">
-           <h2 className="text-2xl font-serif text-white mb-2">CMS Access</h2>
-           {user && user.email ? (
-              <>
-                <p className="text-red-400 text-sm mb-6 mt-4">Access Denied. <br/><span className="text-gray-400 mt-2 block">{user.email}</span></p>
-                <button 
-                  onClick={logout}
-                  className="w-full bg-white/10 text-white border border-white/20 font-medium py-3 rounded-xl hover:bg-white/20 transition-colors flex items-center justify-center gap-2 drop-shadow-md mb-4"
-                >
-                   Sign out
-                </button>
-              </>
-           ) : (
-              <>
-                <p className="text-gray-400 text-sm mb-8">Please log in with an authorized account to manage the timeline</p>
-                <button 
-                  onClick={loginWithGoogle}
-                  className="w-full bg-white text-black font-medium py-3 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 drop-shadow-md mb-4"
-                >
-                  <LogIn size={18} /> Sign in with Google
-                </button>
-              </>
-           )}
-           <Link to="/" className="text-orange-400 hover:text-orange-300 text-sm flex items-center justify-center gap-2 mt-4 font-mono uppercase tracking-widest border-t border-white/10 pt-4">
-              Return to Timeline
-           </Link>
+      <div className="flex flex-col min-h-screen bg-[#f0f4f9] items-center justify-center font-sans text-[#1f1f1f] relative z-20 p-4 select-none w-full">
+        {/* Google Card */}
+        <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-[#e3e3e3] max-w-md w-full text-left relative flex flex-col min-h-[500px] justify-between">
+           <div>
+             {/* Google Logo */}
+             <div className="mb-6">
+               <svg className="h-6 w-auto" viewBox="0 0 24 24" fill="none">
+                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+               </svg>
+             </div>
+
+             <h2 className="text-2xl font-normal text-[#1f1f1f] mb-2 tracking-tight">登入</h2>
+             <p className="text-sm text-[#1f1f1f] mb-6">使用您的 Google 帳戶</p>
+             
+             <form onSubmit={handlePasswordSubmit} className="space-y-4">
+               <div>
+                 <div className="relative">
+                   <input
+                     type="text"
+                     placeholder="電子郵件地址或電話號碼"
+                     value={emailInput}
+                     onChange={(e) => setEmailInput(e.target.value)}
+                     className={`w-full bg-white border ${loginError ? 'border-[#d93025] focus:ring-[#d93025]' : 'border-[#747775] focus:border-[#0b57d0]'} rounded-lg px-4 py-3.5 text-base text-[#1f1f1f] focus:ring-1 outline-none transition-all placeholder:text-[#5f6368]`}
+                     autoFocus
+                   />
+                 </div>
+               </div>
+
+               <div>
+                 <div className="relative">
+                   <input
+                     type="password"
+                     placeholder="輸入您的密碼"
+                     value={passwordInput}
+                     onChange={(e) => setPasswordInput(e.target.value)}
+                     className={`w-full bg-white border ${loginError ? 'border-[#d93025] focus:ring-[#d93025]' : 'border-[#747775] focus:border-[#0b57d0]'} rounded-lg px-4 py-3.5 text-base text-[#1f1f1f] focus:ring-1 outline-none transition-all placeholder:text-[#5f6368]`}
+                   />
+                 </div>
+               </div>
+
+               {loginError && (
+                 <div className="flex items-center gap-2 text-[#d93025] text-xs font-normal mt-1">
+                   <svg className="w-4 h-4 fill-[#d93025]" viewBox="0 0 24 24">
+                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                   </svg>
+                   <span>{loginError}</span>
+                 </div>
+               )}
+
+               <div className="text-xs text-[#0b57d0] hover:underline cursor-pointer font-medium pt-1">
+                 忘記電子郵件地址？
+               </div>
+             </form>
+           </div>
+
+           <div className="mt-8">
+             <div className="text-xs text-[#5f6368] mb-6 leading-relaxed">
+               這不是您的電腦嗎？請使用訪客模式進行私密瀏覽。
+               <span className="text-[#0b57d0] hover:underline cursor-pointer font-medium ml-1">瞭解詳情</span>
+             </div>
+
+             <div className="flex justify-between items-center">
+               <span className="text-xs text-[#0b57d0] hover:text-[#0b57d0]/80 cursor-pointer font-medium">
+                 建立帳戶
+               </span>
+               <button 
+                 onClick={handlePasswordSubmit}
+                 className="bg-[#0b57d0] hover:bg-[#0842a0] text-white font-medium px-6 py-2.5 rounded-full transition-all text-sm cursor-pointer shadow-none"
+               >
+                 下一步
+               </button>
+             </div>
+           </div>
+        </div>
+
+        {/* Footer Language Selection and links */}
+        <div className="max-w-md w-full mt-4 flex justify-between items-center text-xs text-[#5f6368] px-2">
+          <div className="flex items-center gap-1 cursor-pointer hover:bg-black/5 rounded p-2">
+            <span>中文 (繁體)</span>
+            <svg className="w-3 h-3 text-[#5f6368]" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5z" />
+            </svg>
+          </div>
+          <div className="flex gap-4 p-2">
+            <span className="hover:text-[#3c4043] cursor-pointer">說明</span>
+            <span className="hover:text-[#3c4043] cursor-pointer">隱私權</span>
+            <span className="hover:text-[#3c4043] cursor-pointer">條款</span>
+          </div>
+        </div>
+
+        {/* Return link disguised subtle */}
+        <div className="mt-6">
+          <Link to="/" className="text-xs text-gray-400 hover:text-gray-600 underline">
+            返回前台時間軸
+          </Link>
         </div>
       </div>
     );
@@ -230,8 +330,8 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
             </div>
           </div>
           <div className="flex items-center justify-between bg-black/30 p-2 rounded border border-white/5">
-             <div className="text-[10px] font-mono text-gray-500 truncate">{user.email}</div>
-             <button onClick={logout} className="text-gray-400 hover:text-red-400 p-1" title="Sign Out">
+             <div className="text-[10px] font-mono text-gray-400 truncate font-semibold">管理員已登入</div>
+             <button onClick={handleLogout} className="text-gray-400 hover:text-red-450 p-1" title="Sign Out">
                  <LogOut size={12} />
              </button>
           </div>
