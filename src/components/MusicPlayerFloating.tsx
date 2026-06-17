@@ -20,7 +20,7 @@ export function MusicPlayerFloating() {
             ? "bg-cyan-500 text-white border-cyan-400 rotate-12" 
             : "bg-[#1a1a20] text-cyan-400 border-cyan-500/30 hover:bg-[#25252d] hover:border-cyan-400"
         )}
-        title={isMusicExpanded ? "Minimize Player" : "Expand Music Player"}
+        title={isMusicExpanded ? "收起音樂" : "聽音樂"}
       >
         <Music size={20} className={isMusicExpanded ? "animate-pulse" : ""} />
       </button>

@@ -348,7 +348,7 @@ function TimelineLayout({ data }: { data: any }) {
                 ? "bg-cyan-500 text-white border-cyan-400 rotate-12" 
                 : "bg-[#1a1a20] text-cyan-400 border-cyan-500/30 hover:bg-[#25252d] hover:border-cyan-400"
             )}
-            title={isSearchExpanded ? "關閉檢索" : "打開編年史內容檢索"}
+            title={isSearchExpanded ? "關閉搜尋" : "開啟搜尋"}
           >
             {isSearchExpanded ? <X size={20} /> : <Search size={20} />}
           </button>
@@ -538,7 +538,6 @@ function TimelineLayout({ data }: { data: any }) {
         <Link 
           to="/admin" 
           className="p-3 bg-black/60 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 text-gray-300 rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center backdrop-blur-md h-12 w-12 md:h-16 md:w-16 transition-all duration-300"
-          title="開啟管理後台"
         >
           <Settings className="size-5 md:size-7" />
         </Link>

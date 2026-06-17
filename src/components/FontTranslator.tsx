@@ -1118,7 +1118,7 @@ export default function FontTranslator() {
 
             {/* Glyph display board frame */}
             <div className={cn(
-              "relative flex-1 min-h-[180px] bg-[#07090c] rounded-2xl border transition-all duration-300 p-5 sm:p-6 overflow-hidden flex flex-col justify-center",
+              "relative flex-1 min-h-[180px] bg-[#07090c] rounded-2xl border transition-all duration-300 p-5 overflow-hidden flex flex-col justify-start",
               activeTheme.borderGlow
             )}>
               
@@ -1164,9 +1164,9 @@ export default function FontTranslator() {
               )} />
 
               {/* Render translated glyph characters layout */}
-              <div className="max-h-[180px] overflow-y-auto custom-scrollbar pr-2 py-2 flex flex-wrap gap-x-2.5 gap-y-3.5 items-center justify-center relative z-10 w-full">
+              <div className="max-h-[180px] overflow-y-auto custom-scrollbar pr-2 flex flex-wrap gap-x-[1.5px] gap-y-2 items-start justify-start relative z-10 w-full">
                 {text.length === 0 ? (
-                  <div className="text-gray-500 font-serif text-sm italic tracking-widest text-center py-6 select-none">
+                  <div className="text-gray-500 font-serif text-sm italic tracking-widest text-center py-6 select-none w-full">
                     等待輸入解密文本...
                   </div>
                 ) : (
@@ -1174,10 +1174,10 @@ export default function FontTranslator() {
                     {text.split("").map((char, index) => {
                       const isTtf = ['wuwa_jitin', 'wuwa_ragunna', 'wuwa_septimont', 'wuwa_lahairoi'].includes(fontFamily);
                       const fontClass = 
-                        fontFamily === 'wuwa_jitin' ? 'font-jitin' :
-                        fontFamily === 'wuwa_ragunna' ? 'font-ragunna' :
-                        fontFamily === 'wuwa_septimont' ? 'font-septimont' :
-                        fontFamily === 'wuwa_lahairoi' ? 'font-lahairoi' : '';
+                        fontFamily === 'wuwa_jitin' ? 'font-jitin tracking-wider' :
+                        fontFamily === 'wuwa_ragunna' ? 'font-ragunna tracking-wider' :
+                        fontFamily === 'wuwa_septimont' ? 'font-septimont tracking-wider' :
+                        fontFamily === 'wuwa_lahairoi' ? 'font-lahairoi tracking-wider' : 'tracking-wider';
 
                       return (
                         <motion.div
@@ -1190,17 +1190,25 @@ export default function FontTranslator() {
                         >
                           {isTtf ? (
                             char === ' ' ? (
-                              <div style={{ width: '16px', height: '38px' }} className="flex-shrink-0" />
+                              <div style={{ width: '8px', height: '38px' }} className="flex-shrink-0" />
                             ) : (
                               <span 
-                                className={cn("text-3xl font-normal leading-none tracking-normal select-text inline-block min-w-[20px] text-center", fontClass)}
+                                className={cn(
+                                  "font-normal leading-none select-text inline-block", 
+                                  ['wuwa_ragunna', 'wuwa_septimont', 'wuwa_lahairoi'].includes(fontFamily) ? "text-[35px]" : "text-3xl mt-[6px]",
+                                  fontClass
+                                )}
                                 style={{ fontFamily: fontFamily === 'wuwa_jitin' ? 'WuWa-Jitin' : fontFamily === 'wuwa_ragunna' ? 'WuWa-Ragunna' : fontFamily === 'wuwa_septimont' ? 'WuWa-Septimont' : 'WuWa-LahaiRoi' }}
                               >
                                 {char}
                               </span>
                             )
                           ) : (
-                            <Glyph char={char} style={fontFamily as any} size={38} />
+                            char === ' ' ? (
+                                <div style={{ width: '8px', height: '24px' }} className="flex-shrink-0" />
+                            ) : (
+                                <Glyph char={char} style={fontFamily as any} size={28} />
+                            )
                           )}
                         </motion.div>
                       );
