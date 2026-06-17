@@ -305,8 +305,8 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
 
         {/* Return link disguised subtle */}
         <div className="mt-6">
-          <button 
-            onClick={() => window.location.href = '/'}
+          <button
+            onClick={() => window.location.href = "https://robertlf2.github.io/Wuwa-chronicle/"}
             className="text-xs text-gray-400 hover:text-gray-600 underline bg-transparent border-none cursor-pointer"
           >
             返回前頁
@@ -327,9 +327,9 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
               <button onClick={handleSave} className="text-orange-400 hover:text-orange-300 flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest bg-orange-500/10 hover:bg-orange-500/20 px-2 py-1 rounded transition-colors">
                 <Save size={14} /> Save
               </button>
-              <Link to="/" className="text-gray-400 hover:text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 border border-white/10 rounded hover:bg-white/5 transition-colors flex items-center py-1">
+              <button onClick={() => window.location.href = "https://robertlf2.github.io/Wuwa-chronicle/"} className="text-gray-400 hover:text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 border border-white/10 rounded hover:bg-white/5 transition-colors flex items-center py-1">
                 Back
-              </Link>
+              </button>
             </div>
           </div>
           <div className="flex items-center justify-between bg-black/30 p-2 rounded border border-white/5">
