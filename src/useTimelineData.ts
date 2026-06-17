@@ -62,7 +62,7 @@ export function useTimelineData() {
     }
     return defaultFallbackData;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const loadData = async () => {
     try {

@@ -305,9 +305,12 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
 
         {/* Return link disguised subtle */}
         <div className="mt-6">
-          <Link to="/" className="text-xs text-gray-400 hover:text-gray-600 underline">
-            返回前台時間軸
-          </Link>
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="text-xs text-gray-400 hover:text-gray-600 underline bg-transparent border-none cursor-pointer"
+          >
+            返回前頁
+          </button>
         </div>
       </div>
     );

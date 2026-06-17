@@ -551,7 +551,7 @@ export default function App() {
   const { data, loading, saveData } = useTimelineData();
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center text-gray-500 bg-[#08080a]">Loading timeline data...</div>;
+    return <div className="flex h-screen w-full bg-[#08080a]"></div>;
   }
 
   const basename = window.location.pathname.startsWith('/Wuwa-chronicle') ? '/Wuwa-chronicle' : '/';
