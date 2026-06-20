@@ -232,42 +232,87 @@ export function useTimelineData() {
 
   const loadData = async () => {
     try {
-      // First try to load from the server API (which reads the latest daily backup JSON)
-      let apiData: TimelineData | null = null;
-      try {
-        const res = await fetch('./api/timeline');
-        if (res.ok) {
-          apiData = await res.json();
+      let loadedData: TimelineData | null = null;
+      const pathname = window.location.pathname;
+      const isAdmin = pathname.endsWith('/admin') || pathname.endsWith('/admin/');
+      const relativePrefix = isAdmin ? '../' : './';
+
+      // 1. First priority: Try to probe local static daily backups inside "backups/" folder (up to 45 days back)
+      console.log("Attempting to probe local static daily backups...");
+      const currentDate = new Date();
+      for (let i = 0; i < 45; i++) {
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() - i);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        const dateStr = `${year}-${month}-${day}`;
+
+        const relativeUrl = `${relativePrefix}backups/timeline_backup_${dateStr}.json`;
+        try {
+          const res = await fetch(relativeUrl);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.events && data.events.length > 0) {
+              console.log(`Successfully loaded the newest local static backup: ${relativeUrl}`);
+              loadedData = data;
+              break;
+            }
+          }
+        } catch (probeErr) {
+          // Fail silently, keep probing earlier dates
         }
-      } catch (apiErr) {
-        console.warn('Failed to fetch from local server API', apiErr);
       }
 
-      if (apiData && apiData.events && apiData.events.length > 0) {
-        setData(apiData);
+      // 2. Second priority: If relative files aren't found or fail, try local backend server API (if running on Node platform)
+      if (!loadedData || !loadedData.events || loadedData.events.length === 0) {
+        console.log("No static daily backup resolved. Trying local backend API...");
         try {
-          localStorage.setItem('wuwa-chronicle-data', JSON.stringify(apiData));
+          const apiUrl = `${relativePrefix}api/timeline`;
+          const res = await fetch(apiUrl);
+          if (res.ok) {
+            const apiData = await res.json();
+            if (apiData && apiData.events && apiData.events.length > 0) {
+              loadedData = apiData;
+            }
+          }
+        } catch (apiErr) {
+          console.warn("Local server API was not available or failed:", apiErr);
+        }
+      }
+
+      // 3. Third priority: Try fetching the core static data.json in the repository 
+      if (!loadedData || !loadedData.events || loadedData.events.length === 0) {
+        console.log("Trying core static fallback data.json...");
+        try {
+          const targetUrl = `${relativePrefix}data.json`;
+          const res = await fetch(targetUrl);
+          if (res.ok) {
+            const staticData = await res.json();
+            if (staticData && staticData.events && staticData.events.length > 0) {
+              loadedData = staticData;
+            }
+          }
+        } catch (staticErr) {
+          console.warn("Failed to fetch static main fallback data.json", staticErr);
+        }
+      }
+
+      // Handle loading results
+      if (loadedData && loadedData.events && loadedData.events.length > 0) {
+        setData(loadedData);
+        try {
+          localStorage.setItem('wuwa-chronicle-data', JSON.stringify(loadedData));
         } catch (storageErr) {
-          console.warn('Failed to cache API data in localStorage', storageErr);
+          console.warn('Failed to cache data in localStorage', storageErr);
         }
       } else {
-        // Fallback to Firebase Firestore if server API is unavailable/empty
-        const fbData = await fetchTimelineData();
-        if (fbData && fbData.events && fbData.events.length > 0) {
-          setData(fbData);
-          try {
-            localStorage.setItem('wuwa-chronicle-data', JSON.stringify(fbData));
-          } catch (storageErr) {
-            console.warn('Failed to cache Firebase data in localStorage', storageErr);
-          }
+        // Ultimate fallback to localStorage if all sources are empty of results
+        const saved = localStorage.getItem('wuwa-chronicle-data');
+        if (saved) {
+          setData(JSON.parse(saved));
         } else {
-          // If both fail, load from localStorage
-          const saved = localStorage.getItem('wuwa-chronicle-data');
-          if (saved) {
-            setData(JSON.parse(saved));
-          } else {
-            setData(defaultFallbackData);
-          }
+          setData(defaultFallbackData);
         }
       }
     } catch (e) {
@@ -298,8 +343,13 @@ export function useTimelineData() {
 
     // Save to server local API (which writes data.json & daily backup file on the server)
     try {
+      const pathname = window.location.pathname;
+      const isAdmin = pathname.endsWith('/admin') || pathname.endsWith('/admin/');
+      const relativePrefix = isAdmin ? '../' : './';
+      const apiUrl = `${relativePrefix}api/timeline`;
+
       const clientDate = new Date().toISOString().split('T')[0];
-      await fetch('./api/timeline', {
+      await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

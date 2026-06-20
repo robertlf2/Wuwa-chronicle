@@ -4,6 +4,7 @@ import { createServer as createViteServer } from "vite";
 import fs from "fs";
 
 const DATA_FILE = path.join(process.cwd(), "data.json");
+const PUBLIC_DATA_FILE = path.join(process.cwd(), "public", "data.json");
 const BACKUPS_DIR = path.join(process.cwd(), "backups");
 
 // Ensure backups directory exists
@@ -247,6 +248,26 @@ if (!fs.existsSync(DATA_FILE)) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(defaultData, null, 2), "utf8");
 }
 
+// In development, ensure public/data.json matches data.json
+try {
+  const publicDir = path.dirname(PUBLIC_DATA_FILE);
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
+  
+  if (!fs.existsSync(PUBLIC_DATA_FILE)) {
+    fs.copyFileSync(DATA_FILE, PUBLIC_DATA_FILE);
+  } else {
+    const dataStat = fs.statSync(DATA_FILE);
+    const publicStat = fs.statSync(PUBLIC_DATA_FILE);
+    if (dataStat.mtime > publicStat.mtime) {
+      fs.copyFileSync(DATA_FILE, PUBLIC_DATA_FILE);
+    }
+  }
+} catch (syncErr) {
+  console.error("Startup data sync failed:", syncErr);
+}
+
 function getLatestBackupFilename(): string | null {
   try {
     if (!fs.existsSync(BACKUPS_DIR)) return null;
@@ -264,24 +285,43 @@ function getLatestBackupFilename(): string | null {
 function readData() {
   try {
     const latestFile = getLatestBackupFilename();
-    const fileToRead = latestFile && fs.existsSync(latestFile) ? latestFile : DATA_FILE;
-    const rawData = fs.readFileSync(fileToRead, "utf8");
-    return JSON.parse(rawData);
-  } catch (err) {
-    try {
-      if (fs.existsSync(DATA_FILE)) {
-        const rawData = fs.readFileSync(DATA_FILE, "utf8");
-        return JSON.parse(rawData);
-      }
-    } catch (innerErr) {
-      console.error("Fallback file reading failed as well", innerErr);
+    const fileToRead = latestFile && fs.existsSync(latestFile) ? latestFile : (fs.existsSync(DATA_FILE) ? DATA_FILE : PUBLIC_DATA_FILE);
+    if (fs.existsSync(fileToRead)) {
+      const rawData = fs.readFileSync(fileToRead, "utf8");
+      return JSON.parse(rawData);
     }
-    return defaultData;
+  } catch (e) {
+    console.error("Error finding or parsing latest backup file", e);
   }
+
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const rawData = fs.readFileSync(DATA_FILE, "utf8");
+      return JSON.parse(rawData);
+    } else if (fs.existsSync(PUBLIC_DATA_FILE)) {
+      const rawData = fs.readFileSync(PUBLIC_DATA_FILE, "utf8");
+      return JSON.parse(rawData);
+    }
+  } catch (innerErr) {
+    console.error("Fallback file reading failed as well", innerErr);
+  }
+  return defaultData;
 }
 
 function writeData(data: any, req?: express.Request) {
+  // Write to root data.json
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf8");
+
+  // Write to public/data.json so that 'npm run build' packages it in 'dist' statically
+  try {
+    const publicDir = path.dirname(PUBLIC_DATA_FILE);
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true });
+    }
+    fs.writeFileSync(PUBLIC_DATA_FILE, JSON.stringify(data, null, 2), "utf8");
+  } catch (publicWriteErr) {
+    console.error("Failed to write to public/data.json", publicWriteErr);
+  }
 
   let dateStr = "";
   if (req && req.headers && req.headers["x-client-date"]) {
@@ -305,6 +345,9 @@ async function startServer() {
   const PORT = 3000;
 
   app.use(express.json({ limit: "50mb" })); // Increase limit in case of large timelines with content/images
+
+  // Serve the backups directory statically so that direct relative fetch of backups/timeline_backup_... works both in dev and prod!
+  app.use("/backups", express.static(path.join(process.cwd(), "backups")));
 
   // API routes
   app.get("/api/timeline", (req, res) => {
