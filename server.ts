@@ -3,7 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import fs from "fs";
 
-const DATA_FILE = path.join(process.cwd(), "data.json");
+const DATA_FILE = path.join(process.cwd(), "public", "data.json");
 const BACKUPS_DIR = path.join(process.cwd(), "backups");
 
 // Ensure backups directory exists

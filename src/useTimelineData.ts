@@ -231,20 +231,56 @@ export function useTimelineData() {
 
   const loadData = async () => {
     try {
-      const res = await fetch('./api/timeline');
-      if (res.ok) {
-        const apiData = await res.json();
-        if (apiData && apiData.events) {
-          setData(apiData);
-          try {
-            localStorage.setItem('wuwa-chronicle-data', JSON.stringify(apiData));
-          } catch (storageErr) {
-            console.warn('Failed to cache API data in localStorage', storageErr);
+      let loaded = false;
+      // 1. Try server API first (important in dev container)
+      try {
+        const res = await fetch('./api/timeline');
+        if (res.ok) {
+          const apiData = await res.json();
+          if (apiData && apiData.events) {
+            setData(apiData);
+            try {
+              localStorage.setItem('wuwa-chronicle-data', JSON.stringify(apiData));
+            } catch (storageErr) {
+              console.warn('Failed to cache API data in localStorage', storageErr);
+            }
+            loaded = true;
           }
         }
+      } catch (apiErr) {
+        // Safe to ignore, fallback to static asset next
       }
-    } catch (apiErr) {
-      console.warn('Failed to fetch from local server API', apiErr);
+
+      // 2. Fallback to direct static fetch of data.json (for static GitHub Pages hosting)
+      if (!loaded) {
+        try {
+          const res = await fetch('./data.json');
+          if (res.ok) {
+            const staticData = await res.json();
+            if (staticData && staticData.events) {
+              setData(staticData);
+              try {
+                localStorage.setItem('wuwa-chronicle-data', JSON.stringify(staticData));
+              } catch (storageErr) {
+                console.warn('Failed to cache static data in localStorage', storageErr);
+              }
+              loaded = true;
+            }
+          }
+        } catch (staticErr) {
+          console.warn('Failed to fetch static data.json file directly', staticErr);
+        }
+      }
+
+      // 3. Fallback to localStorage
+      if (!loaded) {
+        const saved = localStorage.getItem('wuwa-chronicle-data');
+        if (saved) {
+          setData(JSON.parse(saved));
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load timeline data completely', e);
     } finally {
       setLoading(false);
     }
