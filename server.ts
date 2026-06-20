@@ -4,6 +4,29 @@ import { createServer as createViteServer } from "vite";
 import fs from "fs";
 
 const DATA_FILE = path.join(process.cwd(), "data.json");
+const BACKUPS_DIR = path.join(process.cwd(), "backups");
+
+// Ensure backups directory exists
+if (!fs.existsSync(BACKUPS_DIR)) {
+  fs.mkdirSync(BACKUPS_DIR, { recursive: true });
+}
+
+// Migrate legacy file structure backups at the root of project (if any)
+try {
+  const rootFiles = fs.readdirSync(process.cwd());
+  rootFiles.forEach((file) => {
+    if (file.startsWith("timeline_backup_") && file.endsWith(".json")) {
+      const oldPath = path.join(process.cwd(), file);
+      const newPath = path.join(BACKUPS_DIR, file);
+      if (fs.existsSync(oldPath)) {
+        fs.renameSync(oldPath, newPath);
+        console.log(`Migrated legacy backup "${file}" to backups/`);
+      }
+    }
+  });
+} catch (err) {
+  console.error("Migration of backups failed", err);
+}
 
 // Default initial data
 const defaultData = {
@@ -224,24 +247,64 @@ if (!fs.existsSync(DATA_FILE)) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(defaultData, null, 2), "utf8");
 }
 
+function getLatestBackupFilename(): string | null {
+  try {
+    if (!fs.existsSync(BACKUPS_DIR)) return null;
+    const files = fs.readdirSync(BACKUPS_DIR);
+    const backupFiles = files.filter(f => f.startsWith("timeline_backup_") && f.endsWith(".json"));
+    if (backupFiles.length === 0) return null;
+    backupFiles.sort((a, b) => b.localeCompare(a));
+    return path.join(BACKUPS_DIR, backupFiles[0]);
+  } catch (e) {
+    console.error("Error finding latest backup file", e);
+    return null;
+  }
+}
+
 function readData() {
   try {
-    const rawData = fs.readFileSync(DATA_FILE, "utf8");
+    const latestFile = getLatestBackupFilename();
+    const fileToRead = latestFile && fs.existsSync(latestFile) ? latestFile : DATA_FILE;
+    const rawData = fs.readFileSync(fileToRead, "utf8");
     return JSON.parse(rawData);
   } catch (err) {
+    try {
+      if (fs.existsSync(DATA_FILE)) {
+        const rawData = fs.readFileSync(DATA_FILE, "utf8");
+        return JSON.parse(rawData);
+      }
+    } catch (innerErr) {
+      console.error("Fallback file reading failed as well", innerErr);
+    }
     return defaultData;
   }
 }
 
-function writeData(data: any) {
+function writeData(data: any, req?: express.Request) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf8");
+
+  let dateStr = "";
+  if (req && req.headers && req.headers["x-client-date"]) {
+    dateStr = req.headers["x-client-date"] as string;
+  }
+
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    dateStr = `${year}-${month}-${day}`;
+  }
+
+  const backupFile = path.join(BACKUPS_DIR, `timeline_backup_${dateStr}.json`);
+  fs.writeFileSync(backupFile, JSON.stringify(data, null, 2), "utf8");
 }
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: "50mb" })); // Increase limit in case of large timelines with content/images
 
   // API routes
   app.get("/api/timeline", (req, res) => {
@@ -250,7 +313,7 @@ async function startServer() {
 
   app.post("/api/timeline", (req, res) => {
     const data = req.body;
-    writeData(data);
+    writeData(data, req);
     res.json({ success: true });
   });
 

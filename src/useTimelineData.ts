@@ -232,34 +232,36 @@ export function useTimelineData() {
 
   const loadData = async () => {
     try {
-      // First try Firebase Firestore
-      const fbData = await fetchTimelineData();
-      if (fbData && fbData.events && fbData.events.length > 0) {
-        setData(fbData);
+      // First try to load from the server API (which reads the latest daily backup JSON)
+      let apiData: TimelineData | null = null;
+      try {
+        const res = await fetch('./api/timeline');
+        if (res.ok) {
+          apiData = await res.json();
+        }
+      } catch (apiErr) {
+        console.warn('Failed to fetch from local server API', apiErr);
+      }
+
+      if (apiData && apiData.events && apiData.events.length > 0) {
+        setData(apiData);
         try {
-          localStorage.setItem('wuwa-chronicle-data', JSON.stringify(fbData));
+          localStorage.setItem('wuwa-chronicle-data', JSON.stringify(apiData));
         } catch (storageErr) {
-          console.warn('Failed to cache Firebase data in localStorage', storageErr);
+          console.warn('Failed to cache API data in localStorage', storageErr);
         }
       } else {
-        // If Firebase is empty/unconfigured, load from localStorage or server fallback
-        try {
-          const res = await fetch('./api/timeline');
-          if (res.ok) {
-            const json = await res.json();
-            setData(json);
-            localStorage.setItem('wuwa-chronicle-data', JSON.stringify(json));
-          } else {
-            // If API route failed (as on GitHub Pages static sites), we keep localStorage or defaultFallbackData
-            const saved = localStorage.getItem('wuwa-chronicle-data');
-            if (saved) {
-              setData(JSON.parse(saved));
-            } else {
-              setData(defaultFallbackData);
-            }
+        // Fallback to Firebase Firestore if server API is unavailable/empty
+        const fbData = await fetchTimelineData();
+        if (fbData && fbData.events && fbData.events.length > 0) {
+          setData(fbData);
+          try {
+            localStorage.setItem('wuwa-chronicle-data', JSON.stringify(fbData));
+          } catch (storageErr) {
+            console.warn('Failed to cache Firebase data in localStorage', storageErr);
           }
-        } catch (fetchErr) {
-          // Normal case for static sites
+        } else {
+          // If both fail, load from localStorage
           const saved = localStorage.getItem('wuwa-chronicle-data');
           if (saved) {
             setData(JSON.parse(saved));
@@ -294,12 +296,26 @@ export function useTimelineData() {
       console.warn('Failed to write to localStorage', storageErr);
     }
 
+    // Save to server local API (which writes data.json & daily backup file on the server)
+    try {
+      const clientDate = new Date().toISOString().split('T')[0];
+      await fetch('./api/timeline', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-date': clientDate,
+        },
+        body: JSON.stringify(newData),
+      });
+    } catch (apiErr) {
+      console.error('Failed to save to server local API', apiErr);
+    }
+
     // Try to sync with Firebase
     try {
       await saveTimelineData(newData);
     } catch (e) {
       console.error('Failed to save timeline data to Firebase, using local fallback state', e);
-      // Don't alert if we wanted offline-friendly, but since there is an admin panel:
       console.info('Saved locally instead.');
     }
   };
