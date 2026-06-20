@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { TimelineData } from './types';
-import { fetchTimelineData, saveTimelineData } from './firebase';
 
 const defaultFallbackData: TimelineData = {
   titlePageSubtitle: "",
@@ -232,52 +231,20 @@ export function useTimelineData() {
 
   const loadData = async () => {
     try {
-      // First try to load from the server API (which reads the latest daily backup JSON)
-      let apiData: TimelineData | null = null;
-      try {
-        const res = await fetch('./api/timeline');
-        if (res.ok) {
-          apiData = await res.json();
-        }
-      } catch (apiErr) {
-        console.warn('Failed to fetch from local server API', apiErr);
-      }
-
-      if (apiData && apiData.events && apiData.events.length > 0) {
-        setData(apiData);
-        try {
-          localStorage.setItem('wuwa-chronicle-data', JSON.stringify(apiData));
-        } catch (storageErr) {
-          console.warn('Failed to cache API data in localStorage', storageErr);
-        }
-      } else {
-        // Fallback to Firebase Firestore if server API is unavailable/empty
-        const fbData = await fetchTimelineData();
-        if (fbData && fbData.events && fbData.events.length > 0) {
-          setData(fbData);
+      const res = await fetch('./api/timeline');
+      if (res.ok) {
+        const apiData = await res.json();
+        if (apiData && apiData.events) {
+          setData(apiData);
           try {
-            localStorage.setItem('wuwa-chronicle-data', JSON.stringify(fbData));
+            localStorage.setItem('wuwa-chronicle-data', JSON.stringify(apiData));
           } catch (storageErr) {
-            console.warn('Failed to cache Firebase data in localStorage', storageErr);
-          }
-        } else {
-          // If both fail, load from localStorage
-          const saved = localStorage.getItem('wuwa-chronicle-data');
-          if (saved) {
-            setData(JSON.parse(saved));
-          } else {
-            setData(defaultFallbackData);
+            console.warn('Failed to cache API data in localStorage', storageErr);
           }
         }
       }
-    } catch (e) {
-      console.error('Failed to load timeline data', e);
-      const saved = localStorage.getItem('wuwa-chronicle-data');
-      if (saved) {
-        setData(JSON.parse(saved));
-      } else {
-        setData(defaultFallbackData);
-      }
+    } catch (apiErr) {
+      console.warn('Failed to fetch from local server API', apiErr);
     } finally {
       setLoading(false);
     }
@@ -289,14 +256,12 @@ export function useTimelineData() {
 
   const saveData = async (newData: TimelineData) => {
     setData(newData);
-    // Write locally to localStorage first so it works immediately (for offline/static hosting)
     try {
       localStorage.setItem('wuwa-chronicle-data', JSON.stringify(newData));
     } catch (storageErr) {
       console.warn('Failed to write to localStorage', storageErr);
     }
 
-    // Save to server local API (which writes data.json & daily backup file on the server)
     try {
       const clientDate = new Date().toISOString().split('T')[0];
       await fetch('./api/timeline', {
@@ -309,14 +274,6 @@ export function useTimelineData() {
       });
     } catch (apiErr) {
       console.error('Failed to save to server local API', apiErr);
-    }
-
-    // Try to sync with Firebase
-    try {
-      await saveTimelineData(newData);
-    } catch (e) {
-      console.error('Failed to save timeline data to Firebase, using local fallback state', e);
-      console.info('Saved locally instead.');
     }
   };
 

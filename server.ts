@@ -263,21 +263,14 @@ function getLatestBackupFilename(): string | null {
 
 function readData() {
   try {
-    const latestFile = getLatestBackupFilename();
-    const fileToRead = latestFile && fs.existsSync(latestFile) ? latestFile : DATA_FILE;
-    const rawData = fs.readFileSync(fileToRead, "utf8");
-    return JSON.parse(rawData);
-  } catch (err) {
-    try {
-      if (fs.existsSync(DATA_FILE)) {
-        const rawData = fs.readFileSync(DATA_FILE, "utf8");
-        return JSON.parse(rawData);
-      }
-    } catch (innerErr) {
-      console.error("Fallback file reading failed as well", innerErr);
+    if (fs.existsSync(DATA_FILE)) {
+      const rawData = fs.readFileSync(DATA_FILE, "utf8");
+      return JSON.parse(rawData);
     }
-    return defaultData;
+  } catch (err) {
+    console.error("Failed to read DATA_FILE", err);
   }
+  return defaultData;
 }
 
 function writeData(data: any, req?: express.Request) {
