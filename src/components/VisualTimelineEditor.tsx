@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { TimelineData, TimelineEvent, AxisLabel, Drawing } from '../types';
 import { cn } from '../lib/utils';
-import { Plus, X, MousePointer2, PencilLine, Trash2 } from 'lucide-react';
+import { Plus, X, MousePointer2, PencilLine, Trash2, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface VisualTimelineEditorProps {
   data: TimelineData;
@@ -15,6 +15,8 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
   const verticalThumbRef = useRef<HTMLDivElement>(null);
   const [draggingEventId, setDraggingEventId] = useState<string | null>(null);
   const [draggingLabelId, setDraggingLabelId] = useState<string | null>(null);
+  const [draggedCategory, setDraggedCategory] = useState<string | null>(null);
+  const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
   const zoomScale = 180;
 
   const [activeTool, setActiveTool] = useState<'move' | 'draw'>('move');
@@ -57,7 +59,44 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
   const dateRange = maxDate - minDate || 1;
 
   const sortedEvents = [...data.events].sort((a, b) => (a.positionX ?? 0) - (b.positionX ?? 0));
-  const categories = Array.from(new Set(sortedEvents.map(e => e.category)));
+  const rawCategories = Array.from(new Set(sortedEvents.map(e => e.category)));
+  
+  // Sort according to data.categoryOrder if available
+  const categoryOrder = data.categoryOrder || [];
+  const categories = [...rawCategories].sort((a, b) => {
+    const idxA = categoryOrder.indexOf(a);
+    const idxB = categoryOrder.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  const handleReorderCategories = (dragged: string, target: string) => {
+    const draggedIdx = categories.indexOf(dragged);
+    const targetIdx = categories.indexOf(target);
+    if (draggedIdx !== -1 && targetIdx !== -1) {
+      const newOrder = [...categories];
+      newOrder.splice(draggedIdx, 1);
+      newOrder.splice(targetIdx, 0, dragged);
+      
+      onUpdateData({
+        ...data,
+        categoryOrder: newOrder
+      });
+    }
+  };
+
+  const moveCategoryStep = (category: string, direction: 'up' | 'down') => {
+    const draggedIdx = categories.indexOf(category);
+    if (draggedIdx === -1) return;
+    
+    const targetIdx = direction === 'up' ? draggedIdx - 1 : draggedIdx + 1;
+    if (targetIdx >= 0 && targetIdx < categories.length) {
+      const targetCategory = categories[targetIdx];
+      handleReorderCategories(category, targetCategory);
+    }
+  };
 
   const handleLanesScroll = () => {
     const container = lanesRef.current;
@@ -170,6 +209,20 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
       resizeObserver.disconnect();
     };
   }, [categories]);
+
+  const handleTimelineScroll = useCallback(() => {
+    if (containerRef.current) {
+      const sLeft = containerRef.current.scrollLeft;
+      const labels = containerRef.current.querySelectorAll('.lane-label');
+      labels.forEach((label) => {
+        (label as HTMLElement).style.transform = `translateX(${sLeft}px)`;
+      });
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    handleTimelineScroll();
+  });
 
   // Dragging logic for events
   const handleEventMouseDown = (e: React.MouseEvent, id: string) => {
@@ -475,10 +528,14 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
             e.preventDefault();
             const x = e.pageX - (containerRef.current?.offsetLeft || 0);
             const walk = (x - panStartX) * 2;
-            if (containerRef.current) containerRef.current.scrollLeft = panScrollLeft - walk;
+            if (containerRef.current) {
+              containerRef.current.scrollLeft = panScrollLeft - walk;
+              handleTimelineScroll();
+            }
           }}
           onMouseUp={() => setIsPanning(false)}
           onMouseLeave={() => setIsPanning(false)}
+          onScroll={handleTimelineScroll}
           className={cn("w-full relative flex flex-col overflow-x-hidden overflow-y-hidden h-[25vh] min-h-[120px] custom-scrollbar bg-grid-pattern", activeTool === 'draw' ? "cursor-crosshair" : (isPanning ? "cursor-grabbing" : "cursor-grab"))}
           style={{ overflowX: "hidden", margin: 0 }}
         >
@@ -653,11 +710,78 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                   return (
                     <div key={category} className="h-9 border-b border-white/5 relative flex items-center shrink-0">
                       {/* Lane Label */}
-                      <div className="sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2">
-                         <div className={cn("w-2 h-2 shrink-0", !customColor && t.bgSolid)} style={customColor ? { backgroundColor: customColor } : undefined}></div>
-                         <span className={`text-sm sm:text-base uppercase tracking-wider text-gray-300 font-bold truncate pointer-events-none select-none`}>
-                           {category}
-                         </span>
+                      <div 
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setDragOverCategory(category);
+                        }}
+                        onDragLeave={() => setDragOverCategory(null)}
+                        onDrop={() => {
+                          if (draggedCategory && draggedCategory !== category) {
+                            handleReorderCategories(draggedCategory, category);
+                          }
+                          setDraggedCategory(null);
+                          setDragOverCategory(null);
+                        }}
+                        className={cn(
+                          "lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-36 md:w-40 bg-[#08080a]/85 backdrop-blur-sm flex items-center justify-between px-2 py-1 z-40 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-1 group/lane transition-colors flex-shrink-0 transform-gpu",
+                          dragOverCategory === category ? "bg-orange-500/20 border-r-2 border-r-orange-500" : "border-r border-white/5"
+                        )}
+                      >
+                         <div className="flex items-center gap-1 min-w-0 flex-1">
+                            {/* Drag Grip Handle */}
+                            <div 
+                              draggable
+                              onDragStart={(e) => {
+                                setDraggedCategory(category);
+                                e.dataTransfer.effectAllowed = "move";
+                              }}
+                              className="cursor-grab active:cursor-grabbing text-gray-500 hover:text-orange-400 p-0.5 rounded transition-colors"
+                              title="拖曳以排序泳道"
+                            >
+                              <GripVertical size={13} />
+                            </div>
+
+                            <div className={cn("w-2 h-2 shrink-0 rounded-full", !customColor && t.bgSolid)} style={customColor ? { backgroundColor: customColor } : undefined}></div>
+                            
+                            <span className="text-xs sm:text-xs uppercase tracking-wider text-gray-300 font-bold truncate select-none pointer-events-none" title={category}>
+                              {category || "未命名"}
+                            </span>
+                         </div>
+
+                         {/* Up / Down Reorder Buttons */}
+                         <div className="opacity-0 group-hover/lane:opacity-100 flex items-center gap-0.5 shrink-0 transition-opacity duration-150 pl-0.5 z-50">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveCategoryStep(category, 'up');
+                              }}
+                              disabled={idx === 0}
+                              className={cn(
+                                "p-0.5 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer",
+                                idx === 0 && "opacity-20 cursor-not-allowed pointer-events-none"
+                              )}
+                              title="向上移動"
+                            >
+                              <ChevronUp size={13} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                moveCategoryStep(category, 'down');
+                              }}
+                              disabled={idx === categories.length - 1}
+                              className={cn(
+                                "p-0.5 rounded hover:bg-white/10 text-gray-400 hover:text-white transition-colors cursor-pointer",
+                                idx === categories.length - 1 && "opacity-20 cursor-not-allowed pointer-events-none"
+                              )}
+                              title="向下移動"
+                            >
+                              <ChevronDown size={13} />
+                            </button>
+                         </div>
                       </div>
                       
                       <div className="absolute inset-0">
@@ -668,7 +792,11 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                             leftPerc = ((eventTime - minDate) / dateRange) * 90 + 5;
                           }
                           
-                          const catColor = event.categoryColor;
+                          const catColor = event.categoryColor || (
+                            idx % 4 === 0 ? '#f97316' :
+                            idx % 4 === 1 ? '#0ea5e9' :
+                            idx % 4 === 2 ? '#10b981' : '#a855f7'
+                          );
 
                           return (
                             <div
@@ -687,41 +815,64 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                               />
 
                                <div 
-                                 style={
-                                   catColor
-                                     ? {
-                                         backgroundColor: event.id === draggingEventId
-                                           ? "rgba(0,0,0,0.5)"
-                                           : `${catColor}1A`,
-                                         borderColor: event.id === draggingEventId
-                                           ? "rgba(255,255,255,0.9)"
-                                           : catColor,
-                                       }
-                                     : undefined
-                                 }
-                                 className={cn(
-                                   "flex h-7 border items-center px-2 gap-2 rounded-sm backdrop-blur-md shadow-lg",
-                                   !catColor && t.bgLight,
-                                   !catColor && t.border,
-                                   event.id === draggingEventId &&
-                                     (catColor
-                                       ? "brightness-125 border-white bg-black/40"
-                                       : "border-white brightness-125 bg-black/40")
-                                 )}
+                                 className="relative"
+                                 style={{
+                                   background: `linear-gradient(135deg, #ffffff 0%, #b8bfc6 20%, #eff2f5 35%, #7e8790 55%, #ffffff 75%, #a2aab3 100%)`,
+                                   padding: '1.5px',
+                                   borderRadius: '6px',
+                                   boxShadow: event.id === draggingEventId
+                                     ? `0 0 14px ${catColor}, inset 0 1px 1px rgba(255,255,255,0.9)`
+                                     : `0 3px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.8), 0 0 3px ${catColor}50`
+                                 }}
                                >
-                                  <div
-                                    className={cn(
-                                      "w-1 self-stretch rounded-sm flex-shrink-0",
-                                      !catColor && t.bgSolid,
-                                    )}
-                                    style={catColor ? { backgroundColor: catColor } : undefined}
-                                  ></div>
-                                  <span className={cn(
-                                    "text-xs font-bold uppercase truncate max-w-[200px] select-none pointer-events-none",
-                                    event.id === draggingEventId ? "text-white" : "text-gray-300"
-                                  )}>
-                                    {event.title}
-                                  </span>
+                                 {/* Category Color Filter Overlay on the metallic border */}
+                                 <div 
+                                   className="absolute inset-0 rounded-[6px] pointer-events-none mix-blend-color opacity-85 animate-fade-in"
+                                   style={{ backgroundColor: catColor }}
+                                 />
+                                 <div 
+                                   className="absolute inset-[1px] rounded-[5px] pointer-events-none mix-blend-overlay opacity-30"
+                                   style={{ backgroundColor: catColor }}
+                                 />
+                                 
+                                 {/* Inner sleek carbon black glossy container */}
+                                 <div 
+                                   className={cn(
+                                     "relative flex h-6.5 items-center px-2 py-0.5 gap-2 overflow-hidden bg-black/95 text-white transition-all duration-200"
+                                   )}
+                                   style={{ 
+                                     borderRadius: '5px',
+                                     boxShadow: `inset 0 1px 2px rgba(255,255,255,0.15), inset 0 -1px 2px rgba(0,0,0,0.8)`,
+                                     background: `linear-gradient(to bottom, #111115 0%, #060608 100%)`
+                                   }}
+                                 >
+                                   {/* Subtle custom category background tint inside */}
+                                   <div 
+                                     className="absolute inset-0 opacity-[0.08] pointer-events-none"
+                                     style={{ backgroundColor: catColor }}
+                                   />
+                                   
+                                   {/* Curved glossy reflection highlight (shiny curve from top half) */}
+                                   <div 
+                                     className="absolute top-0 left-0 right-0 h-[45%] bg-gradient-to-b from-white/[0.18] to-transparent rounded-t-[5px] pointer-events-none"
+                                   />
+
+                                   {/* Small neon color status indicator dot with a matching glow */}
+                                   <div 
+                                     className="w-1 h-3.5 rounded-full shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                     style={{ 
+                                       backgroundColor: catColor, 
+                                       boxShadow: `0 0 6px ${catColor}, 0 0 12px ${catColor}` 
+                                     }}
+                                   />
+                                   
+                                   <span className={cn(
+                                     "text-[10px] sm:text-xs font-black uppercase tracking-wider truncate max-w-[200px] select-none pointer-events-none relative z-10",
+                                     event.id === draggingEventId ? "text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]" : "text-gray-300"
+                                   )}>
+                                     {event.title}
+                                   </span>
+                                 </div>
                                </div>
                             </div>
                           );

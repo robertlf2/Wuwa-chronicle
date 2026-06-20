@@ -47,4 +47,5 @@ export interface TimelineData {
   events: TimelineEvent[];
   axisLabels?: AxisLabel[];
   drawings?: Drawing[];
+  categoryOrder?: string[];
 }

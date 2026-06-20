@@ -305,12 +305,12 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
 
         {/* Return link disguised subtle */}
         <div className="mt-6">
-          <button
-            onClick={() => window.location.href = "https://robertlf2.github.io/Wuwa-chronicle/"}
+          <a
+            href="https://robertlf2.github.io/Wuwa-chronicle/"
             className="text-xs text-gray-400 hover:text-gray-600 underline bg-transparent border-none cursor-pointer"
           >
             返回前頁
-          </button>
+          </a>
         </div>
       </div>
     );
@@ -327,9 +327,9 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
               <button onClick={handleSave} className="text-orange-400 hover:text-orange-300 flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest bg-orange-500/10 hover:bg-orange-500/20 px-2 py-1 rounded transition-colors">
                 <Save size={14} /> Save
               </button>
-              <button onClick={() => window.location.href = "https://robertlf2.github.io/Wuwa-chronicle/"} className="text-gray-400 hover:text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 border border-white/10 rounded hover:bg-white/5 transition-colors flex items-center py-1">
+              <Link to="/" className="text-gray-400 hover:text-white text-[10px] uppercase font-bold tracking-widest px-2 py-1 border border-white/10 rounded hover:bg-white/5 transition-colors flex items-center py-1">
                 Back
-              </button>
+              </Link>
             </div>
           </div>
           <div className="flex items-center justify-between bg-black/30 p-2 rounded border border-white/5">
@@ -590,6 +590,63 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
                       className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-orange-500 outline-none"
                     />
                   </div>
+
+                  {/* Category & Color Quick Select */}
+                  {(() => {
+                    const prevCombinationsMap = new Map<string, string>();
+                    const seenCategories: string[] = [];
+
+                    data.events.forEach(ev => {
+                      const cat = ev.category?.trim();
+                      if (cat) {
+                        if (!prevCombinationsMap.has(cat)) {
+                          seenCategories.push(cat);
+                        }
+                        if (ev.categoryColor) {
+                          prevCombinationsMap.set(cat, ev.categoryColor);
+                        } else if (!prevCombinationsMap.has(cat)) {
+                          prevCombinationsMap.set(cat, '#f97316');
+                        }
+                      }
+                    });
+
+                    if (seenCategories.length === 0) return null;
+
+                    return (
+                      <div className="mt-2 text-xs">
+                        <span className="text-gray-400 block mb-1.5 text-[10px] uppercase font-semibold tracking-wider">
+                          先前使用過的分類與顏色搭配 (點擊快速套用):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
+                          {seenCategories.map(cat => {
+                            const color = prevCombinationsMap.get(cat) || '#f97316';
+                            const isSelected = activeEvent.category?.trim() === cat;
+                            return (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => {
+                                  handleEventChange('category', cat);
+                                  handleEventChange('categoryColor', color);
+                                }}
+                                className={`flex items-center gap-1.5 px-2 py-1 rounded transition-all text-[11px] border cursor-pointer ${
+                                  isSelected 
+                                    ? 'bg-orange-500/20 border-orange-500/80 text-orange-200 font-medium' 
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 text-gray-300'
+                                }`}
+                              >
+                                <span 
+                                  className="w-2.5 h-2.5 rounded-full border border-black/30 flex-shrink-0"
+                                  style={{ backgroundColor: color }}
+                                />
+                                {cat}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div>
                   <label className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block mb-1">Character Tags</label>

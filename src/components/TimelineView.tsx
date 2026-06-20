@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import { TimelineEvent, TimelineData } from "../types";
 import { format, parseISO, isValid } from "date-fns";
 import {
@@ -209,9 +209,19 @@ export function TimelineView({
   }
 
   // Group events by category
-  const categories = Array.from(
+  const rawCategories = Array.from(
     new Set(sortedEvents.map((e) => e.category || "Uncategorized")),
   );
+
+  const categoryOrder = data.categoryOrder || [];
+  const categories = [...rawCategories].sort((a, b) => {
+    const idxA = categoryOrder.indexOf(a);
+    const idxB = categoryOrder.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  });
 
   // Calculate timeline min/max dates
   const dates = sortedEvents.map((e) => new Date(e.date).getTime());
@@ -398,6 +408,20 @@ export function TimelineView({
     </defs>
   );
 
+  const handleTimelineScroll = () => {
+    if (timelineRef.current) {
+      const sLeft = timelineRef.current.scrollLeft;
+      const labels = timelineRef.current.querySelectorAll('.lane-label');
+      labels.forEach((label) => {
+        (label as HTMLElement).style.transform = `translateX(${sLeft}px)`;
+      });
+    }
+  };
+
+  useLayoutEffect(() => {
+    handleTimelineScroll();
+  });
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setStartX(e.pageX - (timelineRef.current?.offsetLeft || 0));
@@ -419,6 +443,7 @@ export function TimelineView({
     const walk = (x - startX) * 2;
     if (timelineRef.current) {
       timelineRef.current.scrollLeft = scrollLeft - walk;
+      handleTimelineScroll();
     }
   };
 
@@ -1052,6 +1077,7 @@ export function TimelineView({
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            onScroll={handleTimelineScroll}
           >
             <div
               className="min-w-fit flex-1 flex flex-col relative pb-0 overflow-hidden min-h-0"
@@ -1213,7 +1239,7 @@ export function TimelineView({
                         className="h-9 border-b border-white/5 relative flex items-center shrink-0"
                       >
                         {/* Lane Label */}
-                        <div className="sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2">
+                        <div className="lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu">
                           <div
                             className={cn(
                               "w-2 h-2 shrink-0",
@@ -1244,7 +1270,11 @@ export function TimelineView({
                                 : ((eventTime - minDate) / dateRange) * 90 + 5;
 
                             const isActive = activeEventId === event.id;
-                            const catColor = event.categoryColor;
+                            const catColor = event.categoryColor || (
+                              idx % 4 === 0 ? '#f97316' :
+                              idx % 4 === 1 ? '#0ea5e9' :
+                              idx % 4 === 2 ? '#10b981' : '#a855f7'
+                            );
 
                             return (
                               <div
@@ -1270,47 +1300,64 @@ export function TimelineView({
                                 />
 
                                 <div
-                                  style={
-                                    catColor
-                                      ? {
-                                          backgroundColor: isActive
-                                            ? "rgba(0,0,0,0.4)"
-                                            : `${catColor}1A`,
-                                          borderColor: isActive
-                                            ? "rgba(255,255,255,0.9)"
-                                            : catColor,
-                                        }
-                                      : undefined
-                                  }
-                                  className={cn(
-                                    "flex py-1 px-3 min-h-[28px] sm:min-h-[34px] border items-center gap-2 rounded-sm backdrop-blur-md shadow-lg",
-                                    !catColor && t.bgLight,
-                                    !catColor && t.border,
-                                    isActive &&
-                                      (catColor
-                                        ? "brightness-125 border-white"
-                                        : "border-white brightness-125 bg-black/40"),
-                                  )}
+                                  className="relative group/tag transition-transform hover:scale-105"
+                                  style={{
+                                    background: `linear-gradient(135deg, #ffffff 0%, #b8bfc6 20%, #eff2f5 35%, #7e8790 55%, #ffffff 75%, #a2aab3 100%)`,
+                                    padding: '1.5px',
+                                    borderRadius: '6px',
+                                    boxShadow: isActive
+                                      ? `0 0 14px ${catColor}, inset 0 1px 1px rgba(255,255,255,0.9)`
+                                      : `0 3px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.8), 0 0 3px ${catColor}50`
+                                  }}
                                 >
-                                  <div
+                                  {/* Category Color Filter Overlay on the metallic border */}
+                                  <div 
+                                    className="absolute inset-0 rounded-[6px] pointer-events-none mix-blend-color opacity-85"
+                                    style={{ backgroundColor: catColor }}
+                                  />
+                                  <div 
+                                    className="absolute inset-[1px] rounded-[5px] pointer-events-none mix-blend-overlay opacity-30"
+                                    style={{ backgroundColor: catColor }}
+                                  />
+
+                                  {/* Inner sleek carbon black glossy container */}
+                                  <div 
                                     className={cn(
-                                      "w-1 self-stretch rounded-sm flex-shrink-0",
-                                      !catColor && t.bgSolid,
+                                      "relative flex h-7 sm:h-8 items-center px-2.5 py-0.5 gap-2 overflow-hidden bg-black/95 text-white transition-all duration-200"
                                     )}
-                                    style={
-                                      catColor
-                                        ? { backgroundColor: catColor }
-                                        : undefined
-                                    }
-                                  ></div>
-                                  <span
-                                    className={cn(
-                                      "text-xs sm:text-sm md:text-base font-bold uppercase truncate max-w-[200px] sm:max-w-[260px]",
-                                      isActive ? "text-white" : "text-gray-300",
-                                    )}
+                                    style={{ 
+                                      borderRadius: '5px',
+                                      boxShadow: `inset 0 1px 2px rgba(255,255,255,0.15), inset 0 -1px 2px rgba(0,0,0,0.8)`,
+                                      background: `linear-gradient(to bottom, #111115 0%, #060608 100%)`
+                                    }}
                                   >
-                                    {event.title}
-                                  </span>
+                                    {/* Subtle custom category background tint inside */}
+                                    <div 
+                                      className="absolute inset-0 opacity-[0.08] pointer-events-none"
+                                      style={{ backgroundColor: catColor }}
+                                    />
+
+                                    {/* Curved glossy reflection highlight (shiny curve from top half) */}
+                                    <div 
+                                      className="absolute top-0 left-0 right-0 h-[45%] bg-gradient-to-b from-white/[0.18] to-transparent rounded-t-[5px] pointer-events-none"
+                                    />
+
+                                    {/* Small neon color status indicator line like the title with a matching glow */}
+                                    <div 
+                                      className="w-1 h-3.5 rounded-full shrink-0 shadow-[0_0_8px_rgba(255,255,255,0.6)]"
+                                      style={{ 
+                                        backgroundColor: catColor, 
+                                        boxShadow: `0 0 6px ${catColor}, 0 0 12px ${catColor}` 
+                                      }}
+                                    />
+
+                                    <span className={cn(
+                                      "text-xs sm:text-xs md:text-sm font-black uppercase tracking-wider truncate max-w-[200px] sm:max-w-[260px] select-none pointer-events-none relative z-10",
+                                      isActive ? "text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]" : "text-gray-300"
+                                    )}>
+                                      {event.title}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             );
