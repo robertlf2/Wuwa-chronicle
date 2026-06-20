@@ -1,0 +1,333 @@
+{
+  "titlePageSubtitle": "",
+  "titlePageImage": "https://live.staticflickr.com/65535/55311195868_33774af8db_b.jpg",
+  "lastModified": 1781662808866,
+  "axisLabels": [
+    {
+      "id": "6ca7f7f3-0557-40b7-bc98-8f7296e4b9e7",
+      "positionX": 12.466436268549431,
+      "text": "10000年前"
+    },
+    {
+      "id": "bfbb6b85-cc99-46c7-a1ff-6f1b049b0660",
+      "text": "2000年前",
+      "positionX": 27.005846966740226
+    }
+  ],
+  "timelineBackground": "#2d2a3c",
+  "titlePageEnabled": true,
+  "drawings": [],
+  "titlePageTitle": "",
+  "events": [
+    {
+      "category": "角色",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55159692505_5a21266daa_c.jpg",
+        "https://live.staticflickr.com/65535/55343417992_f17b3c506b_b.jpg"
+      ],
+      "characterTags": [
+        "漂泊者"
+      ],
+      "regionTags": [],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162509401_e7aff3c59d_b.jpg",
+      "customDateText": "萬年前(待定)",
+      "date": "1000-01-01",
+      "categoryColor": "#ffffff",
+      "mainStoryTags": [],
+      "positionX": 4.962256997705575,
+      "referenceText": "主線1.4、主線3.1",
+      "id": "1",
+      "titleSize": 24,
+      "title": "漂泊者抵達索拉里斯",
+      "mediaUrl": "https://live.staticflickr.com/65535/55162688198_7bc5711ddc_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者首次抵達索拉里斯</strong></span><span style=\"font-size: 20px;\"><strong>。</strong></span></p>",
+      "mediaType": "image"
+    },
+    {
+      "mediaUrl": "https://live.staticflickr.com/65535/55169431343_6a56d80258_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">黎是由多數悲鳴毀滅的文明所聚集海上難民組成。此時黎的組成國家尚健在。</p>",
+      "mediaType": "image",
+      "id": "1781498197038",
+      "referenceText": "黎那汐塔探索、主線2.0",
+      "titleSize": 24,
+      "title": "黎那汐塔尚未存在",
+      "categoryColor": "#5cc33b",
+      "date": "2026-06-15",
+      "positionX": 19.993476320267675,
+      "mainStoryTags": [
+        "主線2.0"
+      ],
+      "category": "黎那汐塔",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55169657470_dc0524ffb1_b.jpg"
+      ],
+      "regionTags": [
+        "黎那汐塔"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162301197_5454aa97b7_b.jpg",
+      "customDateText": "確切時間不明"
+    },
+    {
+      "mediaUrl": "https://live.staticflickr.com/65535/55169357818_b5d8437fc3_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>羅伊上古時期，此時羅伊族人生活於地上游牧而生，此時地下綠洲拉海洛尚不存在。</strong></p>",
+      "mediaType": "image",
+      "referenceText": "拉海洛探索",
+      "id": "1781499265808",
+      "titleSize": 24,
+      "title": "羅伊冰原上古時期",
+      "date": "2026-06-15",
+      "categoryColor": "#3376d0",
+      "mainStoryTags": [
+        "主線3.0"
+      ],
+      "positionX": 11.790932674164461,
+      "category": "拉海洛",
+      "referenceImages": [],
+      "regionTags": [
+        "拉海洛"
+      ],
+      "customDateText": "上萬年前",
+      "backgroundColor": "https://live.staticflickr.com/65535/55169152545_7c044f4fd5_b.jpg"
+    },
+    {
+      "mediaUrl": "https://live.staticflickr.com/65535/55188660003_322a6b27f5_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>目前尚未知道何時發生。做為科技前研擁有全世界最先進悲鳴預警科技的黑海岸內部，一份科研檔案，目前尚未知決議時間點。牽引整個索拉里斯命運的決議。</strong></p>",
+      "mediaType": "image",
+      "id": "1781499586599",
+      "referenceText": "黑海岸探索、主線1.4",
+      "titleSize": 24,
+      "title": "K626決議",
+      "categoryColor": "#5e5c66",
+      "date": "2026-06-15",
+      "positionX": 16.036955267441417,
+      "mainStoryTags": [
+        "主線1.4"
+      ],
+      "category": "黑海岸",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55188919310_9e7da86ab9_b.jpg"
+      ],
+      "regionTags": [
+        "黑海岸"
+      ],
+      "customDateText": "確切時間不明",
+      "backgroundColor": "https://live.staticflickr.com/65535/55162509376_08a2c8999a_b.jpg"
+    },
+    {
+      "characterTags": [],
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55171378860_257e0d05bf_b.jpg"
+      ],
+      "category": "其他",
+      "backgroundColor": "https://live.staticflickr.com/65535/55171252343_c021bf8d21_b.jpg",
+      "customDateText": "確切時間不明",
+      "categoryColor": "#4d0000",
+      "date": "2026-06-15",
+      "positionX": 17.194961429244227,
+      "mainStoryTags": [
+        "主線 1.0",
+        "主線2.5"
+      ],
+      "id": "1781500292944",
+      "referenceText": "主線 1.0、主線 2.7",
+      "titleSize": 24,
+      "title": "殘星會成立",
+      "mediaUrl": "https://live.staticflickr.com/65535/55169696565_a4fc955c18_b.jpg",
+      "mediaType": "image",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">追求力量不擇手段的神秘的組織，存在時間久遠，從3.1劇情推測至少跨越一次大滅絕。</p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">從與漂泊者對話來看，與漂泊者關係匪淺。</p>"
+    },
+    {
+      "customDateText": "確切時間不明",
+      "backgroundColor": "https://live.staticflickr.com/65535/55162826059_f3510f4fa3_b.jpg",
+      "regionTags": [
+        "瑝瓏"
+      ],
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55187758767_b853bb99ac_b.jpg",
+        "https://live.staticflickr.com/65535/55343417992_f17b3c506b_b.jpg"
+      ],
+      "category": "瑝瓏",
+      "positionX": 22.695490697807557,
+      "mainStoryTags": [
+        "主線1.0",
+        "主線3.0"
+      ],
+      "categoryColor": "#865935",
+      "date": "2026-06-15",
+      "titleSize": 24,
+      "title": "稷廷研究機構成立",
+      "id": "1781507987430",
+      "referenceText": "今州探索、主線1.0、主線3.1",
+      "mediaType": "image",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>為一神秘且科技先進的研究機構，擅長機關術。在各地有各種不同遺址遺物。華胥研究院曾與其合作過。其人員分不同部門與分支，其中更有受到殘星會會監贊助的分支。在拉海洛第一次悲鳴前就存在。</strong></p>",
+      "mediaUrl": "https://live.staticflickr.com/65535/55162954485_e4a922ac32_b.jpg"
+    },
+    {
+      "titleSize": 24,
+      "title": "第一實例接觸漂泊者",
+      "referenceText": "主線 1.0、主線 2.7、官方 YT",
+      "id": "2",
+      "content": "<p><span style=\"color: rgb(255, 255, 255); font-family: monospace; font-size: 20px;\"><strong>  目前尚未知道何時發生。從主線 1.0 與 2.7 可知其為第一實例，掌控時間，第二實例為守岸人，掌控空間。</strong></span></p><p></p>",
+      "mediaType": "youtube",
+      "mediaUrl": "https://www.youtube.com/watch?v=Dg6CYxCDFHE",
+      "regionTags": [],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162509401_e7aff3c59d_b.jpg",
+      "customDateText": "確切時間不明",
+      "category": "黑海岸",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55169265963_9d0ea9a81e_b.jpg"
+      ],
+      "characterTags": [
+        "漂泊者",
+        "第一實例"
+      ],
+      "mainStoryTags": [
+        "主線1.0"
+      ],
+      "positionX": 5.518399297732592,
+      "date": "1500-05-12",
+      "categoryColor": "#5e5c66"
+    },
+    {
+      "content": "<p><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者首個建立的組織，致力於觀察與預測悲鳴災害，與各國皆有合作。隱藏在暴風海，唯有黑海岸認可或引導者能抵達。一般依照泰提斯指示行動。其人員包含:</strong></span></p><p><span style=\"font-family: monospace; font-size: 20px;\"><strong>執花：需通過考核的高階執行者/客卿：一般人員執行專才或業務。</strong></span></p><p><span style=\"font-family: monospace; font-size: 20px;\"><strong>此時守岸人為助手，泰提斯已存在， 阿布已經存在。</strong></span></p><p><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者則隱藏首領身分行動，甚至連內部人員也鮮少人知首領是誰。</strong></span></p>",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55188687413_9325317579_b.jpg",
+      "titleSize": 24,
+      "title": "黑海岸成立",
+      "referenceText": "主線1.4",
+      "id": "3",
+      "mainStoryTags": [
+        "主線1.4"
+      ],
+      "positionX": 11.437097458058048,
+      "date": "1994-01-01",
+      "categoryColor": "#5e5c66",
+      "regionTags": [
+        "黑海岸"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162759889_3550457c08_b.jpg",
+      "customDateText": "萬年前(待定)",
+      "category": "黑海岸",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55169141145_87b44384e5_b.jpg",
+        "https://live.staticflickr.com/65535/55158422977_756959c04a_z.jpg"
+      ],
+      "characterTags": [
+        "漂泊者"
+      ]
+    },
+    {
+      "id": "1781940403445",
+      "title": "椿(花女)追蹤漂泊者",
+      "date": "2026-06-20",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55169468615_35901ef99c_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>椿為人工誘導型共鳴者，但從共鳴報告得知其並非第一個。是某組織(尚不明)用以追蹤漂泊者的實驗品，未與漂泊者直接接觸，原因為避開泰提斯探查。極其長壽，推測至少經歷了第五次滅世級悲鳴。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55169055521_783ecd10ff_w.jpg",
+        "https://live.staticflickr.com/65535/55168165937_94c34197f4_w.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55169455020_1a93ccb1b9_w.jpg",
+      "category": "角色",
+      "positionX": 24.561167291823192,
+      "categoryColor": "#ffffff",
+      "titleSize": 24,
+      "customDateText": "至少兩千多年前",
+      "characterTags": [
+        "椿",
+        "漂泊者"
+      ],
+      "regionTags": [
+        "黑海岸"
+      ],
+      "mainStoryTags": [
+        "主線1.4"
+      ],
+      "referenceText": "椿共鳴者資料"
+    },
+    {
+      "id": "1781941161565",
+      "title": "拉海洛第一次悲鳴",
+      "date": "2026-06-20",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55165474519_3b6d277232_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>拉海洛第一神紀:舊日紀末，拉海洛記載的第一次悲鳴。拉海洛變為新極點，天空海覆蓋，羅伊也至此變為冰原。推測3.1天槎空間站也為此時墜落。泰提斯過去萬年曾觀測五次滅世級悲鳴，極有可能此為第五次。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55165612300_8b2ba4eae5_b.jpg",
+        "https://live.staticflickr.com/65535/55169023190_2067f1df21_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162826059_f3510f4fa3_b.jpg",
+      "category": "拉海洛",
+      "positionX": 24.850668832273893,
+      "titleSize": 24,
+      "customDateText": "確切時間不明",
+      "categoryColor": "#3376d0",
+      "regionTags": [
+        "拉海洛"
+      ],
+      "mainStoryTags": [
+        "主線3.0"
+      ],
+      "referenceText": "拉海洛探索、主線1.4、主線3.1"
+    },
+    {
+      "id": "1781941491181",
+      "title": "隧者運載歲主                                       ",
+      "date": "2026-06-20",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55169363418_9346b9ef0e_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>隧者，在羅伊神紀中被稱為巴德爾，阿列夫一，在羅伊神紀中被稱為赫龍格。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>隧者為運載歲主的搬運載具。運載歲主不只一趟，最後一趟中途遭遇阿列夫一，並戰鬥直至抵達拉海洛(拉海洛第二次悲鳴)，此時羅伊早已是冰原且天空海覆蓋，必須用隧門進出索拉里斯。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55168263217_c745146a20_c.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55169041376_2817ec96eb_c.jpg",
+      "category": "其他",
+      "titleSize": 24,
+      "customDateText": "確切時間不明",
+      "categoryColor": "#4d0000",
+      "positionX": 26.201676021043834,
+      "mainStoryTags": [
+        "主線3.0"
+      ],
+      "regionTags": [
+        "拉海洛"
+      ],
+      "referenceText": "拉海洛地圖、3.1主線"
+    },
+    {
+      "id": "1781942112174",
+      "title": "瑝瓏建國",
+      "date": "2026-06-20",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55161617612_49a2240ea4_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>《紀事通鑑》中記載一個奇人在盤古終端還不存在時，以肉身吸收了世上最強大的殘像，轉化為聲骸。之後瑝瓏才開始有歷史。依照劇情設定，很有可能是漂泊者與阿布。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>瑝瓏分一庭六州，歲主為青龍，分為七宿治理瑝瓏。抵抗威脅無相燹主(鳴式)。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55158463167_82d5d5cb91_z.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162954600_b7b7186f80_b.jpg",
+      "category": "瑝瓏",
+      "positionX": 28.678522533788726,
+      "titleSize": 24,
+      "customDateText": "確切時間不明",
+      "categoryColor": "#865935",
+      "regionTags": [
+        "瑝瓏"
+      ],
+      "characterTags": [
+        "漂泊者"
+      ],
+      "mainStoryTags": [
+        "主線1.0"
+      ],
+      "referenceText": "主線1.0"
+    }
+  ],
+  "categoryOrder": [
+    "角色",
+    "黑海岸",
+    "瑝瓏",
+    "黎那汐塔",
+    "拉海洛",
+    " "
+  ]
+}
