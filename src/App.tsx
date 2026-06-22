@@ -12,7 +12,7 @@ import { MusicPlayerFloating } from './components/MusicPlayerFloating';
 import FontTranslator from './components/FontTranslator';
 import { Settings, Search, Tag as TagIcon, X, Maximize, Minimize, ChevronLeft, ChevronRight, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { cn } from './lib/utils';
 import { TimelineEvent } from './types';
 
@@ -60,6 +60,25 @@ function TimelineLayout({ data }: { data: any }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [frameSize, setFrameSize] = useState({ width: 1200, height: 675 });
+
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      // Keep exactly 1% space to the webpage edges (left & right margins = 1% each, so total width occupies 98%)
+      const calculatedWidth = window.innerWidth * 0.98;
+      const calculatedHeight = (calculatedWidth * 9) / 16;
+
+      setFrameSize({
+        width: Math.floor(calculatedWidth),
+        height: Math.floor(calculatedHeight),
+      });
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const [titlePageOpen, setTitlePageOpen] = useState(data.titlePageEnabled ?? false);
 
   useEffect(() => {
@@ -185,22 +204,97 @@ function TimelineLayout({ data }: { data: any }) {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-white flex flex-col items-center py-10 w-full overflow-y-auto relative z-10">
+    <div className="min-h-screen bg-transparent text-white flex flex-col items-center justify-start py-6 sm:py-8 md:py-12 px-0 w-full overflow-y-auto scroll-smooth relative z-10 transition-all duration-300">
 
-      {/* Header */}
-      <div className="mb-8 text-center relative z-10 px-4 md:px-8">
-        <img src="./images/title.png" alt="鳴潮編年史" className="h-48 md:h-72 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] object-contain" />
-        <p className="text-white font-bold tracking-[0.5em] text-2xl md:text-3xl uppercase drop-shadow-md" style={{ fontFamily: '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif' }}>我們生而眺望</p>
+      {/* Top Right Action Button Panel (Fixed at viewport top-right) */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 flex items-center gap-4 md:gap-8 z-50">
+        {/* Discord Join Button */}
+        <motion.a
+          href="https://discord.gg/3NG4ZPYc"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative inline-block overflow-hidden rounded-2xl shadow-[0_0_20px_rgba(88,101,242,0.2)] hover:shadow-[0_0_35px_rgba(88,101,242,0.55)] border border-[#5865f2]/20 hover:border-[#5865f2]/50 transition-all duration-300 bg-black/40"
+          title="加入 Discord 社群"
+        >
+          <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#5865f2]" />
+          <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#5865f2]" />
+          <img 
+            src="./images/JoinDc.png" 
+            alt="Join Discord" 
+            className="h-20 sm:h-24 md:h-28 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
+            referrerPolicy="no-referrer"
+          />
+        </motion.a>
+
+        {/* Game Download Button */}
+        <motion.a
+          href="https://wutheringwaves.kurogames.com/zh-tw/main/"
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative inline-block overflow-hidden rounded-2xl shadow-[0_0_20px_rgba(34,211,238,0.2)] hover:shadow-[0_0_35px_rgba(34,211,238,0.55)] border border-[#22d3ee]/20 hover:border-[#22d3ee]/50 transition-all duration-300 bg-black/40"
+          title="前往《鳴潮》官方網站"
+        >
+          <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan-400" />
+          <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan-400" />
+          <img 
+            src="./images/DownloadButton.png" 
+            alt="Download Game" 
+            className="h-20 sm:h-24 md:h-28 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
+            referrerPolicy="no-referrer"
+          />
+        </motion.a>
+
+        {/* Admin Panel Link */}
+        <Link 
+          to="/admin" 
+          className="p-4 sm:p-5 bg-black/60 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 text-gray-300 rounded-2xl shadow-lg transition-all hover:scale-105 flex items-center justify-center backdrop-blur-md h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 transition-all duration-300"
+        >
+          <Settings className="size-8 sm:size-10 md:size-12" />
+        </Link>
       </div>
 
-      {/* Sci-fi Tablet Container */}
+      {/* Header outside the 16:9 adaptive chronicle frame to prevent overlapping and make it bigger */}
+      {!isFullscreen && (
+        <div className="text-center relative z-40 px-4 flex flex-col items-center justify-center select-none mb-8 sm:mb-10 md:mb-14 w-full max-w-[98vw] transition-all duration-300">
+          <img 
+            src="./images/title.png" 
+            alt="鳴潮編年史" 
+            className="mx-auto mb-4 drop-shadow-[0_0_35px_rgba(255,255,255,0.4)] object-contain transition-all duration-300 pointer-events-none relative -translate-x-1.5 sm:-translate-x-2.5 md:-translate-x-3.5" 
+            style={{ 
+              height: `${Math.max(160, Math.min(340, frameSize.height * 0.35))}px`,
+              maxHeight: '380px'
+            }}
+          />
+          <p 
+            className="text-white font-bold tracking-[0.7em] pl-[0.7em] uppercase drop-shadow-[0_2px_20px_rgba(255,255,255,0.4)] text-center w-full select-none" 
+            style={{ 
+              fontSize: `${Math.max(22, Math.min(42, frameSize.height * 0.045))}px`,
+              fontFamily: '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif' 
+            }}
+          >
+            我們生而眺望
+          </p>
+        </div>
+      )}
+
+      {/* 16:9 Adaptive Chronicle Frame */}
       <div 
-        ref={containerRef}
-        className={cn(
-          "relative flex items-center justify-center transition-all duration-300 z-40",
-          isFullscreen ? "w-full h-screen max-w-none rounded-none" : "w-[calc(100%-10px)] max-w-full aspect-[16/9] mx-[5px]"
-        )}
+        className="relative flex flex-col justify-start items-center bg-transparent z-40 select-none p-1 sm:p-2 mb-2 flex-shrink-0"
+        style={isFullscreen ? { width: '100vw', height: '100vh' } : { width: `${frameSize.width}px`, height: `${frameSize.height}px` }}
       >
+
+        {/* Sci-fi Tablet Container */}
+        <div 
+          ref={containerRef}
+          className={cn(
+            "relative flex items-center justify-center transition-all duration-300 z-40 w-full flex-1 min-h-0",
+            isFullscreen ? "w-full h-screen max-w-none rounded-none" : ""
+          )}
+        >
         
         {/* Left Sci-fi Border Handle */}
         <div className="w-10 md:w-12 h-[80%] rounded-l-2xl bg-gradient-to-b from-[#b0b8c4] via-[#e5e7eb] to-[#b0b8c4] shadow-[inset_-2px_0_10px_rgba(0,0,0,0.5),inset_2px_0_10px_rgba(255,255,255,0.8)] flex flex-col items-center justify-center relative border-y-2 border-l-2 border-[#fff] z-10 -mr-1 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] flex-shrink-0">
@@ -487,62 +581,11 @@ function TimelineLayout({ data }: { data: any }) {
         <MusicPlayerFloating />
       </div>
 
-      {/* Font Translator Area */}
-      <FontTranslator />
-
-      {/* Top Right Action Button Panel */}
-      <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-3 md:gap-4 z-50">
-        {/* Discord Join Button */}
-        <motion.a
-          href="https://discord.gg/3NG4ZPYc"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative inline-block overflow-hidden rounded-xl shadow-[0_0_15px_rgba(88,101,242,0.15)] hover:shadow-[0_0_25px_rgba(88,101,242,0.45)] border border-[#5865f2]/20 hover:border-[#5865f2]/50 transition-all duration-300 bg-black/40"
-          title="加入 Discord 社群"
-        >
-          <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-[#5865f2]" />
-          <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-[#5865f2]" />
-          
-          <img 
-            src="./images/JoinDc.png" 
-            alt="Join Discord" 
-            className="h-12 md:h-16 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
-            referrerPolicy="no-referrer"
-          />
-        </motion.a>
-
-        {/* Game Download Button */}
-        <motion.a
-          href="https://wutheringwaves.kurogames.com/zh-tw/main/"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative inline-block overflow-hidden rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.15)] hover:shadow-[0_0_25px_rgba(34,211,238,0.45)] border border-[#22d3ee]/20 hover:border-[#22d3ee]/50 transition-all duration-300 bg-black/40"
-          title="前往《鳴潮》官方網站"
-        >
-          <span className="absolute top-0 left-0 w-2 h-2 border-t border-l border-cyan-400" />
-          <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-cyan-400" />
-
-          <img 
-            src="./images/DownloadButton.png" 
-            alt="Download Game" 
-            className="h-12 md:h-16 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
-            referrerPolicy="no-referrer"
-          />
-        </motion.a>
-
-        {/* Admin Panel Link */}
-        <Link 
-          to="/admin" 
-          className="p-3 bg-black/60 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 text-gray-300 rounded-xl shadow-lg transition-all hover:scale-105 flex items-center justify-center backdrop-blur-md h-12 w-12 md:h-16 md:w-16 transition-all duration-300"
-        >
-          <Settings className="size-5 md:size-7" />
-        </Link>
-      </div>
     </div>
+
+    {/* Font Translator Area */}
+    <FontTranslator />
+  </div>
   );
 }
 

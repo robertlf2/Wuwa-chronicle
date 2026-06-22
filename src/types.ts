@@ -36,6 +36,8 @@ export interface Drawing {
   color?: string;
   startEventId?: string;
   endEventId?: string;
+  startAttachment?: 'left' | 'center' | 'right';
+  endAttachment?: 'left' | 'center' | 'right';
 }
 
 export interface TimelineData {

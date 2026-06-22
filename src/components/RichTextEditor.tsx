@@ -5,7 +5,7 @@ import Color from '@tiptap/extension-color';
 import { TextStyle } from '@tiptap/extension-text-style';
 import Underline from '@tiptap/extension-underline';
 import FontFamily from '@tiptap/extension-font-family';
-import { Bold, Italic, Underline as UnderlineIcon, List, ListOrdered, Palette } from 'lucide-react';
+import { Bold, Italic, Underline as UnderlineIcon, Strikethrough, List, ListOrdered, Palette } from 'lucide-react';
 
 export const FontSize = Extension.create({
   name: 'fontSize',
@@ -121,6 +121,13 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
           title="Underline"
         >
           <UnderlineIcon size={14} />
+        </button>
+        <button
+          onClick={(e) => { e.preventDefault(); editor.chain().focus().toggleStrike().run(); }}
+          className={`px-2 py-1.5 rounded transition-colors ${editor.isActive('strike') ? 'bg-orange-500/20 text-orange-400' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+          title="Strikethrough"
+        >
+          <Strikethrough size={14} />
         </button>
         
         <div className="h-4 w-px bg-white/10 mx-1"></div>

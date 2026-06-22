@@ -1116,7 +1116,7 @@ export function TimelineView({
                 {/* SVG Drawing Layer */}
                 {data.drawings && data.drawings.length > 0 && (
                   <svg
-                    className="absolute inset-0 z-20 pointer-events-none"
+                    className="absolute inset-0 z-10 pointer-events-none"
                     width={dimensions.width}
                     height={dimensions.height}
                   >
@@ -1148,13 +1148,21 @@ export function TimelineView({
                         return { x: leftPerc, y: percY };
                       };
 
-                      const startCoords = getEventCoords(d.startEventId) || {
-                        x: d.startX,
-                        y: d.startY,
+                      const getEventCardWidth = (eventId: string | undefined): number => {
+                        if (!eventId) return 0;
+                        const el = document.getElementById(`timeline-node-${eventId}`);
+                        if (el) {
+                          return el.getBoundingClientRect().width;
+                        }
+                        const event = data.events.find((e) => e.id === eventId);
+                        const textLength = event?.title ? event.title.length : 12;
+                        return 32 + textLength * 7.5;
                       };
-                      const endCoords = getEventCoords(d.endEventId) || {
-                        x: d.endX,
-                        y: d.endY,
+
+                      const getEventCardWidthPercent = (eventId: string | undefined): number => {
+                        if (!eventId || dimensions.width === 0) return 0;
+                        const pixelWidth = getEventCardWidth(eventId);
+                        return (pixelWidth / dimensions.width) * 100;
                       };
 
                       const toAbsX = (perc: number) =>
@@ -1162,23 +1170,172 @@ export function TimelineView({
                       const toAbsY = (perc: number) =>
                         Math.max(0, (perc / 100) * dimensions.height);
 
-                      let cX =
+                      const getAttachmentCoords = (
+                        eventId: string | undefined,
+                        attachment: 'left' | 'center' | 'right' | undefined,
+                        isEnd: boolean = false,
+                        otherCoords?: { x: number; y: number } | null
+                      ): { x: number; y: number } | null => {
+                        if (!eventId) return null;
+                        const baseCoords = getEventCoords(eventId);
+                        if (!baseCoords) return null;
+
+                        let finalAttachment = attachment;
+                        if (!finalAttachment) {
+                          if (otherCoords) {
+                            if (baseCoords.x < otherCoords.x) {
+                              finalAttachment = isEnd ? "left" : "right";
+                            } else {
+                              finalAttachment = isEnd ? "right" : "left";
+                            }
+                          } else {
+                            finalAttachment = isEnd ? "left" : "right";
+                          }
+                        }
+
+                        const cardWidthPercent = getEventCardWidthPercent(eventId);
+                        let x = baseCoords.x;
+                        if (finalAttachment === "center") {
+                          x = baseCoords.x + cardWidthPercent / 2;
+                        } else if (finalAttachment === "right") {
+                          x = baseCoords.x + cardWidthPercent;
+                        }
+
+                        return { x, y: baseCoords.y };
+                      };
+
+                      const getSnappedCardPoint = (
+                        eventId: string | undefined,
+                        attachment: "left" | "center" | "right" | undefined,
+                        isEnd: boolean,
+                        controlPointAbs: { x: number; y: number }
+                      ): { x: number; y: number } | null => {
+                        if (!eventId) return null;
+                        const baseCoords = getEventCoords(eventId);
+                        if (!baseCoords) return null;
+
+                        const cardLeft = toAbsX(baseCoords.x);
+                        const cardWidth = getEventCardWidth(eventId);
+                        const cardRight = cardLeft + cardWidth;
+                        const cardCenterY = toAbsY(baseCoords.y);
+                        const cardTop = cardCenterY - 13;
+                        const cardBottom = cardCenterY + 13;
+
+                        let finalAttachment = attachment;
+                        if (!finalAttachment) {
+                          if (baseCoords.x < (controlPointAbs.x / (dimensions.width || 1)) * 100) {
+                            finalAttachment = isEnd ? "left" : "right";
+                          } else {
+                            finalAttachment = isEnd ? "right" : "left";
+                          }
+                        }
+
+                        let anchorX = cardLeft;
+                        if (finalAttachment === "center") {
+                          anchorX = cardLeft + cardWidth / 2;
+                        } else if (finalAttachment === "right") {
+                          anchorX = cardRight;
+                        }
+                        const anchorY = cardCenterY;
+
+                        const ctrlX = controlPointAbs.x;
+                        const ctrlY = controlPointAbs.y;
+
+                        let bestT = 1.0;
+                        let intersectX = anchorX;
+                        let intersectY = anchorY;
+
+                        const checkIntersection = (t: number, x: number, y: number) => {
+                          if (t >= 0 && t <= 1 && t < bestT) {
+                            bestT = t;
+                            intersectX = x;
+                            intersectY = y;
+                          }
+                        };
+
+                        const dx = anchorX - ctrlX;
+                        const dy = anchorY - ctrlY;
+
+                        if (Math.abs(dy) > 0.0001) {
+                          const t = (cardTop - ctrlY) / dy;
+                          const x = ctrlX + t * dx;
+                          if (x >= cardLeft - 0.1 && x <= cardRight + 0.1) {
+                            checkIntersection(t, x, cardTop);
+                          }
+                        }
+
+                        if (Math.abs(dy) > 0.0001) {
+                          const t = (cardBottom - ctrlY) / dy;
+                          const x = ctrlX + t * dx;
+                          if (x >= cardLeft - 0.1 && x <= cardRight + 0.1) {
+                            checkIntersection(t, x, cardBottom);
+                          }
+                        }
+
+                        if (Math.abs(dx) > 0.0001) {
+                          const t = (cardLeft - ctrlX) / dx;
+                          const y = ctrlY + t * dy;
+                          if (y >= cardTop - 0.1 && y <= cardBottom + 0.1) {
+                            checkIntersection(t, cardLeft, y);
+                          }
+                        }
+
+                        if (Math.abs(dx) > 0.0001) {
+                          const t = (cardRight - ctrlX) / dx;
+                          const y = ctrlY + t * dy;
+                          if (y >= cardTop - 0.1 && y <= cardBottom + 0.1) {
+                            checkIntersection(t, cardRight, y);
+                          }
+                        }
+
+                        const len = Math.sqrt(dx * dx + dy * dy);
+                        const offsetDistance = 3.5;
+                        if (len > 0.0001) {
+                          const ux = dx / len;
+                          const uy = dy / len;
+                          intersectX = intersectX - ux * offsetDistance;
+                          intersectY = intersectY - uy * offsetDistance;
+                        }
+
+                        return { x: intersectX, y: intersectY };
+                      };
+
+                      const rawStartCoords = getAttachmentCoords(d.startEventId, d.startAttachment, false, getEventCoords(d.endEventId)) || {
+                        x: d.startX,
+                        y: d.startY,
+                      };
+                      const rawEndCoords = getAttachmentCoords(d.endEventId, d.endAttachment, true, getEventCoords(d.startEventId)) || {
+                        x: d.endX,
+                        y: d.endY,
+                      };
+
+                      const rawStartAbsX = toAbsX(rawStartCoords.x);
+                      const rawStartAbsY = toAbsY(rawStartCoords.y);
+                      const rawEndAbsX = toAbsX(rawEndCoords.x);
+                      const rawEndAbsY = toAbsY(rawEndCoords.y);
+
+                      const cAbsX =
                         d.controlX !== undefined
-                          ? d.controlX
-                          : (startCoords.x + endCoords.x) / 2;
-                      let cY =
+                          ? toAbsX(d.controlX)
+                          : (rawStartAbsX + rawEndAbsX) / 2;
+                      const cAbsY =
                         d.controlY !== undefined
-                          ? d.controlY
-                          : Math.min(startCoords.y, endCoords.y) - 20;
+                          ? toAbsY(d.controlY)
+                          : dimensions.height > 0
+                            ? Math.min(rawStartAbsY, rawEndAbsY) - 20
+                            : rawStartAbsY - 20;
 
-                      const startAbsX = toAbsX(startCoords.x);
-                      const startAbsY = toAbsY(startCoords.y);
-                      const endAbsX = toAbsX(endCoords.x);
-                      const endAbsY = toAbsY(endCoords.y);
-                      const cAbsX = toAbsX(cX);
-                      const cAbsY = toAbsY(cY);
+                      const ctrlPoint = { x: cAbsX, y: cAbsY };
 
-                      const pathD = `M ${startAbsX} ${startAbsY} Q ${cAbsX} ${cAbsY} ${endAbsX} ${endAbsY}`;
+                      const snStart = d.startEventId ? getSnappedCardPoint(d.startEventId, d.startAttachment, false, ctrlPoint) : null;
+                      const snEnd = d.endEventId ? getSnappedCardPoint(d.endEventId, d.endAttachment, true, ctrlPoint) : null;
+
+                      const arrowStartX = snStart ? snStart.x : rawStartAbsX;
+                      const arrowStartY = snStart ? snStart.y : rawStartAbsY;
+                      const arrowEndX = snEnd ? snEnd.x : rawEndAbsX;
+                      const arrowEndY = snEnd ? snEnd.y : rawEndAbsY;
+
+                      const pathD = `M ${arrowStartX} ${arrowStartY} Q ${cAbsX} ${cAbsY} ${arrowEndX} ${arrowEndY}`;
                       const color = d.color || "#fb923c";
 
                       return (
@@ -1196,7 +1353,7 @@ export function TimelineView({
                 )}
 
                 {/* Lanes Wrapper */}
-                <div className="relative w-full flex flex-col shrink-0 pb-[3px]">
+                <div className="relative w-full flex flex-col shrink-0 pb-[3px] pointer-events-none z-20">
                   {categories.map((category, idx) => {
                     const categoryEvents = sortedEvents.filter(
                       (e) => e.category === category,
@@ -1236,10 +1393,10 @@ export function TimelineView({
                     return (
                       <div
                         key={category}
-                        className="h-9 border-b border-white/5 relative flex items-center shrink-0"
+                        className="h-9 border-b border-white/5 relative flex items-center shrink-0 pointer-events-none"
                       >
                         {/* Lane Label */}
-                        <div className="lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu">
+                        <div className="lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu pointer-events-auto">
                           <div
                             className={cn(
                               "w-2 h-2 shrink-0",
@@ -1285,7 +1442,7 @@ export function TimelineView({
                                   handleEventChange(event.id);
                                 }}
                                 className={cn(
-                                  "absolute top-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 hover:z-30",
+                                  "absolute top-1/2 -translate-y-1/2 cursor-pointer transition-all duration-300 hover:z-30 pointer-events-auto",
                                   isActive
                                     ? "z-20 scale-105"
                                     : "z-10 hover:scale-[1.02]",
