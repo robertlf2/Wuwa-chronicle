@@ -332,7 +332,10 @@ function TimelineLayout({ data }: { data: any }) {
         </div>
 
         {/* Timeline Screen */}
-        <div className="flex-1 h-full bg-[#0f0f12] flex flex-col relative overflow-hidden rounded-xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_40px_rgba(34,211,238,0.15)] z-20 group">
+        <div 
+          className="flex-1 h-full flex flex-col relative overflow-hidden rounded-xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_40px_rgba(34,211,238,0.15)] z-20 group"
+          style={{ backgroundColor: data.transparentBackground ? 'transparent' : '#0f0f12' }}
+        >
           
           {/* Top Semitransparent Bezel/Border Indicator line */}
           <div className="h-[36px] bg-black/60 border-b border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">

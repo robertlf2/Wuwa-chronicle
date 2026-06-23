@@ -572,7 +572,7 @@ export function TimelineView({
   return (
     <div
       className="flex flex-col h-full w-full font-sans select-none text-[#e0e0e0]"
-      style={{ backgroundColor: data.timelineBackground }}
+      style={{ backgroundColor: data.transparentBackground ? 'transparent' : data.timelineBackground }}
     >
       <AnimatePresence>
         {showTitlePage && (
@@ -1063,7 +1063,7 @@ export function TimelineView({
         <div
           className="border-t border-white/5 relative flex flex-col container-bg shadow-[0_-10px_30px_rgba(0,0,0,0.5)] z-20"
           style={{
-            backgroundColor: data.timelineBackground,
+            backgroundColor: data.transparentBackground ? 'transparent' : data.timelineBackground,
             height: `calc(${timelineHeight}% + 11px)`,
             minHeight: "120px",
           }}
@@ -1531,7 +1531,7 @@ export function TimelineView({
               {data.axisLabels && data.axisLabels.length > 0 && (
                 <div 
                   className="h-10 border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative"
-                  style={{ backgroundColor: data.timelineBackground || "#08080a" }}
+                  style={{ backgroundColor: data.transparentBackground ? 'transparent' : (data.timelineBackground || "#08080a") }}
                 >
                   {data.axisLabels.map((label) => (
                     <div

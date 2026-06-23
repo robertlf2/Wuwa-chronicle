@@ -429,16 +429,31 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
                     <input 
                       type="color" 
                       value={data.timelineBackground} 
+                      disabled={data.transparentBackground}
                       onChange={e => handleSettingsChange('timelineBackground', e.target.value)}
-                      className="h-10 w-20 p-1 rounded border border-white/10 bg-black/40 cursor-pointer"
+                      className="h-10 w-20 p-1 rounded border border-white/10 bg-black/40 cursor-pointer disabled:opacity-40"
                     />
                     <input 
                       type="text" 
                       value={data.timelineBackground} 
+                      disabled={data.transparentBackground}
                       onChange={e => handleSettingsChange('timelineBackground', e.target.value)}
-                      className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-orange-500 outline-none font-mono"
+                      className="flex-1 bg-black/40 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-orange-500 outline-none font-mono disabled:opacity-40"
                     />
                   </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <input
+                    type="checkbox"
+                    id="transparentBackground"
+                    checked={data.transparentBackground || false}
+                    onChange={e => handleSettingsChange('transparentBackground', e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-orange-500 focus:ring-orange-500 focus:ring-offset-gray-800 cursor-pointer"
+                  />
+                  <label htmlFor="transparentBackground" className="text-[10px] text-gray-300 uppercase font-bold tracking-widest cursor-pointer select-none">
+                    Use Transparent Background (啓用透明背景)
+                  </label>
                 </div>
               </div>
             </div>

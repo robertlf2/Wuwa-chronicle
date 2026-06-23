@@ -42,6 +42,7 @@ export interface Drawing {
 
 export interface TimelineData {
   timelineBackground: string;
+  transparentBackground?: boolean;
   titlePageEnabled?: boolean;
   titlePageTitle?: string;
   titlePageSubtitle?: string;
