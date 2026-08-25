@@ -254,7 +254,12 @@ export function useTimelineData() {
       // 2. Fallback to direct static fetch of data.json (for static GitHub Pages hosting)
       if (!loaded) {
         try {
-          const res = await fetch('./data.json');
+          const metaEnv = (import.meta as unknown as { env?: { BASE_URL?: string } })?.env;
+          const basePath = metaEnv?.BASE_URL || './';
+          const cleanBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+          const res = await fetch(`${cleanBasePath}data.json?t=${Date.now()}`, {
+            cache: 'no-store'
+          });
           if (res.ok) {
             const staticData = await res.json();
             if (staticData && staticData.events) {
