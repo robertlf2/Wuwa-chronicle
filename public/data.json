@@ -17,6 +17,11 @@
       "id": "e315d960-53a2-46ec-a9a4-b947c696d7c2",
       "text": "1000年前",
       "positionX": 33.986051266211916
+    },
+    {
+      "id": "2e0a0948-b1fc-447d-9478-53d6bf38d925",
+      "text": "200年前",
+      "positionX": 71.24907101747351
     }
   ],
   "timelineBackground": "#2d2a3c",
@@ -353,7 +358,7 @@
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55162737888_559efb5f3d_b.jpg",
       "category": "瑝瓏",
-      "positionX": 55.23760895475761,
+      "positionX": 66.13318584835548,
       "customDateText": "確切時間不明",
       "referenceText": "主線1.1、長離伴星",
       "titleSize": 24,
@@ -595,7 +600,7 @@
       "category": "角色",
       "positionX": 60,
       "titleSize": 24,
-      "customDateText": "數百年前",
+      "customDateText": "數百年前(暫定)",
       "characterTags": [
         "弗洛洛"
       ],
@@ -604,6 +609,117 @@
         "主線2.5"
       ],
       "categoryColor": "#ffffff"
+    },
+    {
+      "id": "1787605165133",
+      "title": "弗洛洛加入殘星會",
+      "date": "2026-08-24",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55187092975_0ee9718079_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>弗洛洛在不斷失敗下，趨近崩潰，最終殘星會遞出橄欖枝，並讓弗洛洛看到「特莉絲的虛影」，弗洛洛加入殘星會。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55187102680_7e460c3eaa_b.jpg",
+        "https://live.staticflickr.com/65535/55186995834_28a820330f_w.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55187107105_c05c8e614f_b.jpg",
+      "category": "其他",
+      "titleSize": 24,
+      "positionX": 64.03152491401511,
+      "categoryColor": "#4d0000",
+      "customDateText": "數百年前",
+      "characterTags": [
+        "弗洛洛"
+      ],
+      "regionTags": [],
+      "mainStoryTags": [
+        "主線2.5"
+      ],
+      "referenceText": "主線2.5"
+    },
+    {
+      "id": "1787608621819",
+      "title": "清宵駐留玄方地界",
+      "date": "2026-08-24",
+      "mediaType": "youtube",
+      "mediaUrl": "https://youtu.be/tL2Zeu_3SUM",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>清宵於兩百餘年前本欲前往重州，卻迷路抵達玄方地界，於此暫居修行，於意外中救下鈴坊，此時鈴坊與若雲尚且年幼。當時抵禦殘像乃是仰賴機關術天才木禺設計的\"淵城\"。後鈴坊加入了定玄衛，而若雲則入了稷庭且開發了雲帛機騎。當時鳴式有復甦跡象，為防患未然，歲主心起了建設玄方城的計畫，若雲等一眾稷庭人同歲主心開始建設玄方城。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55486148093_d588192009_b.jpg",
+        "https://live.staticflickr.com/65535/55485127067_c0bd4c293f_b.jpg",
+        "https://live.staticflickr.com/65535/55486510224_59abfb2a7b_b.jpg",
+        "https://live.staticflickr.com/65535/55486564724_6ab3cd268c_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55486058401_99b66415d8_b.jpg",
+      "category": "角色",
+      "titleSize": 24,
+      "positionX": 70.087626816917,
+      "characterTags": [
+        "清宵"
+      ],
+      "categoryColor": "#ffffff",
+      "regionTags": [
+        "瑝瓏",
+        "玄方城"
+      ],
+      "mainStoryTags": [
+        "主線3.6"
+      ],
+      "referenceText": "主線3.5、主線3.6",
+      "customDateText": "兩百餘年前"
+    },
+    {
+      "id": "1787615579736",
+      "title": "村女阿清拾得劍譜",
+      "date": "2026-08-24",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55486571790_e806b49d9f_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>村女阿清放牧時拾得《金瞳異人劍法》，自習其劍法數年劍法小成，得於殘像潮滅村時倖存，後行俠鄉間，拜入修仙者靜微門下習修行之法，得名清宵。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55485232397_f35fcf255d_b.jpg",
+        "https://live.staticflickr.com/65535/55486219726_9507cf78c2_b.jpg",
+        "https://live.staticflickr.com/65535/55486459464_b6d54b2252_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55486641595_d840a68b93_b.jpg",
+      "category": "角色",
+      "titleSize": 24,
+      "positionX": 45.64199173853679,
+      "categoryColor": "#ffffff",
+      "characterTags": [
+        "清宵"
+      ],
+      "mainStoryTags": [
+        "主線3.6"
+      ],
+      "customDateText": "數百年前",
+      "referenceText": "主線3.6"
+    },
+    {
+      "id": "1787649828691",
+      "title": "雲\"淵\"之役",
+      "date": "2026-08-25",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55487278945_08b0778e58_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>兩百年前，無相燹主瞄準了玄方城即將竣工的時機，朝玄方地界發動了奇襲。大規模的殘像潮自雲陵谷往淵城，史稱雲淵之役。此一役淵城岌岌可危，清宵為斷禍源前往雲陵谷，琢鈞堂的刃偶和玄方玄衛無法抵禦如此巨量殘像潮，鈴坊死於抵禦殘像潮中，一眾工匠率人前往淵城核心引爆淵城阻斷殘像潮攻勢，包含若雲等參與者皆亡於該行動，部分工匠被歲主心轉為天人永久守護玄方城，玄翎雀相伴守護最終也絕跡於玄方地界。待清宵回歸淵城已毀僅留廢墟。而木禺在此戰役中覺醒獲得共鳴能力，開始了他的實驗。</strong><span style=\"color: rgb(255, 0, 0);\"><strong>Rip鈴坊、若雲、工匠們</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55487110694_0718f542c4_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55487006618_f2e622044a_b.jpg",
+      "category": "瑝瓏",
+      "positionX": 71.00019011735425,
+      "titleSize": 24,
+      "customDateText": "兩百年前",
+      "categoryColor": "#865935",
+      "regionTags": [
+        "玄方城"
+      ],
+      "characterTags": [
+        "清宵"
+      ],
+      "mainStoryTags": [
+        "主線3.5",
+        "主線3.6"
+      ],
+      "referenceText": "主線3.5、主線3.6"
     }
   ],
   "categoryOrder": [

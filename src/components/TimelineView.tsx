@@ -660,7 +660,7 @@ export function TimelineView({
                 }
           }
         >
-          <div className="w-full h-full overflow-hidden p-4 md:p-8 flex items-center justify-center relative">
+          <div className="h-full overflow-hidden p-4 md:p-8 flex items-center justify-center relative mx-auto" style={{ width: "calc(100% - 10px)" }}>
             <AnimatePresence
               mode="popLayout"
               initial={false}
