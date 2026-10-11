@@ -527,6 +527,75 @@ export function TimelineView({
     }
   };
 
+  const touchState = useRef<{
+    startX: number;
+    startY: number;
+    startScrollLeft: number;
+    startScrollTop: number;
+    active: boolean;
+    axis: 'horizontal' | 'vertical' | null;
+  }>({
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    startScrollTop: 0,
+    active: false,
+    axis: null,
+  });
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    touchState.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startScrollLeft: timelineRef.current?.scrollLeft || 0,
+      startScrollTop: lanesRef.current?.scrollTop || 0,
+      active: true,
+      axis: null,
+    };
+    timelineGesture.current = { x: touch.clientX, y: touch.clientY, moved: false };
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchState.current.active || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchState.current.startX;
+    const deltaY = touch.clientY - touchState.current.startY;
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if (Math.hypot(deltaX, deltaY) > 6) {
+      timelineGesture.current.moved = true;
+    }
+
+    if (touchState.current.axis === null) {
+      if (absX > 4 || absY > 4) {
+        touchState.current.axis = absX >= absY ? 'horizontal' : 'vertical';
+      }
+    }
+
+    if (touchState.current.axis === 'horizontal') {
+      if (timelineRef.current) {
+        timelineRef.current.scrollLeft = touchState.current.startScrollLeft - deltaX;
+        handleTimelineScroll();
+      }
+    } else if (touchState.current.axis === 'vertical') {
+      if (lanesRef.current) {
+        lanesRef.current.scrollTop = touchState.current.startScrollTop - deltaY;
+        handleLanesScroll();
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchState.current.active = false;
+    touchState.current.axis = null;
+    setTimeout(() => {
+      timelineGesture.current.moved = false;
+    }, 150);
+  };
+
   const handleLanesScroll = () => {
     const container = lanesRef.current;
     if (!container) return;
@@ -991,8 +1060,14 @@ export function TimelineView({
           {/* Scrollable Timeline Area with Frozen Axis */}
           <div
             ref={timelineRef}
-            className="flex-1 min-h-0 overflow-y-hidden flex flex-col cursor-grab active:cursor-grabbing custom-scrollbar relative bg-grid-pattern"
-            style={{ overflowX: isMobileLayout ? "auto" : "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain", margin: 0 }}
+            className="flex-1 min-h-0 overflow-y-hidden flex flex-col cursor-grab active:cursor-grabbing custom-scrollbar relative bg-grid-pattern touch-pan-y"
+            style={{ 
+              overflowX: isMobileLayout ? "auto" : "hidden", 
+              WebkitOverflowScrolling: "touch", 
+              overscrollBehavior: "contain", 
+              touchAction: "pan-y pinch-zoom",
+              margin: 0 
+            }}
             onPointerDownCapture={(e) => {
               timelineGesture.current = { x: e.clientX, y: e.clientY, moved: false };
             }}
@@ -1005,6 +1080,10 @@ export function TimelineView({
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={handleTouchEnd}
             onScroll={handleTimelineScroll}
           >
             <div
@@ -1015,8 +1094,12 @@ export function TimelineView({
               <div 
                 ref={lanesRef}
                 onScroll={handleLanesScroll}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
                 className="flex-1 overflow-y-auto custom-scrollbar relative min-h-0"
-                style={{ overflowY: "auto", overscrollBehavior: "contain" }}
+                style={{ overflowY: "auto", overscrollBehavior: "contain", touchAction: "pan-x pan-y" }}
               >
                 <div className="relative w-full min-h-full flex flex-col overflow-hidden">
                   {/* Draw a subtle grid/line */}
@@ -1473,8 +1556,13 @@ export function TimelineView({
               {/* Static Frozen Axis Labels at the bottom of viewport container */}
               {data.axisLabels && data.axisLabels.length > 0 && (
                 <div 
-                  className={cn("border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative", isLandscapePhone ? "h-7" : isMobileLayout ? "h-8" : "h-10")}
-                  style={{ backgroundColor: data.transparentBackground ? 'transparent' : (data.timelineBackground || "#08080a") }}
+                  className={cn("border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative cursor-grab active:cursor-grabbing select-none", isLandscapePhone ? "h-7" : isMobileLayout ? "h-8" : "h-10")}
+                  style={{ backgroundColor: data.transparentBackground ? 'transparent' : (data.timelineBackground || "#08080a"), touchAction: "pan-x" }}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchEnd}
+                  onMouseDown={handleMouseDown}
                 >
                   {data.axisLabels.map((label) => (
                     <div

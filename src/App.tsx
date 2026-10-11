@@ -12,6 +12,7 @@ import { MusicPlayerFloating } from './components/MusicPlayerFloating';
 import FontTranslator from './components/FontTranslator';
 import { Settings, Search, Tag as TagIcon, X, Maximize, Minimize, ChevronLeft, ChevronRight, Home, Smartphone, Sparkles } from 'lucide-react';
 import { PwaGuideModal } from './components/PwaGuideModal';
+import { QuickActionGearMenu } from './components/QuickActionGearMenu';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { cn } from './lib/utils';
@@ -60,6 +61,7 @@ function TimelineLayout({ data }: { data: any }) {
   const [hasSearched, setHasSearched] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [timelineFocus, setTimelineFocus] = useState(false);
+  const [isMusicOpen, setIsMusicOpen] = useState(false);
   const [showPwaGuide, setShowPwaGuide] = useState(false);
   const [showIosTip, setShowIosTip] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -511,40 +513,6 @@ function TimelineLayout({ data }: { data: any }) {
           {/* Core Interactive Timeline Area */}
           <div className="flex-1 min-h-0 w-full relative">
             <TimelineView data={data} activeEventId={activeEventId} onEventChange={setActiveEventId} focusMode={timelineFocus} />
-            
-            {/* Action Buttons: Fullscreen & PWA App Guide */}
-            <div className="absolute top-2 right-2 lg:top-4 lg:right-4 z-[120] flex items-center gap-1.5 sm:gap-2">
-              {/* App Mode / PWA Install Guide */}
-              <button
-                onClick={() => {
-                  if (isInstallable && deferredPrompt) {
-                    handleInstallClick();
-                  } else {
-                    setShowPwaGuide(true);
-                  }
-                }}
-                className="p-1.5 lg:p-2 bg-black/75 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-400 hover:text-cyan-200 backdrop-blur-md transition-all drop-shadow-md flex items-center gap-1 text-[11px]"
-                title={isInstallable ? "安裝至手機桌面 (無網址列 App 模式)" : "手機無網址列 App 模式教學"}
-                aria-label="手機無網址列 App 模式"
-              >
-                <Smartphone className="size-4 sm:size-4.5" />
-                <span className="hidden sm:inline font-mono tracking-wider">APP模式</span>
-                {isInstallable && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                )}
-              </button>
-
-              {/* Fullscreen Button */}
-              <button 
-                onClick={toggleFullscreen}
-                className="p-1.5 lg:p-2 bg-black/75 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-400 hover:text-cyan-200 backdrop-blur-md transition-all drop-shadow-md flex items-center justify-center"
-                title={timelineFocus || isFullscreen ? "退出全螢幕專注模式 (縮小)" : "全螢幕放大 (隱藏網址列)"}
-                aria-label={timelineFocus || isFullscreen ? "退出全螢幕專注模式" : "全螢幕放大"}
-                aria-pressed={timelineFocus || isFullscreen}
-              >
-                {isFullscreen || timelineFocus ? <Minimize className="size-4 sm:size-5" /> : <Maximize className="size-4 sm:size-5" />}
-              </button>
-            </div>
 
             {/* iOS Safari Fullscreen / Add to Home Screen tip banner */}
             <AnimatePresence>
@@ -641,24 +609,27 @@ function TimelineLayout({ data }: { data: any }) {
           </div>
         </div>
 
-        {/* Floating Search Action Button & Panel (Inside containerRef for Fullscreen support) */}
-        <div className="landscape-search-widget fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-[120] flex items-end gap-0">
-          <button
-            onClick={() => setIsSearchExpanded(!isSearchExpanded)}
-            className={cn(
-              "w-11 h-11 lg:w-12 lg:h-12 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300 border relative z-10 lg:scale-[0.6] lg:origin-bottom-left",
-              isSearchExpanded 
-                ? "bg-cyan-500 text-white border-cyan-400 rotate-12" 
-                : "bg-[#1a1a20] text-cyan-400 border-cyan-500/30 hover:bg-[#25252d] hover:border-cyan-400"
-            )}
-            title={isSearchExpanded ? "關閉搜尋" : "開啟搜尋"}
-          >
-            {isSearchExpanded ? <X size={20} /> : <Search size={20} />}
-          </button>
+        {/* Unified Bottom-Left Quick Action Gear Menu (整合全螢幕、搜尋、APP模式、音樂按鈕) */}
+        <QuickActionGearMenu
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={toggleFullscreen}
+          isSearchOpen={isSearchExpanded}
+          onToggleSearch={() => setIsSearchExpanded(!isSearchExpanded)}
+          isMusicOpen={isMusicOpen}
+          onToggleMusic={() => setIsMusicOpen(!isMusicOpen)}
+          isInstallable={isInstallable}
+          onOpenAppMode={() => {
+            if (isInstallable && deferredPrompt) {
+              handleInstallClick();
+            } else {
+              setShowPwaGuide(true);
+            }
+          }}
+        />
 
-          {/* Floating Search Panel */}
-          {isSearchExpanded && (
-            <div className="landscape-search-panel absolute bottom-14 lg:bottom-10 left-0 bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.2)] w-[min(480px,calc(100vw-24px))] lg:w-[480px] max-h-[min(75dvh,640px)] lg:max-h-[75vh] flex flex-col p-3 sm:p-5 origin-bottom-left animate-in fade-in zoom-in-95 z-20">
+        {/* Floating Search Panel (Inside containerRef for Fullscreen support) */}
+        {isSearchExpanded && (
+          <div className="landscape-search-panel fixed bottom-16 sm:bottom-22 left-3 sm:left-6 bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_35px_rgba(34,211,238,0.25)] w-[min(480px,calc(100vw-24px))] lg:w-[480px] max-h-[min(75dvh,640px)] lg:max-h-[75vh] flex flex-col p-3 sm:p-5 origin-bottom-left animate-in fade-in zoom-in-95 z-[125]">
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/15">
                 <h3 className="font-serif text-lg flex items-center gap-2 text-cyan-400 font-bold">
                   <Search size={18} />
@@ -784,10 +755,9 @@ function TimelineLayout({ data }: { data: any }) {
               </div>
             </div>
           )}
-        </div>
 
         {/* Floating Music Player (Inside containerRef for Fullscreen support) */}
-        <MusicPlayerFloating />
+        <MusicPlayerFloating isOpen={isMusicOpen} onToggle={() => setIsMusicOpen(!isMusicOpen)} />
 
         {/* PWA App Mode Guide Modal */}
         <PwaGuideModal
