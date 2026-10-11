@@ -8,8 +8,6 @@ import {
   X,
   ChevronUp,
   ChevronDown,
-  ZoomIn,
-  ZoomOut,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "motion/react";
@@ -19,6 +17,8 @@ interface TimelineViewProps {
   activeEventId?: string;
   onEventChange?: (id: string) => void;
   focusMode?: boolean;
+  zoomScale?: number;
+  onZoomScaleChange?: (zoom: number) => void;
 }
 
 interface SciFiButtonProps {
@@ -170,14 +170,18 @@ export function TimelineView({
   activeEventId: externalSelectedId,
   onEventChange,
   focusMode = false,
+  zoomScale: propZoomScale,
+  onZoomScaleChange,
 }: TimelineViewProps) {
   const [internalActiveId, setInternalActiveId] = useState<string | null>(
     data.events[0]?.id || null,
   );
   const [showReferences, setShowReferences] = useState(false);
-  const [zoomScale, setZoomScale] = useState<number>(() =>
+  const [internalZoomScale, setInternalZoomScale] = useState<number>(() =>
     typeof window !== "undefined" && window.innerWidth < 1024 ? 100 : 110,
   );
+  const zoomScale = propZoomScale ?? internalZoomScale;
+  const setZoomScale = onZoomScaleChange ?? setInternalZoomScale;
   const [isMobileLayout, setIsMobileLayout] = useState(() => window.matchMedia('(max-width: 1023px)').matches);
   const [isLandscapePhone, setIsLandscapePhone] = useState(() =>
     window.matchMedia('(orientation: landscape) and (max-height: 600px) and (max-width: 1023px)').matches
@@ -1653,45 +1657,6 @@ export function TimelineView({
             </div>
           </div>
         )}
-      {/* Zoom Scale Controller (Floating functional bar: mobile & desktop) */}
-      <div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-[120] items-center justify-center pointer-events-none scale-[0.55] sm:scale-[0.65] origin-bottom">
-        <div className="bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/25 hover:border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.18)] rounded-full px-3.5 py-1.5 flex items-center gap-2 pointer-events-auto transition-all duration-300">
-          <button
-            onClick={() => setZoomScale((prev) => Math.max(80, prev - 10))}
-            className="text-gray-400 hover:text-cyan-400 transition-colors"
-            title="縮小"
-          >
-            <ZoomOut size={14} />
-          </button>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[9px] font-bold text-gray-400 select-none">
-              縮小
-            </span>
-            <input
-              type="range"
-              min="80"
-              max="180"
-              step="5"
-              value={zoomScale}
-              onChange={(e) => setZoomScale(Number(e.target.value))}
-              className="w-16 sm:w-24 h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-cyan-500 focus:outline-none focus:ring-0"
-            />
-            <span className="text-[9px] font-bold text-cyan-400 select-none">
-              放大
-            </span>
-            <span className="text-[10px] font-mono font-bold text-cyan-400 min-w-[2.2rem] text-center select-none ml-1 bg-cyan-950/45 px-1 py-0.5 rounded border border-cyan-500/20">
-              {zoomScale}%
-            </span>
-          </div>
-          <button
-            onClick={() => setZoomScale((prev) => Math.min(180, prev + 10))}
-            className="text-gray-400 hover:text-cyan-400 transition-colors"
-            title="放大"
-          >
-            <ZoomIn size={14} />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

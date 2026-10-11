@@ -120,6 +120,9 @@ function TimelineLayout({ data }: { data: any }) {
     };
   }, [timelineFocus]);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [zoomScale, setZoomScale] = useState<number>(() =>
+    typeof window !== "undefined" && window.innerWidth < 1024 ? 100 : 110,
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const [frameSize, setFrameSize] = useState({ width: 1200, height: 675, originalHeaderHeight: 675 });
 
@@ -512,7 +515,14 @@ function TimelineLayout({ data }: { data: any }) {
 
           {/* Core Interactive Timeline Area */}
           <div className="flex-1 min-h-0 w-full relative">
-            <TimelineView data={data} activeEventId={activeEventId} onEventChange={setActiveEventId} focusMode={timelineFocus} />
+            <TimelineView 
+              data={data} 
+              activeEventId={activeEventId} 
+              onEventChange={setActiveEventId} 
+              focusMode={timelineFocus} 
+              zoomScale={zoomScale}
+              onZoomScaleChange={setZoomScale}
+            />
 
             {/* iOS Safari Fullscreen / Add to Home Screen tip banner */}
             <AnimatePresence>
@@ -609,7 +619,7 @@ function TimelineLayout({ data }: { data: any }) {
           </div>
         </div>
 
-        {/* Unified Bottom-Left Quick Action Gear Menu (整合全螢幕、搜尋、APP模式、音樂按鈕) */}
+        {/* Unified Bottom-Right Quick Action Gear Menu (整合全螢幕、搜尋、APP模式、音樂、畫面縮放拉桿) */}
         <QuickActionGearMenu
           isFullscreen={isFullscreen}
           onToggleFullscreen={toggleFullscreen}
@@ -625,11 +635,13 @@ function TimelineLayout({ data }: { data: any }) {
               setShowPwaGuide(true);
             }
           }}
+          zoomScale={zoomScale}
+          onZoomScaleChange={setZoomScale}
         />
 
         {/* Floating Search Panel (Inside containerRef for Fullscreen support) */}
         {isSearchExpanded && (
-          <div className="landscape-search-panel fixed bottom-16 sm:bottom-22 left-3 sm:left-6 bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_35px_rgba(34,211,238,0.25)] w-[min(480px,calc(100vw-24px))] lg:w-[480px] max-h-[min(75dvh,640px)] lg:max-h-[75vh] flex flex-col p-3 sm:p-5 origin-bottom-left animate-in fade-in zoom-in-95 z-[125]">
+          <div className="landscape-search-panel fixed bottom-14 sm:bottom-20 right-3 sm:right-6 bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_35px_rgba(34,211,238,0.25)] w-[min(480px,calc(100vw-24px))] lg:w-[480px] max-h-[min(75dvh,640px)] lg:max-h-[75vh] flex flex-col p-3 sm:p-5 origin-bottom-right animate-in fade-in zoom-in-95 z-[125]">
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/15">
                 <h3 className="font-serif text-lg flex items-center gap-2 text-cyan-400 font-bold">
                   <Search size={18} />

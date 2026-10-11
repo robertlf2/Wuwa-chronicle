@@ -45,7 +45,7 @@ export function MusicPlayerFloating({
   return (
     <div className={cn(
       "landscape-music-widget fixed z-[125]",
-      showTriggerButton ? "bottom-3 right-3 sm:bottom-6 sm:right-6 flex items-end gap-0" : "bottom-3 right-3 sm:bottom-6 sm:right-6 pointer-events-none"
+      showTriggerButton ? "bottom-3 right-3 sm:bottom-6 sm:right-6 flex items-end gap-0" : "bottom-14 right-3 sm:bottom-18 sm:right-6 pointer-events-none"
     )}>
       {/* Optional Trigger Button (Hidden when controlled by QuickActionGearMenu) */}
       {showTriggerButton && (
