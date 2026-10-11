@@ -58,19 +58,55 @@ function TimelineLayout({ data }: { data: any }) {
   });
   const [hasSearched, setHasSearched] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [timelineFocus, setTimelineFocus] = useState(false);
+
+  useEffect(() => {
+    if (!timelineFocus) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const exitFocus = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setTimelineFocus(false);
+    };
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    const onLayoutChange = () => { if (desktopQuery.matches) setTimelineFocus(false); };
+    document.addEventListener('keydown', exitFocus);
+    desktopQuery.addEventListener('change', onLayoutChange);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', exitFocus);
+      desktopQuery.removeEventListener('change', onLayoutChange);
+    };
+  }, [timelineFocus]);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [frameSize, setFrameSize] = useState({ width: 1200, height: 675 });
+  const [frameSize, setFrameSize] = useState({ width: 1200, height: 675, originalHeaderHeight: 675 });
 
   useLayoutEffect(() => {
     const handleResize = () => {
-      // Keep exactly 1% space to the webpage edges (left & right margins = 1% each, so total width occupies 98%)
-      const calculatedWidth = window.innerWidth * 0.98;
-      const calculatedHeight = (calculatedWidth * 9) / 16;
+      // Portrait/mobile: give the event reader usable height rather than forcing 16:9.
+      // Desktop: retain the tablet's aspect ratio while accounting for the header.
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const compact = vw < 1024;
+      // A landscape phone has enough width but very little height: reserve just
+      // 40px for the condensed actions, instead of forcing a 410px tall frame.
+      const landscapePhone = vw < 1024 && vw > vh && vh <= 600;
+      // Desktop (>=1024px): EXACT original 98vw width and 16:9 height.
+      // Responsive sizing is exclusively for narrower phone/tablet screens.
+      const calculatedWidth = !compact
+        ? vw * 0.98
+        : landscapePhone ? vw * 0.99 : vw * 0.97;
+      const calculatedHeight = !compact
+        ? (calculatedWidth * 9) / 16
+        : landscapePhone ? Math.max(200, vh - 44) : Math.max(650, vh * 0.86);
 
+      // Keep the title/subtitle the same size as the original website,
+      // independently of the responsive content frame height.
+      const originalHeaderHeight = (vw * 0.98 * 9) / 16;
       setFrameSize({
         width: Math.floor(calculatedWidth),
         height: Math.floor(calculatedHeight),
+        originalHeaderHeight,
       });
     };
 
@@ -143,6 +179,10 @@ function TimelineLayout({ data }: { data: any }) {
   }, []);
 
   const toggleFullscreen = () => {
+    if (window.innerWidth < 1024 && !document.fullscreenElement) {
+      setTimelineFocus(value => !value);
+      return;
+    }
     if (!document.fullscreenElement) {
       containerRef.current?.requestFullscreen().catch(err => {
         console.error(`Error attempting to enable fullscreen: ${err.message}`);
@@ -204,10 +244,10 @@ function TimelineLayout({ data }: { data: any }) {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-white flex flex-col items-center justify-start py-6 sm:py-8 md:py-12 px-0 w-full overflow-y-auto scroll-smooth relative z-10 transition-all duration-300">
+    <div className="landscape-page min-h-screen bg-transparent text-white flex flex-col items-center justify-start pt-1 sm:pt-3 lg:py-12 px-0 w-full overflow-x-clip lg:overflow-y-auto scroll-smooth relative z-10 transition-all duration-300">
 
-      {/* Top Right Action Button Panel (Fixed at viewport top-right) */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 flex items-center gap-4 md:gap-8 z-50">
+      {/* Top Right Action Button Panel (Desktop only: Hidden on mobile to free up space) */}
+      <div className="landscape-actions hidden lg:flex lg:absolute lg:top-8 lg:right-8 items-center justify-end gap-3 lg:gap-8 z-50 px-0 mb-0 max-w-full">
         {/* Discord Join Button */}
         <motion.a
           href="https://discord.gg/3NG4ZPYc"
@@ -223,7 +263,7 @@ function TimelineLayout({ data }: { data: any }) {
           <img 
             src="./images/JoinDc.png" 
             alt="Join Discord" 
-            className="h-20 sm:h-24 md:h-28 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
+            className="h-10 sm:h-12 lg:h-28 w-auto max-w-[38vw] lg:max-w-none object-contain transition-all hover:brightness-110 active:brightness-95"
             referrerPolicy="no-referrer"
           />
         </motion.a>
@@ -243,7 +283,7 @@ function TimelineLayout({ data }: { data: any }) {
           <img 
             src="./images/DownloadButton.png" 
             alt="Download Game" 
-            className="h-20 sm:h-24 md:h-28 w-auto object-contain transition-all hover:brightness-110 active:brightness-95"
+            className="h-10 sm:h-12 lg:h-28 w-auto max-w-[38vw] lg:max-w-none object-contain transition-all hover:brightness-110 active:brightness-95"
             referrerPolicy="no-referrer"
           />
         </motion.a>
@@ -251,29 +291,29 @@ function TimelineLayout({ data }: { data: any }) {
         {/* Admin Panel Link */}
         <Link 
           to="/admin" 
-          className="p-4 sm:p-5 bg-black/60 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 text-gray-300 rounded-2xl shadow-lg transition-all hover:scale-105 flex items-center justify-center backdrop-blur-md h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 transition-all duration-300"
+          className="p-2 sm:p-3 lg:p-5 bg-black/60 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 text-gray-300 rounded-xl lg:rounded-2xl shadow-lg transition-all hover:scale-105 flex items-center justify-center backdrop-blur-md h-10 w-10 sm:h-12 sm:w-12 lg:h-28 lg:w-28"
         >
-          <Settings className="size-8 sm:size-10 md:size-12" />
+          <Settings className="size-5 sm:size-6 lg:size-12" />
         </Link>
       </div>
 
       {/* Header outside the 16:9 adaptive chronicle frame to prevent overlapping and make it bigger */}
       {!isFullscreen && (
-        <div className="text-center relative z-40 px-4 flex flex-col items-center justify-center select-none mb-8 sm:mb-10 md:mb-14 w-full max-w-[98vw] transition-all duration-300">
+        <div className="landscape-site-header text-center relative z-40 px-3 lg:px-4 flex flex-col items-center justify-center select-none mb-4 lg:mb-14 w-full max-w-[98vw] transition-all duration-300">
           <img 
             src="./images/title.png" 
             alt="鳴潮編年史" 
-            className="mx-auto mb-4 drop-shadow-[0_0_35px_rgba(255,255,255,0.4)] object-contain transition-all duration-300 pointer-events-none relative -translate-x-1.5 sm:-translate-x-2.5 md:-translate-x-3.5" 
-            style={{ 
-              height: `${Math.max(160, Math.min(340, frameSize.height * 0.35))}px`,
+            className="mx-auto mb-1 sm:mb-2 lg:mb-4 max-w-[96vw] lg:max-w-none drop-shadow-[0_0_35px_rgba(255,255,255,0.4)] object-contain transition-all duration-300 pointer-events-none relative -translate-x-1.5 sm:-translate-x-2.5 md:-translate-x-3.5"
+            style={{
+              height: `${Math.max(160, Math.min(340, frameSize.originalHeaderHeight * 0.35))}px`,
               maxHeight: '380px'
             }}
           />
-          <p 
-            className="text-white font-bold tracking-[0.7em] pl-[0.7em] uppercase drop-shadow-[0_2px_20px_rgba(255,255,255,0.4)] text-center w-full select-none" 
-            style={{ 
-              fontSize: `${Math.max(22, Math.min(42, frameSize.height * 0.045))}px`,
-              fontFamily: '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif' 
+          <p
+            className="text-white font-bold tracking-[0.7em] pl-[0.7em] uppercase drop-shadow-[0_2px_20px_rgba(255,255,255,0.4)] text-center w-full select-none"
+            style={{
+              fontSize: `${Math.max(22, Math.min(42, frameSize.originalHeaderHeight * 0.045))}px`,
+              fontFamily: '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif'
             }}
           >
             我們生而眺望
@@ -283,8 +323,8 @@ function TimelineLayout({ data }: { data: any }) {
 
       {/* 16:9 Adaptive Chronicle Frame */}
       <div 
-        className="relative flex flex-col justify-start items-center bg-transparent z-40 select-none p-1 sm:p-2 mb-2 flex-shrink-0"
-        style={isFullscreen ? { width: '100vw', height: '100vh' } : { width: `${frameSize.width}px`, height: `${frameSize.height}px` }}
+        className="landscape-frame relative flex flex-col justify-start items-center bg-transparent z-40 select-none p-1 sm:p-2 mb-2 flex-shrink-0"
+        style={isFullscreen ? { width: '100vw', height: window.innerWidth >= 1024 ? '100vh' : '100dvh' } : { width: `${frameSize.width}px`, height: `${frameSize.height}px` }}
       >
 
         {/* Sci-fi Tablet Container */}
@@ -292,12 +332,13 @@ function TimelineLayout({ data }: { data: any }) {
           ref={containerRef}
           className={cn(
             "relative flex items-center justify-center transition-all duration-300 z-40 w-full flex-1 min-h-0",
-            isFullscreen ? "w-full h-screen max-w-none rounded-none" : ""
+            isFullscreen ? "w-full h-full max-w-none rounded-none" : "",
+            timelineFocus ? "mobile-timeline-focus" : ""
           )}
         >
         
         {/* Left Sci-fi Border Handle */}
-        <div className="w-10 md:w-12 h-[80%] rounded-l-2xl bg-gradient-to-b from-[#b0b8c4] via-[#e5e7eb] to-[#b0b8c4] shadow-[inset_-2px_0_10px_rgba(0,0,0,0.5),inset_2px_0_10px_rgba(255,255,255,0.8)] flex flex-col items-center justify-center relative border-y-2 border-l-2 border-[#fff] z-10 -mr-1 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] flex-shrink-0">
+        <div className="w-5 sm:w-7 lg:w-12 h-[80%] rounded-l-2xl bg-gradient-to-b from-[#b0b8c4] via-[#e5e7eb] to-[#b0b8c4] shadow-[inset_-2px_0_10px_rgba(0,0,0,0.5),inset_2px_0_10px_rgba(255,255,255,0.8)] flex flex-col items-center justify-center relative border-y-2 border-l-2 border-[#fff] z-10 -mr-1 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] flex-shrink-0">
           {/* Home / Title Button removed */}
 
           {/* Action Button */}
@@ -305,7 +346,7 @@ function TimelineLayout({ data }: { data: any }) {
             <button
               onClick={() => setActiveEventId(prevEvent.id)}
               title={prevEvent.title}
-              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-8 h-16 md:w-10 md:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group"
+              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-7 h-14 lg:w-10 lg:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group"
             >
               <ChevronLeft size={24} className="group-hover:-translate-x-0.5 transition-transform" />
             </button>
@@ -317,7 +358,7 @@ function TimelineLayout({ data }: { data: any }) {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
                 title="Return to Title"
-                className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-8 h-16 md:w-10 md:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group animate-pulse"
+                className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-7 h-14 lg:w-10 lg:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group animate-pulse"
               >
                 <ChevronLeft size={24} className="group-hover:-translate-x-0.5 transition-transform" />
               </button>
@@ -333,12 +374,12 @@ function TimelineLayout({ data }: { data: any }) {
 
         {/* Timeline Screen */}
         <div 
-          className="flex-1 h-full flex flex-col relative overflow-hidden rounded-xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_40px_rgba(34,211,238,0.15)] z-20 group"
+          className="flex-1 min-w-0 h-full flex flex-col relative overflow-hidden rounded-xl border-2 border-cyan-500 shadow-[0_0_30px_rgba(34,211,238,0.4),inset_0_0_40px_rgba(34,211,238,0.15)] z-20 group"
           style={{ backgroundColor: data.transparentBackground ? 'transparent' : '#0f0f12' }}
         >
           
           {/* Top Semitransparent Bezel/Border Indicator line */}
-          <div className="h-[36px] bg-black/60 border-b border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
+          <div className="landscape-bezel h-[36px] bg-black/60 border-b border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
             {/* Top-Left Jitin Tech Indicator */}
             <div className="pointer-events-none flex items-center gap-2 text-cyan-400 font-jitin text-[11px] sm:text-xs tracking-[0.25em] font-light opacity-90 select-none">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee] flex-shrink-0" />
@@ -366,19 +407,21 @@ function TimelineLayout({ data }: { data: any }) {
 
           {/* Core Interactive Timeline Area */}
           <div className="flex-1 min-h-0 w-full relative">
-            <TimelineView data={data} activeEventId={activeEventId} onEventChange={setActiveEventId} />
+            <TimelineView data={data} activeEventId={activeEventId} onEventChange={setActiveEventId} focusMode={timelineFocus} />
             
             <button 
               onClick={toggleFullscreen}
-              className="absolute top-4 right-4 z-[110] p-2 bg-black/40 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-500 hover:text-cyan-300 backdrop-blur-md transition-all drop-shadow-md"
-              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              className="absolute top-2 right-2 lg:top-4 lg:right-4 z-[120] p-1.5 lg:p-2 bg-black/70 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-500 hover:text-cyan-300 backdrop-blur-md transition-all drop-shadow-md"
+              title={timelineFocus ? "退出時間軸專注模式 (縮小)" : isFullscreen ? "Exit Fullscreen (縮小)" : "放大檢視 (專注模式)"}
+              aria-label={timelineFocus ? "退出時間軸專注模式" : isFullscreen ? "Exit Fullscreen" : "放大檢視"}
+              aria-pressed={timelineFocus || isFullscreen}
             >
-              {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+              {isFullscreen || timelineFocus ? <Minimize size={20} /> : <Maximize size={20} />}
             </button>
           </div>
 
           {/* Bottom Semitransparent Bezel/Border Indicator line */}
-          <div className="h-[36px] bg-black/60 border-t border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
+          <div className="landscape-bezel h-[36px] bg-black/60 border-t border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
             {/* High-tech accent lines */}
             <div className="hidden sm:flex items-center gap-1.5 opacity-40">
               <span className="w-8 h-[1px] bg-cyan-500/50" />
@@ -406,7 +449,7 @@ function TimelineLayout({ data }: { data: any }) {
         </div>
 
         {/* Right Sci-fi Border Handle */}
-        <div className="w-10 md:w-12 h-[80%] rounded-r-2xl bg-gradient-to-b from-[#b0b8c4] via-[#e5e7eb] to-[#b0b8c4] shadow-[inset_2px_0_10px_rgba(0,0,0,0.5),inset_-2px_0_10px_rgba(255,255,255,0.8)] flex flex-col items-center justify-center relative border-y-2 border-r-2 border-[#fff] z-10 -ml-1 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] flex-shrink-0">
+        <div className="w-5 sm:w-7 lg:w-12 h-[80%] rounded-r-2xl bg-gradient-to-b from-[#b0b8c4] via-[#e5e7eb] to-[#b0b8c4] shadow-[inset_2px_0_10px_rgba(0,0,0,0.5),inset_-2px_0_10px_rgba(255,255,255,0.8)] flex flex-col items-center justify-center relative border-y-2 border-r-2 border-[#fff] z-10 -ml-1 drop-shadow-[0_0_15px_rgba(34,211,238,0.3)] flex-shrink-0">
           {/* Action Button */}
           {titlePageOpen ? (
             <button
@@ -414,7 +457,7 @@ function TimelineLayout({ data }: { data: any }) {
                 window.dispatchEvent(new CustomEvent('timeline-hide-title-page'));
               }}
               title="Enter Content"
-              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-8 h-16 md:w-10 md:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group"
+              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-7 h-14 lg:w-10 lg:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group"
             >
               <ChevronRight size={24} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
@@ -422,7 +465,7 @@ function TimelineLayout({ data }: { data: any }) {
             <button
               onClick={() => setActiveEventId(nextEvent.id)}
               title={nextEvent.title}
-              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-8 h-16 md:w-10 md:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group"
+              className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 z-20 w-7 h-14 lg:w-10 lg:h-20 bg-black/60 hover:bg-cyan-900/80 rounded-full flex items-center justify-center text-cyan-400 hover:text-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)] border border-cyan-500/50 hover:border-cyan-400 transition-all cursor-pointer backdrop-blur group"
             >
               <ChevronRight size={24} className="group-hover:translate-x-0.5 transition-transform" />
             </button>
@@ -436,11 +479,11 @@ function TimelineLayout({ data }: { data: any }) {
         </div>
 
         {/* Floating Search Action Button & Panel (Inside containerRef for Fullscreen support) */}
-        <div className="fixed bottom-6 left-6 z-[60] flex items-end gap-0">
+        <div className="landscape-search-widget fixed bottom-3 left-3 sm:bottom-6 sm:left-6 z-[120] flex items-end gap-0">
           <button
             onClick={() => setIsSearchExpanded(!isSearchExpanded)}
             className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300 border relative z-10 scale-[0.6] origin-bottom-left",
+              "w-11 h-11 lg:w-12 lg:h-12 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all duration-300 border relative z-10 lg:scale-[0.6] lg:origin-bottom-left",
               isSearchExpanded 
                 ? "bg-cyan-500 text-white border-cyan-400 rotate-12" 
                 : "bg-[#1a1a20] text-cyan-400 border-cyan-500/30 hover:bg-[#25252d] hover:border-cyan-400"
@@ -452,7 +495,7 @@ function TimelineLayout({ data }: { data: any }) {
 
           {/* Floating Search Panel */}
           {isSearchExpanded && (
-            <div className="absolute bottom-10 left-0 bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.2)] w-[320px] sm:w-[450px] md:w-[480px] max-h-[75vh] flex flex-col p-5 origin-bottom-left animate-in fade-in zoom-in-95 z-20">
+            <div className="landscape-search-panel absolute bottom-14 lg:bottom-10 left-0 bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.2)] w-[min(480px,calc(100vw-24px))] lg:w-[480px] max-h-[min(75dvh,640px)] lg:max-h-[75vh] flex flex-col p-3 sm:p-5 origin-bottom-left animate-in fade-in zoom-in-95 z-20">
               <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/15">
                 <h3 className="font-serif text-lg flex items-center gap-2 text-cyan-400 font-bold">
                   <Search size={18} />

@@ -18,6 +18,7 @@ interface TimelineViewProps {
   data: TimelineData;
   activeEventId?: string;
   onEventChange?: (id: string) => void;
+  focusMode?: boolean;
 }
 
 interface SciFiButtonProps {
@@ -73,7 +74,7 @@ function SciFiButton({ onClick, text }: SciFiButtonProps) {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative w-full h-11 inline-flex items-center justify-between bg-black/45 backdrop-blur-md rounded-lg group cursor-pointer overflow-visible transition-all duration-300 border-0 outline-none p-0 focus:outline-none"
+      className="relative w-full h-8 sm:h-11 inline-flex items-center justify-between bg-black/45 backdrop-blur-md rounded-lg group cursor-pointer overflow-visible transition-all duration-300 border-0 outline-none p-0 focus:outline-none"
     >
       <svg
         className="absolute inset-0 w-full h-full select-none pointer-events-none"
@@ -148,12 +149,14 @@ function SciFiButton({ onClick, text }: SciFiButtonProps) {
       </svg>
 
       {/* Button content: Soundwave on left, text on right */}
-      <div className="relative z-10 w-full h-full flex items-center pl-3.5 pr-3.5 gap-2.5">
-        <SoundWave isHovered={isHovered} />
+      <div className="relative z-10 w-full h-full flex items-center pl-2 sm:pl-3.5 pr-2 sm:pr-3.5 gap-1.5 sm:gap-2.5">
+        <div className="hidden xs:flex sm:flex">
+          <SoundWave isHovered={isHovered} />
+        </div>
 
         {/* Text Area */}
-        <div className="flex-1 flex items-center justify-center pr-3">
-          <span className="text-sm md:text-base font-mono font-bold tracking-[0.2em] uppercase text-white drop-shadow-md group-hover:text-cyan-200 group-hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.85)] transition-all duration-300 select-none pl-[0.2em]">
+        <div className="flex-1 flex items-center justify-center pr-1 sm:pr-3">
+          <span className="text-[10px] sm:text-xs md:text-base font-mono font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase text-white drop-shadow-md group-hover:text-cyan-200 group-hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.85)] transition-all duration-300 select-none pl-[0.1em] truncate">
             {displayText}
           </span>
         </div>
@@ -166,15 +169,38 @@ export function TimelineView({
   data,
   activeEventId: externalSelectedId,
   onEventChange,
+  focusMode = false,
 }: TimelineViewProps) {
   const [internalActiveId, setInternalActiveId] = useState<string | null>(
     data.events[0]?.id || null,
   );
   const [showReferences, setShowReferences] = useState(false);
-  const [zoomScale, setZoomScale] = useState<number>(110);
+  const [zoomScale, setZoomScale] = useState<number>(() =>
+    typeof window !== "undefined" && window.innerWidth < 1024 ? 100 : 110,
+  );
+  const [isMobileLayout, setIsMobileLayout] = useState(() => window.matchMedia('(max-width: 1023px)').matches);
+  const [isLandscapePhone, setIsLandscapePhone] = useState(() =>
+    window.matchMedia('(orientation: landscape) and (max-height: 600px) and (max-width: 1023px)').matches
+  );
+  useEffect(() => {
+    const mobileQuery = window.matchMedia('(max-width: 1023px)');
+    const landscapeQuery = window.matchMedia('(orientation: landscape) and (max-height: 600px) and (max-width: 1023px)');
+    const updateLayout = () => {
+      setIsMobileLayout(mobileQuery.matches);
+      setIsLandscapePhone(landscapeQuery.matches);
+    };
+    mobileQuery.addEventListener('change', updateLayout);
+    landscapeQuery.addEventListener('change', updateLayout);
+    updateLayout();
+    return () => {
+      mobileQuery.removeEventListener('change', updateLayout);
+      landscapeQuery.removeEventListener('change', updateLayout);
+    };
+  }, []);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const timelineGesture = useRef({ x: 0, y: 0, moved: false });
   const [direction, setDirection] = useState(0);
   const [showTitlePage, setShowTitlePage] = useState(
     data.titlePageEnabled ?? false,
@@ -182,6 +208,16 @@ export function TimelineView({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const timelineRef = useRef<HTMLDivElement>(null);
   const lanesRef = useRef<HTMLDivElement>(null);
+  const [laneViewportHeight, setLaneViewportHeight] = useState(0);
+  useLayoutEffect(() => {
+    const container = lanesRef.current;
+    if (!container) return;
+    const updateHeight = () => setLaneViewportHeight(container.clientHeight);
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [focusMode, isMobileLayout]);
   const customTrackRef = useRef<HTMLDivElement>(null);
   const verticalThumbRef = useRef<HTMLDivElement>(null);
 
@@ -189,7 +225,7 @@ export function TimelineView({
     externalSelectedId !== undefined ? externalSelectedId : internalActiveId;
   const [prevId, setPrevId] = useState<string | null>(activeEventId);
 
-  const timelineHeight = 28;
+  const timelineHeight = isLandscapePhone ? 42 : isMobileLayout ? 44 : 28;
   const isCompact = false;
 
   const activeEvent = data.events.find((e) => e.id === activeEventId);
@@ -223,11 +259,48 @@ export function TimelineView({
     return a.localeCompare(b);
   });
 
+  const laneHeight = focusMode && isMobileLayout
+    ? Math.max(44, Math.min(isLandscapePhone ? 52 : 76,
+        Math.floor((laneViewportHeight - 3) / Math.max(1, categories.length))))
+    : isLandscapePhone ? 40 : isMobileLayout ? 48 : 36;
+  const detailPanelHeight = `calc(${100 - timelineHeight}% - 11px)`;
+
   // Calculate timeline min/max dates
   const dates = sortedEvents.map((e) => new Date(e.date).getTime());
   const minDate = Math.min(...dates, new Date().getTime());
   const maxDate = Math.max(...dates, new Date().getTime());
   const dateRange = maxDate - minDate || 1;
+
+  // Preserve the original positionX-based chronology on mobile. Widen the
+  // entire time coordinate system instead of compressing every card into 390px.
+  // The width is calculated from the closest neighbouring cards in each lane.
+  // Axis ticks, connectors and event buttons therefore keep the same x scale.
+  const mobileTimelineWidth = (() => {
+    let requiredWidth = 2400;
+    for (const category of categories) {
+      const eventsInLane = sortedEvents
+        .filter((event) => event.category === category)
+        .map((event) => ({
+          event,
+          x: event.positionX !== undefined
+            ? event.positionX
+            : ((new Date(event.date).getTime() - minDate) / dateRange) * 90 + 5,
+        }))
+        .sort((a, b) => a.x - b.x);
+
+      for (let i = 0; i < eventsInLane.length - 1; i++) {
+        const left = eventsInLane[i];
+        const right = eventsInLane[i + 1];
+        const gapPercent = right.x - left.x;
+        if (gapPercent <= 0) continue;
+        // Mobile node: up to ~88px of title + ~30px of chrome + 16px gap.
+        const titleWidth = Math.min(88, left.event.title.length * 12);
+        const cardWidth = Math.max(60, titleWidth + 30);
+        requiredWidth = Math.max(requiredWidth, (cardWidth + 16) * 100 / gapPercent);
+      }
+    }
+    return Math.ceil(Math.min(8000, requiredWidth) / 100) * 100;
+  })();
 
   const activeIndex = sortedEvents.findIndex((e) => e.id === activeEventId);
   const prevEvent = activeIndex > 0 ? sortedEvents[activeIndex - 1] : null;
@@ -351,11 +424,18 @@ export function TimelineView({
       if (el) {
         // Scroll horizontally to center the element
         const container = timelineRef.current;
-        el.scrollIntoView({
+        const nodeRect = el.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        container.scrollBy({
+          left: nodeRect.left + nodeRect.width / 2 - containerRect.left - container.clientWidth / 2,
           behavior: "smooth",
-          inline: "center",
-          block: "nearest",
         });
+        const lanes = lanesRef.current;
+        if (lanes) {
+          const lanesRect = lanes.getBoundingClientRect();
+          if (nodeRect.top < lanesRect.top) lanes.scrollBy({ top: nodeRect.top - lanesRect.top });
+          else if (nodeRect.bottom > lanesRect.bottom) lanes.scrollBy({ top: nodeRect.bottom - lanesRect.bottom });
+        }
       }
     }
   }, [activeEventId]);
@@ -380,7 +460,7 @@ export function TimelineView({
 
     observer.observe(scrollContainer);
     return () => observer.disconnect();
-  }, [data.events.length]);
+  }, [data.events.length, laneHeight, focusMode]);
 
   const COLORS = [
     "#fb923c",
@@ -575,7 +655,7 @@ export function TimelineView({
       style={{ backgroundColor: data.transparentBackground ? 'transparent' : data.timelineBackground }}
     >
       <AnimatePresence>
-        {showTitlePage && (
+        {showTitlePage && !focusMode && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, y: -50 }}
@@ -636,12 +716,14 @@ export function TimelineView({
       </AnimatePresence>
       {/* Zoomable Content Wrapper (simulates Ctrl + Wheel browser zoom on layouts) */}
       <div
-        className="flex-1 flex flex-col overflow-hidden relative w-full h-[100vh] origin-top"
-        style={{ zoom: zoomScale / 100 }}
+        className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden relative w-full h-full lg:h-[100vh] origin-top"
+        style={{ zoom: zoomScale / 100, overflowY: "hidden" }}
       >
         {/* Top Event Detail Panel */}
         <div
-          className="relative border-b border-white/5 overflow-hidden animate-in fade-in duration-500"
+          role="region"
+          aria-label="事件內容"
+          className={cn("relative min-h-0 border-b border-white/5 overflow-hidden animate-in fade-in duration-500", focusMode && "focus-event-panel")}
           style={
             activeEvent?.backgroundColor?.startsWith("http")
               ? {
@@ -649,18 +731,21 @@ export function TimelineView({
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   backgroundColor: "#0f0f12",
-                  height: `calc(${100 - timelineHeight}% - 11px)`,
+                  height: detailPanelHeight,
+                  flexShrink: isMobileLayout ? 0 : undefined,
                 }
               : {
                   backgroundColor: activeEvent?.backgroundColor || "#0f0f12",
                   backgroundImage: activeEvent?.backgroundColor
                     ? "none"
                     : "linear-gradient(to bottom, #1a1a20, #0f0f12)",
-                  height: `calc(${100 - timelineHeight}% - 11px)`,
+                  height: detailPanelHeight,
+                  flexShrink: isMobileLayout ? 0 : undefined,
                 }
           }
         >
-          <div className="h-full overflow-hidden p-4 md:p-8 flex items-center justify-center relative mx-auto" style={{ width: "calc(100% - 10px)" }}>
+          {/* Note: Top-left close button removed as requested */}
+          <div className="h-full overflow-hidden p-1 sm:p-2.5 lg:p-6 flex items-center justify-center relative mx-auto" style={{ width: isMobileLayout ? "100%" : "calc(100% - 10px)" }}>
             <AnimatePresence
               mode="popLayout"
               initial={false}
@@ -697,187 +782,23 @@ export function TimelineView({
                     opacity: { duration: 0.25, ease: "easeInOut" },
                     scale: { duration: 0.25, ease: "easeOut" },
                   }}
-                  drag="x"
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.4}
-                  onDragEnd={(_, info) => {
-                    const swipeThreshold = 50; // px
-                    if (info.offset.x < -swipeThreshold) {
-                      if (nextEvent) {
-                        handleEventChange(nextEvent.id);
-                      }
-                    } else if (info.offset.x > swipeThreshold) {
-                      if (prevEvent) {
-                        handleEventChange(prevEvent.id);
-                      }
-                    }
-                  }}
-                  className="w-full h-full md:h-[94%] md:top-[3%] md:bottom-[3%] max-w-[1700px] absolute px-4 md:px-12 overflow-hidden cursor-grab active:cursor-grabbing select-none"
+                  drag={false}
+                  className="w-full h-full lg:h-[94%] lg:top-[3%] lg:bottom-[3%] max-w-[1700px] absolute px-1.5 sm:px-3 lg:px-12 overflow-hidden select-none"
                 >
-                  {/* MOBILE VIEW LAYOUT (visible on small/medium screens below md) */}
-                  <div className="flex md:hidden flex-col w-full h-full overflow-y-auto custom-scrollbar pb-16 pt-3 px-2 gap-1.5">
-                    {/* 1. Title */}
-                    {activeEvent && (
-                      <div
-                        className={cn(
-                          "flex items-center border p-3 gap-3 rounded-md backdrop-blur-md shadow-lg w-full text-left",
-                          !activeCatColor && activeT.bgLight,
-                          !activeCatColor && activeT.border,
-                        )}
-                        style={
-                          activeCatColor
-                            ? {
-                                backgroundColor: "rgba(0,0,0,0.4)",
-                                borderColor: `${activeCatColor}4D`,
-                              }
-                            : undefined
-                        }
-                      >
-                        <div
-                          className={cn(
-                            "w-1 self-stretch rounded flex-shrink-0",
-                            !activeCatColor && activeT.bgSolid,
-                          )}
-                          style={
-                            activeCatColor
-                              ? { backgroundColor: activeCatColor }
-                              : undefined
-                          }
-                        ></div>
-                        <h1
-                          className={cn(
-                            "font-bold leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-all text-left flex-1 py-0.5",
-                            !activeEvent.titleSize && "text-xl sm:text-2xl",
-                          )}
-                          style={{
-                            fontFamily:
-                              '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif',
-                            fontSize: activeEvent.titleSize
-                              ? `${Math.max(20, activeEvent.titleSize * 0.65)}px`
-                              : undefined,
-                          }}
-                        >
-                          {activeEvent.title}
-                        </h1>
-                      </div>
-                    )}
-
-                    {/* 2. Time/Date + Reference button */}
-                    <div className="flex items-stretch justify-between gap-2.5 w-full -mt-1">
-                      <div
-                        className={cn(
-                          "border p-2.5 rounded-md backdrop-blur-md shadow-sm w-1/2 text-left",
-                          !activeCatColor && activeT.bgLight,
-                          !activeCatColor && activeT.border,
-                        )}
-                        style={
-                          activeCatColor
-                            ? {
-                                backgroundColor: "rgba(0,0,0,0.4)",
-                                borderColor: `${activeCatColor}4D`,
-                              }
-                            : undefined
-                        }
-                      >
-                        <p className="text-gray-300 font-mono text-xs font-bold tracking-[0.15em] uppercase text-left w-full py-0.5">
-                          {activeEvent.customDateText ||
-                            formatDate(activeEvent.date)}
-                        </p>
-                      </div>
-
-                      {((activeEvent.referenceImages &&
-                        activeEvent.referenceImages.length > 0) ||
-                        activeEvent.referenceText) && (
-                        <div className="w-1/2 flex">
-                          <SciFiButton
-                            onClick={() => setShowReferences(true)}
-                            text="參考遊戲文本"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* 3. Media (16:9 aspect-video ratio) */}
-                    <div className="w-full aspect-video rounded-xl overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] relative flex-shrink-0">
-                      {activeEvent.mediaType === "youtube" ? (
-                        <iframe
-                          className="absolute inset-0 w-full h-full"
-                          src={
-                            activeEvent.mediaUrl.includes(
-                              "youtube.com/watch?v=",
-                            )
-                              ? activeEvent.mediaUrl
-                                  .replace("watch?v=", "embed/")
-                                  .split("&")[0]
-                              : activeEvent.mediaUrl.includes("youtu.be/")
-                                ? activeEvent.mediaUrl.replace(
-                                    "youtu.be/",
-                                    "youtube.com/embed/",
-                                  )
-                                : activeEvent.mediaUrl
-                          }
-                          title="YouTube video player"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        ></iframe>
-                      ) : (
-                        <img
-                          src={
-                            activeEvent.mediaUrl ||
-                            "https://via.placeholder.com/800x400?text=No+Image"
-                          }
-                          alt={activeEvent.title}
-                          className="w-full h-full object-cover"
-                          draggable={false}
-                        />
-                      )}
-                    </div>
-
-                    {/* 4. Text (Content) */}
-                    <div
-                      className={cn(
-                        "flex-grow border p-4 rounded-md backdrop-blur-md shadow-md w-full text-left mt-1",
-                        !activeCatColor && activeT.bgLight,
-                        !activeCatColor && activeT.border,
-                      )}
-                      style={
-                        activeCatColor
-                          ? {
-                              backgroundColor: "rgba(0,0,0,0.4)",
-                              borderColor: `${activeCatColor}4D`,
-                            }
-                          : undefined
-                      }
-                    >
-                      <div className="w-full py-0.5">
-                        <div
-                          className="rich-text w-full max-w-none text-gray-200 text-sm sm:text-base leading-relaxed text-left"
-                          dangerouslySetInnerHTML={{
-                            __html: activeEvent.content,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* DESKTOP VIEW LAYOUT (visible on md screens and above) */}
-                  <div className="hidden md:flex flex-row items-stretch justify-between w-full h-full gap-[2%]">
+                  {/* Two-Column Responsive Layout: Left Media + Right (Title, Meta, Content) */}
+                  <div className="landscape-story flex flex-row items-stretch justify-between w-full h-full gap-2 sm:gap-3 lg:gap-[2%] overflow-hidden">
                     {/* Media Box (Left) */}
                     <div
-                      className={cn(
-                        "w-full md:w-[50%] lg:w-[55%] flex items-center justify-start relative md:h-full px-0 md:px-2 flex-shrink overflow-hidden",
-                        isCompact ? "py-2" : "py-4",
-                      )}
+                      className="w-[45%] sm:w-[48%] lg:w-[54%] flex items-center justify-center relative h-full max-h-full px-0 sm:px-1 lg:px-2 flex-shrink-0 overflow-hidden py-1 sm:py-2 lg:py-4"
                     >
                       <div
-                        className="relative w-full h-full max-h-full flex items-center justify-start"
+                        className="relative w-full h-full max-h-full flex items-center justify-center"
                         style={{ containerType: "size" }}
                       >
                         {(() => {
                           return activeEvent.mediaType === "youtube" ? (
                             <div
-                              className="relative group rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] ml-0 mr-auto transition-all duration-300"
+                              className="relative group rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] mx-auto transition-all duration-300"
                               style={{
                                 width: "min(100cqw, calc(100cqh * 16 / 9))",
                                 height: "min(100cqh, calc(100cqw * 9 / 16))",
@@ -908,7 +829,7 @@ export function TimelineView({
                             </div>
                           ) : (
                             <div
-                              className="relative group rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] ml-0 mr-auto transition-all duration-300 flex items-center justify-center"
+                              className="relative group rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] mx-auto transition-all duration-300 flex items-center justify-center"
                               style={{
                                 width: "min(100cqw, calc(100cqh * 16 / 9))",
                                 height: "min(100cqh, calc(100cqw * 9 / 16))",
@@ -921,7 +842,7 @@ export function TimelineView({
                                   "https://via.placeholder.com/800x400?text=No+Image"
                                 }
                                 alt={activeEvent.title}
-                                className="w-full h-full object-cover rounded-2xl bg-[#0f0f12] z-0"
+                                className="w-full h-full object-cover rounded-lg sm:rounded-xl lg:rounded-2xl bg-[#0f0f12] z-0"
                                 draggable={false}
                               />
                             </div>
@@ -931,91 +852,91 @@ export function TimelineView({
                     </div>
 
                     {/* Content Box (Right) */}
-                    <div className="w-full md:w-[48%] lg:w-[43%] flex flex-col justify-center text-left relative md:h-full flex-shrink overflow-hidden py-4">
-                      <div className="relative z-10 flex flex-col items-start w-full h-full max-h-full py-0">
-                        {/* Desktop Title & Date */}
-                        <div className="w-full hidden md:block mb-1">
-                          {activeEvent && (
-                            <div
-                              className={cn(
-                                "flex items-center border p-3.5 gap-3.5 rounded-lg backdrop-blur-md shadow-2xl w-full text-left mb-1",
-                                !activeCatColor && activeT.bgLight,
-                                !activeCatColor && activeT.border,
-                              )}
-                              style={
-                                activeCatColor
-                                  ? {
-                                      backgroundColor: "rgba(0,0,0,0.4)",
-                                      borderColor: `${activeCatColor}4D`,
-                                    }
-                                  : undefined
-                              }
-                            >
-                              <div
-                                className={cn(
-                                  "w-1.5 self-stretch rounded-full flex-shrink-0",
-                                  !activeCatColor && activeT.bgSolid,
-                                )}
-                                style={
-                                  activeCatColor
-                                    ? { backgroundColor: activeCatColor }
-                                    : undefined
-                                }
-                              ></div>
-                              <h1
-                                className="font-bold leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-all text-xl md:text-2xl lg:text-3xl text-left flex-1"
-                                style={{
-                                  fontFamily:
-                                    '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif',
-                                  fontSize: activeEvent.titleSize
-                                    ? `${activeEvent.titleSize}px`
-                                    : undefined,
-                                }}
-                              >
-                                {activeEvent.title}
-                              </h1>
-                            </div>
-                          )}
-                          {/* Flex container to place Date and Reference button side-by-side on desktop */}
-                          <div className="flex items-stretch justify-between gap-3 w-full mt-1">
-                            <div
-                              className={cn(
-                                "border p-2.5 rounded-lg backdrop-blur-md shadow-xl w-1/2 text-left",
-                                !activeCatColor && activeT.bgLight,
-                                !activeCatColor && activeT.border,
-                              )}
-                              style={
-                                activeCatColor
-                                  ? {
-                                      backgroundColor: "rgba(0,0,0,0.4)",
-                                      borderColor: `${activeCatColor}4D`,
-                                    }
-                                  : undefined
-                              }
-                            >
-                              <p className="text-white font-mono text-sm md:text-base font-bold tracking-[0.2em] uppercase drop-shadow-md text-left w-full py-0.5">
-                                {activeEvent.customDateText ||
-                                  formatDate(activeEvent.date)}
-                              </p>
-                            </div>
-
-                            {((activeEvent.referenceImages &&
-                              activeEvent.referenceImages.length > 0) ||
-                              activeEvent.referenceText) && (
-                              <div className="w-1/2 flex">
-                                <SciFiButton
-                                  onClick={() => setShowReferences(true)}
-                                  text="參考遊戲文本"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto mb-1 w-full custom-scrollbar pr-0 py-0.5 flex flex-col">
+                    <div className="w-[53%] sm:w-[50%] lg:w-[44%] flex-1 min-w-0 flex flex-col justify-start text-left relative h-full max-h-full flex-shrink overflow-hidden py-1 sm:py-2 lg:py-4">
+                      <div className="relative z-10 flex flex-col items-start w-full h-full max-h-full py-0 min-h-0">
+                        {/* 1. Title */}
+                        {activeEvent && (
                           <div
                             className={cn(
-                              "flex-grow min-h-full border p-4  rounded-lg backdrop-blur-md shadow-2xl w-full text-left",
+                              "landscape-story-title flex items-center border p-1.5 sm:p-2.5 lg:p-3.5 gap-2 sm:gap-2.5 lg:gap-3.5 rounded-md sm:rounded-lg backdrop-blur-md shadow-lg sm:shadow-2xl w-full text-left mb-1 sm:mb-1.5 flex-shrink-0",
+                              !activeCatColor && activeT.bgLight,
+                              !activeCatColor && activeT.border,
+                            )}
+                            style={
+                              activeCatColor
+                                ? {
+                                    backgroundColor: "rgba(0,0,0,0.4)",
+                                    borderColor: `${activeCatColor}4D`,
+                                  }
+                                : undefined
+                            }
+                          >
+                            <div
+                              className={cn(
+                                "w-1 sm:w-1.5 self-stretch rounded-full flex-shrink-0",
+                                !activeCatColor && activeT.bgSolid,
+                              )}
+                              style={
+                                activeCatColor
+                                  ? { backgroundColor: activeCatColor }
+                                  : undefined
+                              }
+                            ></div>
+                            <h1
+                              className="font-bold leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-all text-xs sm:text-lg md:text-2xl lg:text-3xl text-left flex-1 line-clamp-2 sm:line-clamp-none"
+                              style={{
+                                fontFamily:
+                                  '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif',
+                                fontSize: activeEvent.titleSize
+                                  ? `${Math.max(13, Math.min(activeEvent.titleSize, typeof window !== 'undefined' && window.innerWidth < 640 ? activeEvent.titleSize * 0.65 : activeEvent.titleSize))}px`
+                                  : undefined,
+                              }}
+                            >
+                              {activeEvent.title}
+                            </h1>
+                          </div>
+                        )}
+
+                        {/* 2. Date and Reference button side-by-side */}
+                        <div className="landscape-story-meta flex items-stretch justify-between gap-1.5 sm:gap-2 lg:gap-3 w-full mb-1 sm:mb-1.5 flex-shrink-0">
+                          <div
+                            className={cn(
+                              "border px-2 py-1 sm:p-2 lg:p-2.5 rounded-md sm:rounded-lg backdrop-blur-md shadow-md sm:shadow-xl flex-1 min-w-0 flex items-center text-left",
+                              !activeCatColor && activeT.bgLight,
+                              !activeCatColor && activeT.border,
+                            )}
+                            style={
+                              activeCatColor
+                                ? {
+                                    backgroundColor: "rgba(0,0,0,0.4)",
+                                    borderColor: `${activeCatColor}4D`,
+                                  }
+                                : undefined
+                            }
+                          >
+                            <p className="text-white font-mono text-[10px] sm:text-xs md:text-sm lg:text-base font-bold tracking-[0.1em] sm:tracking-[0.15em] lg:tracking-[0.2em] uppercase drop-shadow-md text-left w-full py-0.5 truncate">
+                              {activeEvent.customDateText ||
+                                formatDate(activeEvent.date)}
+                            </p>
+                          </div>
+
+                          {((activeEvent.referenceImages &&
+                            activeEvent.referenceImages.length > 0) ||
+                            activeEvent.referenceText) && (
+                            <div className="flex-shrink-0 flex items-center max-w-[50%]">
+                              <SciFiButton
+                                onClick={() => setShowReferences(true)}
+                                text="參考遊戲文本"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 3. Event Content (Scrollable text block) */}
+                        <div className="flex-1 min-h-0 overflow-y-auto mb-0.5 sm:mb-1 w-full custom-scrollbar pr-0 py-0 flex flex-col overscroll-contain touch-pan-y">
+                          <div
+                            className={cn(
+                              "landscape-story-content flex-grow min-h-full border p-2 sm:p-3 lg:p-4 rounded-md sm:rounded-lg backdrop-blur-md shadow-lg sm:shadow-2xl w-full text-left",
                               !activeCatColor && activeT.bgLight,
                               !activeCatColor && activeT.border,
                             )}
@@ -1030,7 +951,7 @@ export function TimelineView({
                           >
                             <div className="w-full py-0.5">
                               <div
-                                className="rich-text w-full max-w-none text-gray-200 text-sm md:text-base leading-relaxed text-left"
+                                className="rich-text w-full max-w-none text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed text-left"
                                 dangerouslySetInnerHTML={{
                                   __html: activeEvent.content,
                                 }}
@@ -1038,8 +959,6 @@ export function TimelineView({
                             </div>
                           </div>
                         </div>
-
-
                       </div>
                     </div>
                   </div>
@@ -1065,14 +984,23 @@ export function TimelineView({
           style={{
             backgroundColor: data.transparentBackground ? 'transparent' : data.timelineBackground,
             height: `calc(${timelineHeight}% + 11px)`,
-            minHeight: "120px",
+            minHeight: focusMode || isMobileLayout ? 0 : "120px",
+            flexShrink: isMobileLayout ? 0 : undefined,
           }}
         >
           {/* Scrollable Timeline Area with Frozen Axis */}
           <div
             ref={timelineRef}
-            className="flex-1 overflow-x-hidden overflow-y-hidden flex flex-col cursor-grab active:cursor-grabbing custom-scrollbar relative bg-grid-pattern"
-            style={{ overflowX: "hidden", margin: 0 }}
+            className="flex-1 min-h-0 overflow-y-hidden flex flex-col cursor-grab active:cursor-grabbing custom-scrollbar relative bg-grid-pattern"
+            style={{ overflowX: isMobileLayout ? "auto" : "hidden", WebkitOverflowScrolling: "touch", overscrollBehavior: "contain", margin: 0 }}
+            onPointerDownCapture={(e) => {
+              timelineGesture.current = { x: e.clientX, y: e.clientY, moved: false };
+            }}
+            onPointerMoveCapture={(e) => {
+              const gesture = timelineGesture.current;
+              if (Math.hypot(e.clientX - gesture.x, e.clientY - gesture.y) > 8) gesture.moved = true;
+            }}
+            onPointerCancelCapture={() => { timelineGesture.current.moved = true; }}
             onMouseDown={handleMouseDown}
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
@@ -1081,13 +1009,14 @@ export function TimelineView({
           >
             <div
               className="min-w-fit flex-1 flex flex-col relative pb-0 overflow-hidden min-h-0"
-              style={{ width: "180vw" }}
+              style={{ width: isMobileLayout ? `${mobileTimelineWidth}px` : "180vw" }}
             >
               {/* Vertically Scrollable Lanes Container */}
               <div 
                 ref={lanesRef}
                 onScroll={handleLanesScroll}
                 className="flex-1 overflow-y-auto custom-scrollbar relative min-h-0"
+                style={{ overflowY: "auto", overscrollBehavior: "contain" }}
               >
                 <div className="relative w-full min-h-full flex flex-col overflow-hidden">
                   {/* Draw a subtle grid/line */}
@@ -1140,7 +1069,7 @@ export function TimelineView({
                         }
                         leftPerc = Math.max(1, Math.min(99, leftPerc));
 
-                        const absY = laneIndex * 36 + 18;
+                        const absY = laneIndex * laneHeight + laneHeight / 2;
                         const percY =
                           dimensions.height > 0
                             ? (absY / dimensions.height) * 100
@@ -1393,10 +1322,13 @@ export function TimelineView({
                     return (
                       <div
                         key={category}
-                        className="h-9 border-b border-white/5 relative flex items-center shrink-0 pointer-events-none"
+                        className={cn("timeline-lane border-b border-white/5 relative flex items-center shrink-0 pointer-events-none", isLandscapePhone ? "h-10" : isMobileLayout ? "h-12" : "h-9")}
+                        style={focusMode ? { height: laneHeight, backgroundColor: idx % 2 ? 'rgba(255,255,255,0.025)' : undefined } : undefined}
                       >
                         {/* Lane Label */}
-                        <div className="lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu pointer-events-auto">
+                        <div title={category} data-active={category === activeCategory} className={isMobileLayout
+                            ? cn("lane-label sticky left-0 top-0 bottom-0 w-[108px] bg-[#08080a] flex items-center justify-start overflow-hidden px-2 py-1 z-40 border-r border-cyan-700/40 shadow-[4px_0_15px_rgba(0,0,0,0.6)] gap-1.5 flex-shrink-0 transition-none pointer-events-auto", isLandscapePhone ? "min-h-10" : "min-h-12")
+                            : "lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu pointer-events-auto"}>
                           <div
                             className={cn(
                               "w-2 h-2 shrink-0",
@@ -1409,7 +1341,9 @@ export function TimelineView({
                             }
                           ></div>
                           <span
-                            className={`text-sm sm:text-base uppercase tracking-wider text-gray-300 font-bold truncate`}
+                            className={isMobileLayout
+                              ? "min-w-0 text-[11px] leading-tight uppercase text-gray-300 font-bold line-clamp-2 break-all"
+                              : "text-sm sm:text-base uppercase tracking-wider text-gray-300 font-bold truncate"}
                           >
                             {category}
                           </span>
@@ -1439,6 +1373,7 @@ export function TimelineView({
                                 id={`timeline-node-${event.id}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  if (timelineGesture.current.moved) return;
                                   handleEventChange(event.id);
                                 }}
                                 className={cn(
@@ -1480,7 +1415,7 @@ export function TimelineView({
                                   {/* Inner sleek carbon black glossy container */}
                                   <div 
                                     className={cn(
-                                      "relative flex h-7 sm:h-8 items-center px-2.5 py-0.5 gap-2 overflow-hidden bg-black/95 text-white transition-all duration-200"
+                                      "relative flex h-8 lg:h-8 items-center px-1.5 lg:px-2.5 py-0.5 gap-1 lg:gap-2 overflow-hidden bg-black/95 text-white transition-all duration-200"
                                     )}
                                     style={{ 
                                       borderRadius: '5px',
@@ -1509,7 +1444,7 @@ export function TimelineView({
                                     />
 
                                     <span className={cn(
-                                      "text-xs sm:text-xs md:text-sm font-black uppercase tracking-wider truncate max-w-[200px] sm:max-w-[260px] select-none pointer-events-none relative z-10",
+                                      "text-xs lg:text-sm font-black uppercase tracking-wider truncate max-w-[88px] lg:max-w-[260px] select-none pointer-events-none relative z-10",
                                       isActive ? "text-white drop-shadow-[0_0_3px_rgba(255,255,255,0.5)]" : "text-gray-300"
                                     )}>
                                       {event.title}
@@ -1530,7 +1465,7 @@ export function TimelineView({
               {/* Static Frozen Axis Labels at the bottom of viewport container */}
               {data.axisLabels && data.axisLabels.length > 0 && (
                 <div 
-                  className="h-10 border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative"
+                  className={cn("border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative", isLandscapePhone ? "h-7" : "h-10")}
                   style={{ backgroundColor: data.transparentBackground ? 'transparent' : (data.timelineBackground || "#08080a") }}
                 >
                   {data.axisLabels.map((label) => (
@@ -1540,7 +1475,7 @@ export function TimelineView({
                       style={{ left: `${label.positionX}%` }}
                     >
                       <div className="w-[2px] h-3 bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] mb-1 leading-none"></div>
-                      <span className="text-xs sm:text-sm text-cyan-300 font-mono font-extrabold tracking-wider whitespace-nowrap drop-shadow-[0_0_6px_rgba(34,211,238,0.7)]">
+                      <span className="landscape-axis-text text-xs sm:text-sm text-cyan-300 font-mono font-extrabold tracking-wider whitespace-nowrap drop-shadow-[0_0_6px_rgba(34,211,238,0.7)]">
                         {label.text}
                       </span>
                     </div>
@@ -1551,6 +1486,7 @@ export function TimelineView({
           </div>
           
           {/* Custom Vertical Scrollbar */}
+          {!isMobileLayout && (
           <div
             ref={customTrackRef}
             className="absolute right-1 top-1 bottom-11 w-1.5 hover:w-2.5 bg-black/45 hover:bg-black/60 rounded-full border border-white/5 cursor-pointer z-50 flex flex-col justify-start overflow-hidden opacity-0 pointer-events-none transition-all duration-200"
@@ -1562,6 +1498,7 @@ export function TimelineView({
               className="w-full bg-cyan-400 hover:bg-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.85)] rounded-full transition-colors cursor-pointer"
             />
           </div>
+          )}
         </div>
       </div>{" "}
       {/* End Zoomable Content Wrapper */}
@@ -1571,8 +1508,8 @@ export function TimelineView({
         ((activeEvent.referenceImages &&
           activeEvent.referenceImages.length > 0) ||
           activeEvent.referenceText) && (
-          <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-[#1a1a20] border border-white/10 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+          <div className="fixed inset-0 z-[120] bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+            <div className="bg-[#1a1a20] border border-white/10 rounded-2xl max-w-5xl w-full max-h-[90dvh] overflow-hidden flex flex-col shadow-2xl">
               <div className="p-4 border-b border-white/5 flex justify-between items-center">
                 <h3 className="font-serif text-lg text-white font-light">
                   遊戲文本參考 -{" "}
@@ -1587,7 +1524,7 @@ export function TimelineView({
                   <X size={24} />
                 </button>
               </div>
-              <div className="p-6 overflow-y-auto flex-1 flex flex-col auto-rows-max gap-6 custom-scrollbar bg-[#0f0f12]">
+              <div className="p-3 sm:p-6 min-h-0 overflow-y-auto flex-1 flex flex-col auto-rows-max gap-4 sm:gap-6 custom-scrollbar bg-[#0f0f12]">
                 {/* Reference Text (Always display on complete top) */}
                 {activeEvent.referenceText && (
                   <div
@@ -1620,8 +1557,8 @@ export function TimelineView({
             </div>
           </div>
         )}
-      {/* Zoom Scale Controller */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[50] flex items-center justify-center pointer-events-none scale-[0.6] origin-bottom">
+      {/* Zoom Scale Controller (Floating functional bar: mobile & desktop) */}
+      <div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-[120] items-center justify-center pointer-events-none scale-[0.55] sm:scale-[0.65] origin-bottom">
         <div className="bg-[#1a1a20]/95 backdrop-blur-md border border-cyan-500/25 hover:border-cyan-400/50 shadow-[0_0_15px_rgba(6,182,212,0.18)] rounded-full px-3.5 py-1.5 flex items-center gap-2 pointer-events-auto transition-all duration-300">
           <button
             onClick={() => setZoomScale((prev) => Math.max(80, prev - 10))}

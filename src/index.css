@@ -73,6 +73,79 @@ body {
   @apply bg-[#0f0f12] text-[#e0e0e0] font-sans;
 }
 
+@media (max-width: 1023px) {
+  .landscape-actions {
+    display: none !important;
+  }
+  .landscape-page {
+    padding-top: 4px !important;
+  }
+  .landscape-site-header {
+    margin-bottom: 8px !important;
+  }
+  .landscape-site-header img {
+    height: clamp(60px, 14vw, 95px) !important;
+    max-height: 100px !important;
+    margin-bottom: 2px !important;
+  }
+  .landscape-site-header p {
+    font-size: clamp(12px, 3.2vw, 15px) !important;
+    letter-spacing: 0.4em !important;
+  }
+  .mobile-timeline-focus {
+    position: fixed !important;
+    inset: 0;
+    width: 100vw !important;
+    height: 100dvh !important;
+    z-index: 100 !important;
+    background: #0f0f12;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .mobile-timeline-focus > :first-child,
+  .mobile-timeline-focus > :nth-child(3),
+  .mobile-timeline-focus .landscape-bezel { display: none !important; }
+  .mobile-timeline-focus .focus-event-panel {
+    position: relative;
+    z-index: 60;
+    border: 1px solid #22d3ee;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+  .mobile-timeline-focus .focus-event-panel > div { padding-top: 0; }
+  .mobile-timeline-focus .timeline-lane .lane-label {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    width: clamp(80px, 24vw, 104px);
+    height: 100%;
+    min-height: 0;
+    padding: 6px 8px;
+    gap: 6px;
+    align-self: stretch;
+    background: #10151d;
+  }
+  .mobile-timeline-focus .lane-label span {
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  .mobile-timeline-focus .lane-label[data-active="true"] {
+    background: #15313a;
+    border-right-color: #22d3ee;
+    box-shadow: inset 3px 0 #22d3ee, 4px 0 12px rgba(0,0,0,0.5);
+  }
+  .mobile-timeline-focus .lane-label[data-active="true"] span { color: #ecfeff; }
+}
+
+@media (max-width: 1023px) and (orientation: landscape) {
+  .mobile-timeline-focus .timeline-lane .lane-label {
+    width: clamp(104px, 17vw, 144px);
+    padding: 4px 10px;
+  }
+  .mobile-timeline-focus .lane-label span { font-size: 12px; line-height: 1.25; }
+}
+
 .bg-scanlines {
   background: linear-gradient(
     to bottom,
@@ -104,3 +177,129 @@ body {
 .rich-text s, .rich-text strike, .rich-text del { text-decoration: line-through; }
 .rich-text a { @apply text-orange-500 underline decoration-orange-500 underline-offset-4; }
 .rich-text blockquote { @apply border-l-2 border-orange-500/30 pl-6 italic my-4 text-gray-400; }
+
+/* Responsive test v0.2: prevent rich text and embedded media from overflowing the event panel. */
+@media (max-width: 1023px) {
+  html { -webkit-text-size-adjust: 100%; }
+  html, body, #root { max-width: 100%; }
+  body { overflow-x: clip; }
+  .rich-text, .rich-text * { overflow-wrap: anywhere; word-break: normal; }
+  .rich-text img, .rich-text iframe, .rich-text video { max-width: 100%; height: auto; }
+  .rich-text { font-size: 14px; line-height: 1.65; }
+  .rich-text [style*="font-size"] { font-size: inherit !important; line-height: inherit !important; }
+  .rich-text h1 { font-size: 1.4rem; }
+  .rich-text h2 { font-size: 1.2rem; }
+  .rich-text h3 { font-size: 1.05rem; }
+  input, select, textarea { font-size: 16px; }
+}
+
+
+/* Responsive v0.5 — landscape phones, without replacing the original chronology.
+   Only activate on a short landscape viewport; tablets and desktop remain v0.4. */
+@media (orientation: landscape) and (max-height: 600px) and (max-width: 1023px) {
+  .landscape-page {
+    min-height: 100dvh;
+    padding-top: 2px !important;
+    padding-bottom: 0 !important;
+    justify-content: flex-start;
+    gap: 0;
+  }
+  .landscape-site-header { display: none !important; }
+  .landscape-actions { display: none !important; }
+  .landscape-frame {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100vw;
+  }
+  .landscape-bezel {
+    height: 18px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .landscape-bezel .font-jitin { font-size: 9px; }
+
+  /* A two-column event reader: Left Media + Right (Title, Meta, Content) */
+  .landscape-story {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+    padding: 3px !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .landscape-story-title {
+    padding: 3px 6px !important;
+    gap: 6px !important;
+    min-height: 0;
+    margin-bottom: 2px !important;
+  }
+  .landscape-story-title h1 {
+    font-size: clamp(11px, 2vw, 15px) !important;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .landscape-story-meta {
+    margin-bottom: 2px !important;
+    gap: 4px !important;
+  }
+  .landscape-story-meta > div:first-child {
+    padding: 2px 6px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+  }
+  .landscape-story-meta p {
+    font-size: 10px !important;
+    letter-spacing: 0.05em !important;
+  }
+  .landscape-story-meta button {
+    height: 26px !important;
+  }
+  .landscape-story-content {
+    margin: 0 !important;
+    padding: 4px 6px !important;
+  }
+  .landscape-story-content .rich-text {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .landscape-axis-text { font-size: 10px !important; }
+  .landscape-search-widget {
+    top: auto !important;
+    bottom: 4px !important;
+    left: 6px !important;
+    align-items: flex-end;
+  }
+  .landscape-search-widget > button {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .landscape-search-panel {
+    bottom: 40px !important;
+    top: auto !important;
+    max-height: calc(100dvh - 46px) !important;
+    width: min(420px, calc(100vw - 18px)) !important;
+    overflow-y: auto;
+    padding: 10px !important;
+  }
+  .landscape-music-widget {
+    top: auto !important;
+    bottom: 4px !important;
+    right: 6px !important;
+    align-items: flex-end;
+  }
+  .landscape-music-widget > button {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .landscape-music-panel {
+    bottom: 40px !important;
+    top: auto !important;
+    width: min(320px, 82vw);
+    height: min(180px, calc(100dvh - 50px));
+    transform-origin: bottom right;
+  }
+}
