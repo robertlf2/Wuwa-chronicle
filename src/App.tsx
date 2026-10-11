@@ -10,7 +10,8 @@ import { AdminPanel } from './components/AdminPanel';
 import { Starfield } from './components/Starfield';
 import { MusicPlayerFloating } from './components/MusicPlayerFloating';
 import FontTranslator from './components/FontTranslator';
-import { Settings, Search, Tag as TagIcon, X, Maximize, Minimize, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { Settings, Search, Tag as TagIcon, X, Maximize, Minimize, ChevronLeft, ChevronRight, Home, Smartphone, Sparkles } from 'lucide-react';
+import { PwaGuideModal } from './components/PwaGuideModal';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { cn } from './lib/utils';
@@ -59,6 +60,45 @@ function TimelineLayout({ data }: { data: any }) {
   const [hasSearched, setHasSearched] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [timelineFocus, setTimelineFocus] = useState(false);
+  const [showPwaGuide, setShowPwaGuide] = useState(false);
+  const [showIosTip, setShowIosTip] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  const isStandalone = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true
+    );
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          setIsInstallable(false);
+          setDeferredPrompt(null);
+        }
+      } catch (err) {
+        console.warn('Install prompt error:', err);
+      }
+    } else {
+      setShowPwaGuide(true);
+    }
+  };
 
   useEffect(() => {
     if (!timelineFocus) return;
@@ -170,25 +210,88 @@ function TimelineLayout({ data }: { data: any }) {
     }
   }, [data.events, activeEventId]);
 
+  const checkIsFullscreen = () => {
+    const doc = document as any;
+    return !!(
+      doc.fullscreenElement ||
+      doc.webkitFullscreenElement ||
+      doc.mozFullScreenElement ||
+      doc.msFullscreenElement
+    );
+  };
+
   useEffect(() => {
-    const onFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
+    const onFsChange = () => {
+      setIsFullscreen(checkIsFullscreen());
     };
-    document.addEventListener('fullscreenchange', onFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+    const events = [
+      'fullscreenchange',
+      'webkitfullscreenchange',
+      'mozfullscreenchange',
+      'MSFullscreenChange'
+    ];
+    events.forEach(evt => document.addEventListener(evt, onFsChange));
+    return () => {
+      events.forEach(evt => document.removeEventListener(evt, onFsChange));
+    };
   }, []);
 
-  const toggleFullscreen = () => {
-    if (window.innerWidth < 1024 && !document.fullscreenElement) {
-      setTimelineFocus(value => !value);
-      return;
-    }
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
+  const toggleFullscreen = async () => {
+    const isCurrentlyFs = checkIsFullscreen();
+    const isMobile = window.innerWidth < 1024;
+    const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+    if (!isCurrentlyFs) {
+      // 1. Request native browser fullscreen (with navigationUI: 'hide' to request URL bar collapse)
+      const target = (containerRef.current || document.documentElement) as any;
+      let requestedFs = false;
+      try {
+        if (target.requestFullscreen) {
+          await target.requestFullscreen({ navigationUI: 'hide' } as any);
+          requestedFs = true;
+        } else if (target.webkitRequestFullscreen) {
+          target.webkitRequestFullscreen();
+          requestedFs = true;
+        } else if (target.mozRequestFullScreen) {
+          target.mozRequestFullScreen();
+          requestedFs = true;
+        } else if (target.msRequestFullscreen) {
+          target.msRequestFullscreen();
+          requestedFs = true;
+        }
+      } catch (err) {
+        console.warn('Fullscreen request failed:', err);
+      }
+
+      // 2. On mobile, activate full layout focus mode
+      if (isMobile) {
+        setTimelineFocus(true);
+        // If on iOS and not in standalone PWA, show friendly hint about Add to Home Screen
+        if (isIOS && !isStandalone) {
+          setShowIosTip(true);
+          setTimeout(() => setShowIosTip(false), 5000);
+        }
+      }
     } else {
-      document.exitFullscreen();
+      // Exit fullscreen
+      const doc = document as any;
+      try {
+        if (doc.exitFullscreen) {
+          await doc.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          await doc.webkitExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+          await doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+          await doc.msExitFullscreen();
+        }
+      } catch (err) {
+        console.warn('Exit fullscreen error:', err);
+      }
+
+      if (isMobile) {
+        setTimelineFocus(false);
+      }
     }
   };
 
@@ -379,9 +482,9 @@ function TimelineLayout({ data }: { data: any }) {
         >
           
           {/* Top Semitransparent Bezel/Border Indicator line */}
-          <div className="landscape-bezel h-[36px] bg-black/60 border-b border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
+          <div className="landscape-bezel h-6 sm:h-[36px] bg-black/60 border-b border-cyan-500/30 flex items-center justify-between px-3 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
             {/* Top-Left Jitin Tech Indicator */}
-            <div className="pointer-events-none flex items-center gap-2 text-cyan-400 font-jitin text-[11px] sm:text-xs tracking-[0.25em] font-light opacity-90 select-none">
+            <div className="pointer-events-none flex items-center gap-2 text-cyan-400 font-jitin text-[10px] sm:text-xs tracking-[0.2em] sm:tracking-[0.25em] font-light opacity-90 select-none">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_#22d3ee] flex-shrink-0" />
               <AnimatePresence mode="wait">
                 <motion.span
@@ -409,19 +512,79 @@ function TimelineLayout({ data }: { data: any }) {
           <div className="flex-1 min-h-0 w-full relative">
             <TimelineView data={data} activeEventId={activeEventId} onEventChange={setActiveEventId} focusMode={timelineFocus} />
             
-            <button 
-              onClick={toggleFullscreen}
-              className="absolute top-2 right-2 lg:top-4 lg:right-4 z-[120] p-1.5 lg:p-2 bg-black/70 hover:bg-cyan-500/30 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-500 hover:text-cyan-300 backdrop-blur-md transition-all drop-shadow-md"
-              title={timelineFocus ? "退出時間軸專注模式 (縮小)" : isFullscreen ? "Exit Fullscreen (縮小)" : "放大檢視 (專注模式)"}
-              aria-label={timelineFocus ? "退出時間軸專注模式" : isFullscreen ? "Exit Fullscreen" : "放大檢視"}
-              aria-pressed={timelineFocus || isFullscreen}
-            >
-              {isFullscreen || timelineFocus ? <Minimize size={20} /> : <Maximize size={20} />}
-            </button>
+            {/* Action Buttons: Fullscreen & PWA App Guide */}
+            <div className="absolute top-2 right-2 lg:top-4 lg:right-4 z-[120] flex items-center gap-1.5 sm:gap-2">
+              {/* App Mode / PWA Install Guide */}
+              <button
+                onClick={() => {
+                  if (isInstallable && deferredPrompt) {
+                    handleInstallClick();
+                  } else {
+                    setShowPwaGuide(true);
+                  }
+                }}
+                className="p-1.5 lg:p-2 bg-black/75 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-400 hover:text-cyan-200 backdrop-blur-md transition-all drop-shadow-md flex items-center gap-1 text-[11px]"
+                title={isInstallable ? "安裝至手機桌面 (無網址列 App 模式)" : "手機無網址列 App 模式教學"}
+                aria-label="手機無網址列 App 模式"
+              >
+                <Smartphone className="size-4 sm:size-4.5" />
+                <span className="hidden sm:inline font-mono tracking-wider">APP模式</span>
+                {isInstallable && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                )}
+              </button>
+
+              {/* Fullscreen Button */}
+              <button 
+                onClick={toggleFullscreen}
+                className="p-1.5 lg:p-2 bg-black/75 hover:bg-cyan-500/25 border border-cyan-500/30 hover:border-cyan-400 rounded-lg text-cyan-400 hover:text-cyan-200 backdrop-blur-md transition-all drop-shadow-md flex items-center justify-center"
+                title={timelineFocus || isFullscreen ? "退出全螢幕專注模式 (縮小)" : "全螢幕放大 (隱藏網址列)"}
+                aria-label={timelineFocus || isFullscreen ? "退出全螢幕專注模式" : "全螢幕放大"}
+                aria-pressed={timelineFocus || isFullscreen}
+              >
+                {isFullscreen || timelineFocus ? <Minimize className="size-4 sm:size-5" /> : <Maximize className="size-4 sm:size-5" />}
+              </button>
+            </div>
+
+            {/* iOS Safari Fullscreen / Add to Home Screen tip banner */}
+            <AnimatePresence>
+              {showIosTip && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  className="absolute top-12 right-2 left-2 sm:left-auto sm:right-4 sm:max-w-sm z-[130] bg-[#0c121e]/95 border border-cyan-400/50 rounded-xl p-3 shadow-[0_4px_25px_rgba(6,182,212,0.4)] backdrop-blur-md text-xs text-gray-200 flex items-start gap-2.5"
+                >
+                  <Sparkles className="size-4 text-cyan-400 shrink-0 mt-0.5" />
+                  <div className="flex-1 space-y-1">
+                    <p className="font-bold text-cyan-300">iOS Safari 提示</p>
+                    <p className="text-[11px] text-gray-300 leading-relaxed">
+                      如需完全隱藏網址列，請點 Safari 下方「<span className="text-cyan-300 font-semibold">分享</span>」➔「<span className="text-cyan-300 font-semibold">加入主畫面</span>」，即可像原生 App 一樣全螢幕開啟！
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowIosTip(false);
+                        setShowPwaGuide(true);
+                      }}
+                      className="text-[11px] text-cyan-400 underline hover:text-cyan-300"
+                    >
+                      查看詳細步驟教學
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => setShowIosTip(false)}
+                    className="text-gray-400 hover:text-white p-0.5"
+                    aria-label="關閉提示"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Bottom Semitransparent Bezel/Border Indicator line */}
-          <div className="landscape-bezel h-[36px] bg-black/60 border-t border-cyan-500/30 flex items-center justify-between px-4 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
+          <div className="landscape-bezel h-6 sm:h-[36px] bg-black/60 border-t border-cyan-500/30 flex items-center justify-between px-3 sm:px-6 relative z-40 select-none flex-shrink-0 backdrop-blur-md">
             {/* High-tech accent lines */}
             <div className="hidden sm:flex items-center gap-1.5 opacity-40">
               <span className="w-8 h-[1px] bg-cyan-500/50" />
@@ -625,6 +788,16 @@ function TimelineLayout({ data }: { data: any }) {
 
         {/* Floating Music Player (Inside containerRef for Fullscreen support) */}
         <MusicPlayerFloating />
+
+        {/* PWA App Mode Guide Modal */}
+        <PwaGuideModal
+          isOpen={showPwaGuide}
+          onClose={() => setShowPwaGuide(false)}
+          deferredPrompt={deferredPrompt}
+          isInstallable={isInstallable}
+          onInstall={handleInstallClick}
+          isStandalone={isStandalone}
+        />
       </div>
 
     </div>

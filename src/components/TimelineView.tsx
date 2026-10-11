@@ -74,7 +74,7 @@ function SciFiButton({ onClick, text }: SciFiButtonProps) {
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative w-full h-8 sm:h-11 inline-flex items-center justify-between bg-black/45 backdrop-blur-md rounded-lg group cursor-pointer overflow-visible transition-all duration-300 border-0 outline-none p-0 focus:outline-none"
+      className="relative w-full h-7 sm:h-9 lg:h-11 inline-flex items-center justify-between bg-black/45 backdrop-blur-md rounded-md sm:rounded-lg group cursor-pointer overflow-visible transition-all duration-300 border-0 outline-none p-0 focus:outline-none"
     >
       <svg
         className="absolute inset-0 w-full h-full select-none pointer-events-none"
@@ -149,14 +149,14 @@ function SciFiButton({ onClick, text }: SciFiButtonProps) {
       </svg>
 
       {/* Button content: Soundwave on left, text on right */}
-      <div className="relative z-10 w-full h-full flex items-center pl-2 sm:pl-3.5 pr-2 sm:pr-3.5 gap-1.5 sm:gap-2.5">
+      <div className="relative z-10 w-full h-full flex items-center pl-1.5 sm:pl-3 pr-1.5 sm:pr-3 gap-1 sm:gap-2">
         <div className="hidden xs:flex sm:flex">
           <SoundWave isHovered={isHovered} />
         </div>
 
         {/* Text Area */}
-        <div className="flex-1 flex items-center justify-center pr-1 sm:pr-3">
-          <span className="text-[10px] sm:text-xs md:text-base font-mono font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase text-white drop-shadow-md group-hover:text-cyan-200 group-hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.85)] transition-all duration-300 select-none pl-[0.1em] truncate">
+        <div className="flex-1 flex items-center justify-center">
+          <span className="text-[9px] sm:text-xs md:text-sm lg:text-base font-mono font-bold tracking-[0.05em] sm:tracking-[0.15em] uppercase text-white drop-shadow-md group-hover:text-cyan-200 group-hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.85)] transition-all duration-300 select-none truncate">
             {displayText}
           </span>
         </div>
@@ -225,7 +225,7 @@ export function TimelineView({
     externalSelectedId !== undefined ? externalSelectedId : internalActiveId;
   const [prevId, setPrevId] = useState<string | null>(activeEventId);
 
-  const timelineHeight = isLandscapePhone ? 42 : isMobileLayout ? 44 : 28;
+  const timelineHeight = isLandscapePhone ? 28 : isMobileLayout ? 30 : 28;
   const isCompact = false;
 
   const activeEvent = data.events.find((e) => e.id === activeEventId);
@@ -260,9 +260,9 @@ export function TimelineView({
   });
 
   const laneHeight = focusMode && isMobileLayout
-    ? Math.max(44, Math.min(isLandscapePhone ? 52 : 76,
+    ? Math.max(38, Math.min(isLandscapePhone ? 46 : 60,
         Math.floor((laneViewportHeight - 3) / Math.max(1, categories.length))))
-    : isLandscapePhone ? 40 : isMobileLayout ? 48 : 36;
+    : isLandscapePhone ? 36 : isMobileLayout ? 42 : 36;
   const detailPanelHeight = `calc(${100 - timelineHeight}% - 11px)`;
 
   // Calculate timeline min/max dates
@@ -785,11 +785,11 @@ export function TimelineView({
                   drag={false}
                   className="w-full h-full lg:h-[94%] lg:top-[3%] lg:bottom-[3%] max-w-[1700px] absolute px-1.5 sm:px-3 lg:px-12 overflow-hidden select-none"
                 >
-                  {/* Two-Column Responsive Layout: Left Media + Right (Title, Meta, Content) */}
-                  <div className="landscape-story flex flex-row items-stretch justify-between w-full h-full gap-2 sm:gap-3 lg:gap-[2%] overflow-hidden">
-                    {/* Media Box (Left) */}
+                  {/* Two-Column Responsive Layout: Left Media (~60%) + Right (Title, Meta, Content) (~40%) */}
+                  <div className="landscape-story flex flex-row items-stretch justify-between w-full h-full gap-1.5 sm:gap-2.5 lg:gap-4 overflow-hidden">
+                    {/* Media Box (Left: ~60% width, maintaining 16:9 ratio) */}
                     <div
-                      className="w-[45%] sm:w-[48%] lg:w-[54%] flex items-center justify-center relative h-full max-h-full px-0 sm:px-1 lg:px-2 flex-shrink-0 overflow-hidden py-1 sm:py-2 lg:py-4"
+                      className="w-[60%] flex items-center justify-center relative h-full max-h-full px-0 sm:px-1 lg:px-2 flex-shrink-0 overflow-hidden py-0.5 sm:py-1.5 lg:py-4"
                     >
                       <div
                         className="relative w-full h-full max-h-full flex items-center justify-center"
@@ -798,7 +798,7 @@ export function TimelineView({
                         {(() => {
                           return activeEvent.mediaType === "youtube" ? (
                             <div
-                              className="relative group rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] mx-auto transition-all duration-300"
+                              className="relative group rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-[0_0_20px_rgba(34,211,238,0.15)] border border-cyan-500/20 bg-[#0f0f12] mx-auto transition-all duration-300 flex items-center justify-center"
                               style={{
                                 width: "min(100cqw, calc(100cqh * 16 / 9))",
                                 height: "min(100cqh, calc(100cqw * 9 / 16))",
@@ -851,14 +851,14 @@ export function TimelineView({
                       </div>
                     </div>
 
-                    {/* Content Box (Right) */}
-                    <div className="w-[53%] sm:w-[50%] lg:w-[44%] flex-1 min-w-0 flex flex-col justify-start text-left relative h-full max-h-full flex-shrink overflow-hidden py-1 sm:py-2 lg:py-4">
+                    {/* Content Box (Right: ~40% width) */}
+                    <div className="w-[40%] flex-1 min-w-0 flex flex-col justify-start text-left relative h-full max-h-full flex-shrink overflow-hidden py-0.5 sm:py-1.5 lg:py-4">
                       <div className="relative z-10 flex flex-col items-start w-full h-full max-h-full py-0 min-h-0">
                         {/* 1. Title */}
                         {activeEvent && (
                           <div
                             className={cn(
-                              "landscape-story-title flex items-center border p-1.5 sm:p-2.5 lg:p-3.5 gap-2 sm:gap-2.5 lg:gap-3.5 rounded-md sm:rounded-lg backdrop-blur-md shadow-lg sm:shadow-2xl w-full text-left mb-1 sm:mb-1.5 flex-shrink-0",
+                              "landscape-story-title flex items-center border p-1 sm:p-2 lg:p-3.5 gap-1.5 sm:gap-2 lg:gap-3 rounded-md sm:rounded-lg backdrop-blur-md shadow-md sm:shadow-2xl w-full text-left mb-1 sm:mb-1.5 flex-shrink-0",
                               !activeCatColor && activeT.bgLight,
                               !activeCatColor && activeT.border,
                             )}
@@ -883,12 +883,12 @@ export function TimelineView({
                               }
                             ></div>
                             <h1
-                              className="font-bold leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-all text-xs sm:text-lg md:text-2xl lg:text-3xl text-left flex-1 line-clamp-2 sm:line-clamp-none"
+                              className="font-bold leading-tight text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] transition-all text-xs sm:text-base md:text-xl lg:text-3xl text-left flex-1 line-clamp-2"
                               style={{
                                 fontFamily:
                                   '"Zen Maru Gothic", "M PLUS Rounded 1c", ui-rounded, "Hiragino Maru Gothic ProN", sans-serif',
                                 fontSize: activeEvent.titleSize
-                                  ? `${Math.max(13, Math.min(activeEvent.titleSize, typeof window !== 'undefined' && window.innerWidth < 640 ? activeEvent.titleSize * 0.65 : activeEvent.titleSize))}px`
+                                  ? `${Math.max(12, Math.min(activeEvent.titleSize, typeof window !== 'undefined' && window.innerWidth < 640 ? activeEvent.titleSize * 0.6 : activeEvent.titleSize))}px`
                                   : undefined,
                               }}
                             >
@@ -898,10 +898,10 @@ export function TimelineView({
                         )}
 
                         {/* 2. Date and Reference button side-by-side */}
-                        <div className="landscape-story-meta flex items-stretch justify-between gap-1.5 sm:gap-2 lg:gap-3 w-full mb-1 sm:mb-1.5 flex-shrink-0">
+                        <div className="landscape-story-meta flex items-stretch justify-between gap-1 sm:gap-1.5 lg:gap-3 w-full mb-1 sm:mb-1.5 flex-shrink-0">
                           <div
                             className={cn(
-                              "border px-2 py-1 sm:p-2 lg:p-2.5 rounded-md sm:rounded-lg backdrop-blur-md shadow-md sm:shadow-xl flex-1 min-w-0 flex items-center text-left",
+                              "border px-1.5 py-0.5 sm:px-2 sm:py-1.5 lg:p-2.5 rounded-md sm:rounded-lg backdrop-blur-md shadow-sm sm:shadow-xl flex-1 min-w-0 flex items-center text-left",
                               !activeCatColor && activeT.bgLight,
                               !activeCatColor && activeT.border,
                             )}
@@ -914,7 +914,7 @@ export function TimelineView({
                                 : undefined
                             }
                           >
-                            <p className="text-white font-mono text-[10px] sm:text-xs md:text-sm lg:text-base font-bold tracking-[0.1em] sm:tracking-[0.15em] lg:tracking-[0.2em] uppercase drop-shadow-md text-left w-full py-0.5 truncate">
+                            <p className="text-white font-mono text-[9px] sm:text-xs md:text-sm lg:text-base font-bold tracking-[0.05em] sm:tracking-[0.15em] lg:tracking-[0.2em] uppercase drop-shadow-md text-left w-full py-0.5 truncate">
                               {activeEvent.customDateText ||
                                 formatDate(activeEvent.date)}
                             </p>
@@ -923,7 +923,7 @@ export function TimelineView({
                           {((activeEvent.referenceImages &&
                             activeEvent.referenceImages.length > 0) ||
                             activeEvent.referenceText) && (
-                            <div className="flex-shrink-0 flex items-center max-w-[50%]">
+                            <div className="flex-shrink-0 flex items-center max-w-[55%]">
                               <SciFiButton
                                 onClick={() => setShowReferences(true)}
                                 text="參考遊戲文本"
@@ -936,7 +936,7 @@ export function TimelineView({
                         <div className="flex-1 min-h-0 overflow-y-auto mb-0.5 sm:mb-1 w-full custom-scrollbar pr-0 py-0 flex flex-col overscroll-contain touch-pan-y">
                           <div
                             className={cn(
-                              "landscape-story-content flex-grow min-h-full border p-2 sm:p-3 lg:p-4 rounded-md sm:rounded-lg backdrop-blur-md shadow-lg sm:shadow-2xl w-full text-left",
+                              "landscape-story-content flex-grow min-h-full border p-1.5 sm:p-2.5 lg:p-4 rounded-md sm:rounded-lg backdrop-blur-md shadow-md sm:shadow-2xl w-full text-left",
                               !activeCatColor && activeT.bgLight,
                               !activeCatColor && activeT.border,
                             )}
@@ -1322,13 +1322,21 @@ export function TimelineView({
                     return (
                       <div
                         key={category}
-                        className={cn("timeline-lane border-b border-white/5 relative flex items-center shrink-0 pointer-events-none", isLandscapePhone ? "h-10" : isMobileLayout ? "h-12" : "h-9")}
-                        style={focusMode ? { height: laneHeight, backgroundColor: idx % 2 ? 'rgba(255,255,255,0.025)' : undefined } : undefined}
+                        className="timeline-lane border-b border-white/5 relative flex items-center shrink-0 pointer-events-none"
+                        style={{
+                          height: `${laneHeight}px`,
+                          backgroundColor: focusMode && idx % 2 ? 'rgba(255,255,255,0.025)' : undefined,
+                        }}
                       >
                         {/* Lane Label */}
-                        <div title={category} data-active={category === activeCategory} className={isMobileLayout
-                            ? cn("lane-label sticky left-0 top-0 bottom-0 w-[108px] bg-[#08080a] flex items-center justify-start overflow-hidden px-2 py-1 z-40 border-r border-cyan-700/40 shadow-[4px_0_15px_rgba(0,0,0,0.6)] gap-1.5 flex-shrink-0 transition-none pointer-events-auto", isLandscapePhone ? "min-h-10" : "min-h-12")
-                            : "lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu pointer-events-auto"}>
+                        <div
+                          title={category}
+                          data-active={category === activeCategory}
+                          className={isMobileLayout
+                            ? "lane-label sticky left-0 top-0 bottom-0 w-[108px] bg-[#08080a] flex items-center justify-start overflow-hidden px-2 py-1 z-40 border-r border-cyan-700/40 shadow-[4px_0_15px_rgba(0,0,0,0.6)] gap-1.5 flex-shrink-0 transition-none pointer-events-auto"
+                            : "lane-label sticky left-0 top-0 bottom-0 min-h-[32px] w-28 md:w-32 bg-[#08080a]/70 backdrop-blur-sm flex items-center justify-start px-3 py-1 z-40 border-r border-[#08080a]/50 shadow-[4px_0_15px_rgba(0,0,0,0.3)] gap-2 flex-shrink-0 transition-none transform-gpu pointer-events-auto"}
+                          style={{ height: `${laneHeight}px` }}
+                        >
                           <div
                             className={cn(
                               "w-2 h-2 shrink-0",
@@ -1465,7 +1473,7 @@ export function TimelineView({
               {/* Static Frozen Axis Labels at the bottom of viewport container */}
               {data.axisLabels && data.axisLabels.length > 0 && (
                 <div 
-                  className={cn("border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative", isLandscapePhone ? "h-7" : "h-10")}
+                  className={cn("border-t border-white/10 flex items-center z-40 shadow-[0_-4px_20px_rgba(0,0,0,0.6)] backdrop-blur-md shrink-0 relative", isLandscapePhone ? "h-7" : isMobileLayout ? "h-8" : "h-10")}
                   style={{ backgroundColor: data.transparentBackground ? 'transparent' : (data.timelineBackground || "#08080a") }}
                 >
                   {data.axisLabels.map((label) => (
