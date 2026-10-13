@@ -1005,31 +1005,29 @@ export function TimelineView({
                           )}
                         </div>
 
-                        {/* 3. Event Content (Scrollable text block) */}
-                        <div className="flex-1 min-h-0 overflow-y-auto mb-0.5 sm:mb-1 w-full custom-scrollbar pr-0 py-0 flex flex-col overscroll-contain touch-pan-y">
-                          <div
-                            className={cn(
-                              "landscape-story-content flex-grow min-h-full border p-1.5 sm:p-2.5 lg:p-4 rounded-md sm:rounded-lg backdrop-blur-md shadow-md sm:shadow-2xl w-full text-left",
-                              !activeCatColor && activeT.bgLight,
-                              !activeCatColor && activeT.border,
-                            )}
-                            style={
-                              activeCatColor
-                                ? {
-                                    backgroundColor: "rgba(0,0,0,0.4)",
-                                    borderColor: `${activeCatColor}4D`,
-                                  }
-                                : undefined
-                            }
-                          >
-                            <div className="w-full py-0.5">
-                              <div
-                                className="rich-text w-full max-w-none text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed text-left"
-                                dangerouslySetInnerHTML={{
-                                  __html: activeEvent.content,
-                                }}
-                              />
-                            </div>
+                        {/* 3. Event Content (Static background frame: Only inner text scrolls) */}
+                        <div
+                          className={cn(
+                            "landscape-story-content flex-1 min-h-0 mb-0.5 sm:mb-1 w-full border rounded-md sm:rounded-lg backdrop-blur-md shadow-md sm:shadow-2xl text-left flex flex-col relative overflow-hidden",
+                            !activeCatColor && activeT.bgLight,
+                            !activeCatColor && activeT.border,
+                          )}
+                          style={
+                            activeCatColor
+                              ? {
+                                  backgroundColor: "rgba(0,0,0,0.4)",
+                                  borderColor: `${activeCatColor}4D`,
+                                }
+                              : undefined
+                          }
+                        >
+                          <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-1.5 sm:p-2.5 lg:p-4 overscroll-contain touch-pan-y">
+                            <div
+                              className="rich-text w-full max-w-none text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed text-left pb-2 sm:pb-3"
+                              dangerouslySetInnerHTML={{
+                                __html: activeEvent.content,
+                              }}
+                            />
                           </div>
                         </div>
                       </div>

@@ -227,7 +227,8 @@ function TimelineLayout({ data }: { data: any }) {
 
   useEffect(() => {
     const onFsChange = () => {
-      setIsFullscreen(checkIsFullscreen());
+      const nativeFullscreen = checkIsFullscreen();
+      setIsFullscreen(nativeFullscreen);
     };
     const events = [
       'fullscreenchange',
@@ -354,8 +355,8 @@ function TimelineLayout({ data }: { data: any }) {
   return (
     <div className="landscape-page min-h-screen bg-transparent text-white flex flex-col items-center justify-start pt-1 sm:pt-3 lg:py-12 px-0 w-full overflow-x-clip lg:overflow-y-auto scroll-smooth relative z-10 transition-all duration-300">
 
-      {/* Top Right Action Button Panel (Desktop only: Hidden on mobile to free up space) */}
-      <div className="landscape-actions hidden lg:flex lg:absolute lg:top-8 lg:right-8 items-center justify-end gap-3 lg:gap-8 z-50 px-0 mb-0 max-w-full">
+      {/* Top Right Action Button Panel */}
+      <div className="landscape-actions absolute top-2 right-2 sm:top-4 sm:right-4 lg:top-8 lg:right-8 flex items-center justify-end gap-2 sm:gap-3 lg:gap-8 z-50 px-0 mb-0 max-w-full">
         {/* Discord Join Button */}
         <motion.a
           href="https://discord.gg/3NG4ZPYc"
@@ -363,15 +364,15 @@ function TimelineLayout({ data }: { data: any }) {
           rel="noopener noreferrer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative inline-block overflow-hidden rounded-2xl shadow-[0_0_20px_rgba(88,101,242,0.2)] hover:shadow-[0_0_35px_rgba(88,101,242,0.55)] border border-[#5865f2]/20 hover:border-[#5865f2]/50 transition-all duration-300 bg-black/40"
+          className="relative inline-block overflow-hidden rounded-lg sm:rounded-xl lg:rounded-2xl shadow-[0_0_15px_rgba(88,101,242,0.2)] hover:shadow-[0_0_35px_rgba(88,101,242,0.55)] border border-[#5865f2]/20 hover:border-[#5865f2]/50 transition-all duration-300 bg-black/40"
           title="加入 Discord 社群"
         >
-          <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#5865f2]" />
-          <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#5865f2]" />
+          <span className="absolute top-0 left-0 w-2 sm:w-3 h-2 sm:h-3 border-t-2 border-l-2 border-[#5865f2]" />
+          <span className="absolute bottom-0 right-0 w-2 sm:w-3 h-2 sm:h-3 border-b-2 border-r-2 border-[#5865f2]" />
           <img 
             src="./images/JoinDc.png" 
             alt="Join Discord" 
-            className="h-10 sm:h-12 lg:h-28 w-auto max-w-[38vw] lg:max-w-none object-contain transition-all hover:brightness-110 active:brightness-95"
+            className="h-7 sm:h-10 lg:h-28 w-auto max-w-[36vw] lg:max-w-none object-contain transition-all hover:brightness-110 active:brightness-95"
             referrerPolicy="no-referrer"
           />
         </motion.a>
@@ -383,26 +384,36 @@ function TimelineLayout({ data }: { data: any }) {
           rel="noopener noreferrer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="relative inline-block overflow-hidden rounded-2xl shadow-[0_0_20px_rgba(34,211,238,0.2)] hover:shadow-[0_0_35px_rgba(34,211,238,0.55)] border border-[#22d3ee]/20 hover:border-[#22d3ee]/50 transition-all duration-300 bg-black/40"
+          className="relative inline-block overflow-hidden rounded-lg sm:rounded-xl lg:rounded-2xl shadow-[0_0_15px_rgba(34,211,238,0.2)] hover:shadow-[0_0_35px_rgba(34,211,238,0.55)] border border-[#22d3ee]/20 hover:border-[#22d3ee]/50 transition-all duration-300 bg-black/40"
           title="前往《鳴潮》官方網站"
         >
-          <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-cyan-400" />
-          <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-cyan-400" />
+          <span className="absolute top-0 left-0 w-2 sm:w-3 h-2 sm:h-3 border-t-2 border-l-2 border-cyan-400" />
+          <span className="absolute bottom-0 right-0 w-2 sm:w-3 h-2 sm:h-3 border-b-2 border-r-2 border-cyan-400" />
           <img 
             src="./images/DownloadButton.png" 
             alt="Download Game" 
-            className="h-10 sm:h-12 lg:h-28 w-auto max-w-[38vw] lg:max-w-none object-contain transition-all hover:brightness-110 active:brightness-95"
+            className="h-7 sm:h-10 lg:h-28 w-auto max-w-[36vw] lg:max-w-none object-contain transition-all hover:brightness-110 active:brightness-95"
             referrerPolicy="no-referrer"
           />
         </motion.a>
 
-        {/* Admin Panel Link */}
-        <Link 
-          to="/admin" 
-          className="p-2 sm:p-3 lg:p-5 bg-black/60 border border-white/10 hover:border-cyan-500/50 hover:text-cyan-400 text-gray-300 rounded-xl lg:rounded-2xl shadow-lg transition-all hover:scale-105 flex items-center justify-center backdrop-blur-md h-10 w-10 sm:h-12 sm:w-12 lg:h-28 lg:w-28"
+        {/* Admin Backend Gear Button */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative inline-block"
         >
-          <Settings className="size-5 sm:size-6 lg:size-12" />
-        </Link>
+          <Link
+            to="/admin"
+            className="admin-gear-btn relative flex items-center justify-center h-7 w-7 sm:h-10 sm:w-10 lg:h-28 lg:w-28 rounded-lg sm:rounded-xl lg:rounded-2xl shadow-[0_0_15px_rgba(251,191,36,0.2)] hover:shadow-[0_0_35px_rgba(251,191,36,0.55)] border border-amber-400/30 hover:border-amber-400/80 transition-all duration-300 bg-black/40 text-amber-300/90 hover:text-amber-100 group overflow-hidden"
+            title="管理後台"
+            aria-label="管理後台"
+          >
+            <span className="absolute top-0 left-0 w-2 sm:w-3 lg:w-5 h-2 sm:h-3 lg:h-5 border-t-2 border-l-2 border-amber-400/60 group-hover:border-amber-400 transition-colors" />
+            <span className="absolute bottom-0 right-0 w-2 sm:w-3 lg:w-5 h-2 sm:h-3 lg:h-5 border-b-2 border-r-2 border-amber-400/60 group-hover:border-amber-400 transition-colors" />
+            <Settings className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-12 lg:h-12 transition-transform duration-500 group-hover:rotate-90" />
+          </Link>
+        </motion.div>
       </div>
 
       {/* Header outside the 16:9 adaptive chronicle frame to prevent overlapping and make it bigger */}
