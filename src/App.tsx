@@ -14,7 +14,7 @@ import { Settings, Search, Tag as TagIcon, X, Maximize, Minimize, ChevronLeft, C
 import { PwaGuideModal } from './components/PwaGuideModal';
 import { QuickActionGearMenu } from './components/QuickActionGearMenu';
 import { motion, AnimatePresence } from 'motion/react';
-import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { cn } from './lib/utils';
 import { TimelineEvent } from './types';
 
@@ -102,15 +102,46 @@ function TimelineLayout({ data }: { data: any }) {
     }
   };
 
+  const isIOSDevice = useCallback(() => {
+    if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    const platform = (navigator as any).userAgentData?.platform || navigator.platform || '';
+    return (
+      /iPhone|iPad|iPod/i.test(ua) ||
+      /CriOS/i.test(ua) ||
+      (platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1)
+    );
+  }, []);
+
+  const checkIsFullscreen = useCallback(() => {
+    if (typeof document === 'undefined') return false;
+    const doc = document as any;
+    return !!(
+      doc.fullscreenElement ||
+      doc.webkitFullscreenElement ||
+      doc.mozFullScreenElement ||
+      doc.msFullscreenElement
+    );
+  }, []);
+
   useEffect(() => {
     if (!timelineFocus) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     const exitFocus = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setTimelineFocus(false);
+      if (event.key === 'Escape') {
+        setTimelineFocus(false);
+        setIsFullscreen(false);
+      }
     };
     const desktopQuery = window.matchMedia('(min-width: 1024px)');
-    const onLayoutChange = () => { if (desktopQuery.matches) setTimelineFocus(false); };
+    const onLayoutChange = () => {
+      // Don't auto-exit on touch tablets or when in native fullscreen
+      if (desktopQuery.matches && !isIOSDevice() && !checkIsFullscreen() && !('ontouchstart' in window)) {
+        setTimelineFocus(false);
+        setIsFullscreen(false);
+      }
+    };
     document.addEventListener('keydown', exitFocus);
     desktopQuery.addEventListener('change', onLayoutChange);
     return () => {
@@ -118,7 +149,7 @@ function TimelineLayout({ data }: { data: any }) {
       document.removeEventListener('keydown', exitFocus);
       desktopQuery.removeEventListener('change', onLayoutChange);
     };
-  }, [timelineFocus]);
+  }, [timelineFocus, isIOSDevice, checkIsFullscreen]);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [zoomScale, setZoomScale] = useState<number>(() =>
     typeof window !== "undefined" && window.innerWidth < 1024 ? 100 : 110,
@@ -215,20 +246,13 @@ function TimelineLayout({ data }: { data: any }) {
     }
   }, [data.events, activeEventId]);
 
-  const checkIsFullscreen = () => {
-    const doc = document as any;
-    return !!(
-      doc.fullscreenElement ||
-      doc.webkitFullscreenElement ||
-      doc.mozFullScreenElement ||
-      doc.msFullscreenElement
-    );
-  };
-
   useEffect(() => {
     const onFsChange = () => {
       const nativeFullscreen = checkIsFullscreen();
       setIsFullscreen(nativeFullscreen);
+      if (!nativeFullscreen) {
+        setTimelineFocus(false);
+      }
     };
     const events = [
       'fullscreenchange',
@@ -240,12 +264,12 @@ function TimelineLayout({ data }: { data: any }) {
     return () => {
       events.forEach(evt => document.removeEventListener(evt, onFsChange));
     };
-  }, []);
+  }, [checkIsFullscreen]);
 
   const toggleFullscreen = async () => {
-    const isCurrentlyFs = checkIsFullscreen();
-    const isMobile = window.innerWidth < 1024;
-    const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isCurrentlyFs = isFullscreen || checkIsFullscreen() || timelineFocus;
+    const isIOS = isIOSDevice();
+    const isMobileOrTablet = window.innerWidth < 1024 || isIOS || ('ontouchstart' in window);
 
     if (!isCurrentlyFs) {
       // 1. Request native browser fullscreen (with navigationUI: 'hide' to request URL bar collapse)
@@ -269,8 +293,11 @@ function TimelineLayout({ data }: { data: any }) {
         console.warn('Fullscreen request failed:', err);
       }
 
-      // 2. On mobile, activate full layout focus mode
-      if (isMobile) {
+      // 2. Mark state as fullscreen so button immediately switches to "退出全螢幕"
+      setIsFullscreen(true);
+
+      // 3. On mobile, tablet, iOS or whenever native fullscreen is not supported, activate layout focus mode
+      if (isMobileOrTablet || !requestedFs) {
         setTimelineFocus(true);
         // If on iOS and not in standalone PWA, show friendly hint about Add to Home Screen
         if (isIOS && !isStandalone) {
@@ -282,22 +309,22 @@ function TimelineLayout({ data }: { data: any }) {
       // Exit fullscreen
       const doc = document as any;
       try {
-        if (doc.exitFullscreen) {
+        if (doc.exitFullscreen && checkIsFullscreen()) {
           await doc.exitFullscreen();
-        } else if (doc.webkitExitFullscreen) {
+        } else if (doc.webkitExitFullscreen && checkIsFullscreen()) {
           await doc.webkitExitFullscreen();
-        } else if (doc.mozCancelFullScreen) {
+        } else if (doc.mozCancelFullScreen && checkIsFullscreen()) {
           await doc.mozCancelFullScreen();
-        } else if (doc.msExitFullscreen) {
+        } else if (doc.msExitFullscreen && checkIsFullscreen()) {
           await doc.msExitFullscreen();
         }
       } catch (err) {
         console.warn('Exit fullscreen error:', err);
       }
 
-      if (isMobile) {
-        setTimelineFocus(false);
-      }
+      // Reset fullscreen states so UI returns to normal
+      setIsFullscreen(false);
+      setTimelineFocus(false);
     }
   };
 
