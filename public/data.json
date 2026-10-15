@@ -5,7 +5,7 @@
   "axisLabels": [
     {
       "id": "6ca7f7f3-0557-40b7-bc98-8f7296e4b9e7",
-      "positionX": 12.466436268549431,
+      "positionX": 19.040330218992857,
       "text": "10000年前"
     },
     {
@@ -16,12 +16,12 @@
     {
       "id": "e315d960-53a2-46ec-a9a4-b947c696d7c2",
       "text": "1000年前",
-      "positionX": 33.986051266211916
+      "positionX": 34.18317060094624
     },
     {
       "id": "2e0a0948-b1fc-447d-9478-53d6bf38d925",
       "text": "200年前",
-      "positionX": 71.24907101747351
+      "positionX": 93.84391618172833
     }
   ],
   "timelineBackground": "#2d2a3c",
@@ -38,8 +38,8 @@
       "startAttachment": "left",
       "endAttachment": "left",
       "color": "#fb923c",
-      "controlX": 39.53058296894174,
-      "controlY": 76.74858223062382
+      "controlX": 47.21761739896079,
+      "controlY": 82.21796551630575
     }
   ],
   "titlePageTitle": "",
@@ -59,7 +59,7 @@
       "date": "1000-01-01",
       "categoryColor": "#ffffff",
       "mainStoryTags": [],
-      "positionX": 4.962256997705575,
+      "positionX": 8.354110315038747,
       "referenceText": "主線1.4、主線3.1",
       "id": "1",
       "titleSize": 24,
@@ -70,7 +70,7 @@
     },
     {
       "mediaUrl": "https://www.youtube.com/watch?v=D8_YcMQZRr8",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">弗洛洛居住小鎮(所屬地不明)，遭遇隕石毀滅，除弗洛洛外全居民罹難，弗洛洛共鳴能力覺醒，成為不死不滅的半聲骸狀態。之後弗洛洛開始不斷開音樂會，其音樂因為過於哀傷甚至被評為禁曲。</p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>弗洛洛居住小鎮(所屬地不明)，遭遇隕石毀滅，除弗洛洛外全居民罹難，弗洛洛共鳴能力覺醒，成為不死不滅的半聲骸狀態。之後弗洛洛開始不斷開音樂會，其音樂因為過於哀傷甚至被評為禁曲。</strong></span></p>",
       "mediaType": "youtube",
       "id": "1781498197038",
       "referenceText": "官方YT、主線 2.5",
@@ -96,18 +96,18 @@
     },
     {
       "mediaUrl": "https://live.staticflickr.com/65535/55169357818_b5d8437fc3_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>羅伊上古時期，此時羅伊族人生活於地上游牧而生，此時地下綠洲拉海洛尚不存在。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>羅伊上古時期，此時羅伊族人生活於地上游牧而生，此時地下綠洲拉海洛尚不存在。</strong></span></p>",
       "mediaType": "image",
       "referenceText": "拉海洛探索",
       "id": "1781499265808",
       "titleSize": 24,
       "title": "羅伊冰原上古時期",
       "date": "2026-06-15",
-      "categoryColor": "#3376d0",
+      "categoryColor": "#2942ff",
       "mainStoryTags": [
         "主線3.0"
       ],
-      "positionX": 11.790932674164461,
+      "positionX": 18.896569329105773,
       "category": "拉海洛",
       "referenceImages": [],
       "regionTags": [
@@ -118,7 +118,7 @@
     },
     {
       "mediaUrl": "https://live.staticflickr.com/65535/55188660003_322a6b27f5_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>目前尚未知道何時發生。做為科技前研擁有全世界最先進悲鳴預警科技的黑海岸內部，一份科研檔案，目前尚未知決議時間點。牽引整個索拉里斯命運的決議。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>目前尚未知道何時發生。做為科技前研擁有全世界最先進悲鳴預警科技的黑海岸內部，一份科研檔案，目前尚未知決議時間點。牽引整個索拉里斯命運的決議。</strong></span></p>",
       "mediaType": "image",
       "id": "1781499586599",
       "referenceText": "黑海岸探索、主線1.4",
@@ -126,7 +126,7 @@
       "title": "K626決議",
       "categoryColor": "#5e5c66",
       "date": "2026-06-15",
-      "positionX": 16.036955267441417,
+      "positionX": 26.995120368247164,
       "mainStoryTags": [
         "主線1.4"
       ],
@@ -150,7 +150,7 @@
       "customDateText": "確切時間不明",
       "categoryColor": "#4d0000",
       "date": "2026-06-15",
-      "positionX": 17.194961429244227,
+      "positionX": 28.38481000921905,
       "mainStoryTags": [],
       "id": "1781500292944",
       "referenceText": "主線 2.7",
@@ -158,7 +158,7 @@
       "title": "殘星會成立",
       "mediaUrl": "https://live.staticflickr.com/65535/55169696565_a4fc955c18_b.jpg",
       "mediaType": "image",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>追求力量不擇手段的神秘的組織，存在時間久遠，從3.1劇情推測至少跨越一次大滅絕，比稷庭研究機構成立還早。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>從與漂泊者對話來看，與漂泊者關係匪淺。</strong></p>"
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>追求力量不擇手段的神秘的組織，存在時間久遠，從3.1劇情推測至少跨越一次大滅絕，比稷庭研究機構成立還早。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>從與漂泊者對話來看，與漂泊者關係匪淺。</strong></span></p>"
     },
     {
       "customDateText": "確切時間不明",
@@ -183,7 +183,7 @@
       "id": "1781507987430",
       "referenceText": "今州探索、主線1.0、主線3.1",
       "mediaType": "image",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>為一神秘且科技先進的研究機構，擅長機關術。在各地有各種不同遺址遺物。華胥研究院曾與其合作過。其人員分不同部門與分支，其中更有受到殘星會會監贊助的分支。在拉海洛第一次悲鳴前就存在。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>為一神秘且科技先進的研究機構，擅長機關術。在各地有各種不同遺址遺物。華胥研究院曾與其合作過。其人員分不同部門與分支，其中更有受到殘星會會監贊助的分支。在拉海洛第一次悲鳴前就存在。</strong></span></p>",
       "mediaUrl": "https://live.staticflickr.com/65535/55162954485_e4a922ac32_b.jpg"
     },
     {
@@ -191,7 +191,7 @@
       "title": "第一實例接觸漂泊者",
       "referenceText": "官方 YT、主線 1.0、主線 2.7",
       "id": "2",
-      "content": "<p><span style=\"color: rgb(255, 255, 255); font-family: monospace; font-size: 20px;\"><strong>  目前尚未知道何時發生。從主線 1.0 與 2.7 可知其為第一實例，掌控時間，第二實例為守岸人，掌控空間。</strong></span></p><p></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"color: rgb(255, 255, 255); font-family: monospace; font-size: 20px;\"><strong>目前尚未知道何時發生。從主線 1.0 與 2.7 可知其為第一實例，掌控時間，第二實例為守岸人，掌控空間。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
       "mediaType": "youtube",
       "mediaUrl": "https://www.youtube.com/watch?v=Dg6CYxCDFHE",
       "regionTags": [],
@@ -207,12 +207,12 @@
       "mainStoryTags": [
         "主線1.0"
       ],
-      "positionX": 5.518399297732592,
+      "positionX": 9.504198293774099,
       "date": "1500-05-12",
       "categoryColor": "#5e5c66"
     },
     {
-      "content": "<p><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者首個建立的組織，致力於觀察與預測悲鳴災害，與各國皆有合作。隱藏在暴風海，唯有黑海岸認可或引導者能抵達。一般依照泰提斯指示行動。其人員包含:</strong></span></p><p><span style=\"font-family: monospace; font-size: 20px;\"><strong>執花：需通過考核的高階執行者/客卿：一般人員執行專才或業務。</strong></span></p><p><span style=\"font-family: monospace; font-size: 20px;\"><strong>此時守岸人為助手，泰提斯已存在， 阿布已經存在。</strong></span></p><p><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者則隱藏首領身分行動，甚至連內部人員也鮮少人知首領是誰。</strong></span></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者首個建立的組織，致力於觀察與預測悲鳴災害，與各國皆有合作。隱藏在暴風海，唯有黑海岸認可或引導者能抵達。一般依照泰提斯指示行動。其人員包含:</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-family: monospace; font-size: 20px;\"><strong>執花：需通過考核的高階執行者/客卿：一般人員執行專才或業務。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-family: monospace; font-size: 20px;\"><strong>此時守岸人為助手，泰提斯已存在， 阿布已經存在。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-family: monospace; font-size: 20px;\"><strong>漂泊者則隱藏首領身分行動，甚至連內部人員也鮮少人知首領是誰。</strong></span></p>",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55188687413_9325317579_b.jpg",
       "titleSize": 24,
@@ -222,7 +222,7 @@
       "mainStoryTags": [
         "主線1.4"
       ],
-      "positionX": 11.437097458058048,
+      "positionX": 18.369459796525774,
       "date": "1994-01-01",
       "categoryColor": "#5e5c66",
       "regionTags": [
@@ -245,14 +245,14 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55169468615_35901ef99c_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>曾經的椿被稱為花女，為人工誘導型共鳴者，但從共鳴報告得知其並非第一個。是某組織(尚不明)用以追蹤漂泊者的實驗品，未與漂泊者直接接觸，原因為避開泰提斯探查。極其長壽，推測至少經歷了第五次滅世級悲鳴。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>曾經的椿被稱為花女，為人工誘導型共鳴者，但從共鳴報告得知其並非第一個。是某組織(尚不明)用以追蹤漂泊者的實驗品，未與漂泊者直接接觸，原因為避開泰提斯探查。極其長壽，推測至少經歷了第五次滅世級悲鳴。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55169055521_783ecd10ff_w.jpg",
         "https://live.staticflickr.com/65535/55168165937_94c34197f4_w.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55169455020_1a93ccb1b9_w.jpg",
       "category": "角色",
-      "positionX": 26.112324126626373,
+      "positionX": 29.343216658165176,
       "categoryColor": "#ffffff",
       "titleSize": 24,
       "customDateText": "至少兩千多年前",
@@ -274,17 +274,17 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55165474519_3b6d277232_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>拉海洛第一神紀:舊日紀末，拉海洛記載的第一次悲鳴。拉海洛變為新極點，天空海覆蓋，羅伊也至此變為冰原。推測3.1天槎空間站也為此時墜落。泰提斯過去萬年曾觀測五次滅世級悲鳴，極有可能此為第五次。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>拉海洛第一神紀:舊日紀末，拉海洛記載的第一次悲鳴。拉海洛變為新極點，天空海覆蓋，羅伊也至此變為冰原。推測3.1天槎空間站也為此時墜落。泰提斯過去萬年曾觀測五次滅世級悲鳴，極有可能此為第五次。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55165612300_8b2ba4eae5_b.jpg",
         "https://live.staticflickr.com/65535/55169023190_2067f1df21_b.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55162826059_f3510f4fa3_b.jpg",
       "category": "拉海洛",
-      "positionX": 27.742110525443252,
+      "positionX": 25.940873054406424,
       "titleSize": 24,
       "customDateText": "確切時間不明",
-      "categoryColor": "#3376d0",
+      "categoryColor": "#2942ff",
       "regionTags": [
         "拉海洛"
       ],
@@ -299,7 +299,7 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55169363418_9346b9ef0e_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>隧者，在羅伊神紀中被稱為巴德爾，阿列夫一，在羅伊神紀中被稱為赫龍格。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>隧者為運載歲主的搬運載具。運載歲主不只一趟，最後一趟中途遭遇阿列夫一，並戰鬥直至抵達拉海洛(拉海洛第二次悲鳴)，此時羅伊早已是冰原且天空海覆蓋，必須用隧門進出索拉里斯。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>隧者，在羅伊神紀中被稱為巴德爾，阿列夫一，在羅伊神紀中被稱為赫龍格。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>隧者為運載歲主的搬運載具。運載歲主不只一趟，最後一趟中途遭遇阿列夫一，並戰鬥直至抵達拉海洛(拉海洛第二次悲鳴)，此時羅伊早已是冰原且天空海覆蓋，必須用隧門進出索拉里斯。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55168263217_c745146a20_c.jpg"
       ],
@@ -308,7 +308,7 @@
       "titleSize": 24,
       "customDateText": "確切時間不明",
       "categoryColor": "#4d0000",
-      "positionX": 28.674948822451068,
+      "positionX": 33.56020591352814,
       "mainStoryTags": [
         "主線3.0"
       ],
@@ -323,7 +323,7 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55161617612_49a2240ea4_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>《紀事通鑑》中記載一個奇人在盤古終端還不存在時，以肉身吸收了世上最強大的殘像，轉化為聲骸。之後瑝瓏才開始有歷史。依照劇情設定，很有可能是漂泊者與阿布。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>瑝瓏分一庭六州，歲主為青龍，分為七宿治理瑝瓏。抵抗威脅無相燹主(鳴式)。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>《紀事通鑑》中記載一個奇人在盤古終端還不存在時，以肉身吸收了世上最強大的殘像，轉化為聲骸。之後瑝瓏才開始有歷史。依照劇情設定，很有可能是漂泊者與阿布。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>瑝瓏分一庭六州，歲主為青龍，分為七宿治理瑝瓏。抵抗威脅無相燹主(鳴式)。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55158463167_82d5d5cb91_z.jpg"
       ],
@@ -346,11 +346,11 @@
     },
     {
       "id": "1781968751724",
-      "title": "角降臨乘宵山",
+      "title": "待定",
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55199359427_edf94b1670_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>歲主與眠龍庭降臨於乘宵山，此時歲主角已經身負傷。稷庭人曾為調查時序之能，曾來乘宵山調查，後虹鎮人同意其研究時序之能，但需修建保護歲主的機關，因此有了溯流儀及扣天關遺址。其時間推測為雲陵谷殘像潮。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55200660145_5985fd878d_b.jpg",
         "https://live.staticflickr.com/65535/55200647199_369e7479d9_b.jpg",
@@ -358,8 +358,8 @@
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55162737888_559efb5f3d_b.jpg",
       "category": "瑝瓏",
-      "positionX": 66.13318584835548,
-      "customDateText": "確切時間不明",
+      "positionX": 107.6449616108884,
+      "customDateText": "數百年前",
       "referenceText": "主線1.1、長離伴星",
       "titleSize": 24,
       "characterTags": [],
@@ -377,7 +377,7 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55169641500_c52800bffe_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>黎是由多數悲鳴毀滅的文明所聚集海上難民組成，聚集成為海上之民，稱為千島之國時期，此時修會尚未建立，斐薩烈為精神領袖，人民捕魚為生。溯海之鯨已經存在。鳴式利維亞坦很可能已潛伏存在。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>黎是由多數悲鳴毀滅的文明所聚集海上難民組成，聚集成為海上之民，稱為千島之國時期，此時修會尚未建立，斐薩烈為精神領袖，人民捕魚為生。溯海之鯨已經存在。鳴式利維亞坦很可能已潛伏存在。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55185292690_5d77919edc_b.jpg",
         "https://live.staticflickr.com/65535/55184006567_dc4f9a507f_c.jpg"
@@ -402,14 +402,14 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55210882589_e1f39a2fb9_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>歸虛港市因</strong><span style=\"color: rgb(255, 255, 255);\"><strong>為悲鳴黑洞毀滅，黑海岸發出警報但為時已晚，即便派出大量執花還是傷亡慘重，1.4重要npc霍德於此次悲鳴事件死亡。 </strong></span><span style=\"color: rgb(255, 0, 0);\"><strong>Rip霍德</strong></span></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>歸虛港市因</strong></span><span style=\"color: rgb(255, 255, 255); font-size: 20px;\"><strong>為悲鳴黑洞毀滅，黑海岸發出警報但為時已晚，即便派出大量執花還是傷亡慘重，1.4重要npc霍德於此次悲鳴事件死亡。 </strong></span><span style=\"color: rgb(255, 0, 0); font-size: 20px;\"><strong>Rip霍德</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55210845784_9cf3b2c5a4_b.jpg",
         "https://live.staticflickr.com/65535/55210610376_05b149168d_b.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55211039175_f374193cab_b.jpg",
       "category": "瑝瓏",
-      "positionX": 35.84457945589825,
+      "positionX": 48.22394685275775,
       "categoryColor": "#865935",
       "titleSize": 24,
       "customDateText": "數百年前",
@@ -427,7 +427,7 @@
       "date": "2026-06-20",
       "mediaType": "youtube",
       "mediaUrl": "https://www.youtube.com/watch?v=oYTq8VojdE8",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">羅伊三神紀第二紀:爐心紀</p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">羅伊族記載第二次悲鳴，隧者為阻止阿列夫一自隧門穿出交戰，引發第一次虛質磁暴，隧者不敵阿列夫一，愛彌斯自主線3.1時間點穿越與隧者共鳴完成封印。</p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">但隧者重傷，摘出爐心化為地下太陽，照耀拉海洛，身體分化隧群恢復生態平衡。拉海洛至此成為地下綠洲，日靈開始出現在拉海洛。 </p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>羅伊三神紀第二紀:爐心紀</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>羅伊族記載第二次悲鳴，隧者為阻止阿列夫一自隧門穿出交戰，引發第一次虛質磁暴，隧者不敵阿列夫一，愛彌斯自主線3.1時間點穿越與隧者共鳴完成封印。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>但隧者重傷，摘出爐心化為地下太陽，照耀拉海洛，身體分化隧群恢復生態平衡。拉海洛至此成為地下綠洲，日靈開始出現在拉海洛。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55168979406_60514b2967_c.jpg",
         "https://live.staticflickr.com/65535/55169438029_bb8711191d_c.jpg"
@@ -442,7 +442,7 @@
       ],
       "titleSize": 24,
       "customDateText": "數百年前",
-      "categoryColor": "#3376d0",
+      "categoryColor": "#2942ff",
       "regionTags": [
         "拉海洛"
       ],
@@ -456,16 +456,16 @@
       "date": "2026-06-20",
       "mediaType": "youtube",
       "mediaUrl": "https://www.youtube.com/watch?v=ixBGkRc-aEI",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>愛彌斯孓然一身穿越回數百年阿列夫一封印時間點，與隧者共鳴成功封印隧門，拯救了拉海洛，兌現了其成為救世主的訴願並完成自身的因果閉環。隨後被阿列夫一挾帶捲出隧門外。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>愛彌斯孓然一身穿越回數百年阿列夫一封印時間點，與隧者共鳴成功封印隧門，拯救了拉海洛，兌現了其成為救世主的訴願並完成自身的因果閉環。隨後被阿列夫一挾帶捲出隧門外。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55169381675_340bed1a07_b.jpg",
         "https://live.staticflickr.com/65535/55168135592_518e9f3463_c.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55169210343_b954e93c0a_c.jpg",
-      "category": "虛質穿越",
+      "category": "拉海洛",
       "titleSize": 24,
-      "positionX": 39.983108798408956,
-      "categoryColor": "#a929ff",
+      "positionX": 47.984344601853714,
+      "categoryColor": "#2942ff",
       "referenceText": "官方YT、主線3.1",
       "characterTags": [
         "愛彌斯"
@@ -484,14 +484,14 @@
       "date": "2026-06-20",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55186373162_138ed7d6cc_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>翡薩烈家族建立拉古那，奉英白拉多為神明依此建立信仰。此時，利維亞坦已開始淺移默化侵蝕拉古那人民扭曲信仰。大量遭受扭曲信仰者產生。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>一批人與翡薩烈家族理念不同，不以信仰為立國基礎，遂前往七丘建都。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>翡薩烈家族建立拉古那，奉英白拉多為神明依此建立信仰。此時，利維亞坦已開始淺移默化侵蝕拉古那人民扭曲信仰。大量遭受扭曲信仰者產生。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>一批人與翡薩烈家族理念不同，不以信仰為立國基礎，遂前往七丘建都。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55187522124_3a5a8ce583.jpg",
         "https://live.staticflickr.com/65535/55187793352_323beac792_b.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55187480039_c276122751_b.jpg",
       "category": "黎那汐塔",
-      "positionX": 41.11994135049359,
+      "positionX": 44.10278813720832,
       "titleSize": 24,
       "customDateText": "數百年前",
       "referenceText": "黎那汐塔探索、主線 2.6、主線 2.7",
@@ -506,11 +506,11 @@
     },
     {
       "id": "1782000003069",
-      "title": "黎那汐塔第一次黑潮",
+      "title": "第一次黑潮",
       "date": "2026-06-21",
       "mediaType": "youtube",
       "mediaUrl": "https://www.youtube.com/watch?v=METdCgyl3y4",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>英白發現陰謀對抗利維亞坦，爆發信仰戰爭，引發黎那汐塔史上第一次黑潮。那不蓋勒二世乘聖船見歲主與鳴式戰鬥，英白分離力量化神權劍(提爾芬)與始源聖器(提燈)予他用以驅散黑潮終結信仰戰爭，建隱海修會成為初代主座引領拉古那。但利維亞坦的低語開始影響歷代主教與人民。歷代主教皆是瘋癲收尾。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>而七丘則由特庫斯與三英雄法比烏、阿提留斯、薇利芮爾領導對抗黑潮但其力竭而亡，七丘勝利但留下黑潮雲隱患。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>第一次黑潮造成傷害巨大，舊神學院位置產生大量雲海淹沒中樞舊址。修會便遷址至目前拉古那水星大教堂位置至今。七丘埋下了長期黑潮雲襲擊的隱患，英白拉多塑造蘿蕾萊管理雲海，避免雲海擴張，七丘設錨定石協助狩獵擊退黑潮造物。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">第一次黑潮前夕災蝶龍於黎那汐塔境內大量出沒，引得人心惶惶。</p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">英白拉多注意到了利維亞坦腐蝕信仰的陰謀，兩者展開戰鬥。<span style=\"font-size: 20px;\"><strong>爆發了信仰戰爭，引發黎那汐塔史上第一次黑潮。那不蓋勒二世乘聖船見歲主與鳴式戰鬥，英白分離力量化神權劍(提爾芬)與始源聖器(提燈)予他用以驅散黑潮終結信仰戰爭，建隱海修會成為初代主座引領拉古那。但利維亞坦的低語開始影響歷代主教與人民。歷代主教皆是瘋癲收尾。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>而七丘則由特庫斯與三英雄法比烏、阿提留斯、薇利芮爾領導對抗黑潮但其力竭而亡，七丘勝利但留下黑潮雲隱患。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>第一次黑潮造成傷害巨大，舊神學院位置產生大量雲海淹沒中樞舊址。修會便遷址至目前拉古那水星大教堂位置至今。七丘埋下了長期黑潮雲襲擊的隱患，英白拉多塑造蘿蕾萊管理雲海，避免雲海擴張，七丘設錨定石協助狩獵擊退黑潮造物。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55193730352_2212f8bab6_b.jpg",
         "https://live.staticflickr.com/65535/55188948784_f640b49363_b.jpg",
@@ -519,7 +519,7 @@
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55187547967_ac6ee435ed_b.jpg",
       "category": "黎那汐塔",
-      "positionX": 46.556136943401214,
+      "positionX": 51.817980616318295,
       "titleSize": 24,
       "referenceText": "黎那汐塔探索、主線 2.0、主線2.2、主線2.7",
       "categoryColor": "#5cc33b",
@@ -539,14 +539,14 @@
       "date": "2026-06-21",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55194679988_ccd46732e7_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>初代主座將提爾芬交予斐薩烈，告知朝聖真相，已深受鳴式精神汙染的他要求家主賜死。英白拉多逐漸被鳴式融合，取得漂泊者的轉移權限後開始長達數百年的聖女計畫。利維亞坦嘗試利用英白的返回艙製造共鳴者，而斐家則代代舉辦聖女試煉用毒藥殺死受低語影響者或者淬鍊新一代子女，使他們能抵抗鳴式低語，並嘗試選出能與提爾芬共鳴的真聖女。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>初代主座將提爾芬交予斐薩烈，告知朝聖真相，已深受鳴式精神汙染的他要求家主賜死。英白拉多逐漸被鳴式融合，取得漂泊者的轉移權限後開始長達數百年的聖女計畫。利維亞坦嘗試利用英白的返回艙製造共鳴者，而斐家則代代舉辦聖女試煉用毒藥殺死受低語影響者或者淬鍊新一代子女，使他們能抵抗鳴式低語，並嘗試選出能與提爾芬共鳴的真聖女。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55194744318_1fc03ff2fc_b.jpg",
         "https://live.staticflickr.com/65535/55193665322_a07ca0371a_b.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55194604881_75f9efe213_b.jpg",
       "category": "黎那汐塔",
-      "positionX": 52.0959814541217,
+      "positionX": 57.76011643873839,
       "mainStoryTags": [
         "主線2.2"
       ],
@@ -565,7 +565,7 @@
       "date": "2026-06-21",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55187017185_6c2b842601_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\">弗洛洛長達數百年的音樂會旅途中，遇到知音漂泊者。並有了完成音樂時再會的承諾，但漂泊者因失憶而失約。</p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>弗洛洛長達數百年的音樂會旅途中，遇到知音漂泊者。並有了完成音樂時再會的承諾，但漂泊者因失憶而失約。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55185747772_3ec475afa8_c.jpg"
       ],
@@ -575,7 +575,7 @@
       "mainStoryTags": [
         "主線2.5"
       ],
-      "positionX": 54.42628960473191,
+      "positionX": 49.2302763065547,
       "categoryColor": "#ffffff",
       "customDateText": "確切時間不鳴",
       "titleSize": 24,
@@ -591,14 +591,14 @@
       "date": "2026-06-21",
       "mediaType": "image",
       "mediaUrl": "https://duk.tw/FDlC0F.png",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>弗洛洛與漂泊者相遇後，一邊舉辦音樂會一邊開始積極研究如何復活小鎮居民。借助信仰、科技、甚至悲鳴但都相繼失敗告終。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>弗洛洛與漂泊者相遇後，一邊舉辦音樂會一邊開始積極研究如何復活小鎮居民。借助信仰、科技、甚至悲鳴但都相繼失敗告終。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55187080800_1fff5ae89d_b.jpg",
         "https://live.staticflickr.com/65535/55187127120_926fd16059.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55185797442_e555e754c7_b.jpg",
       "category": "角色",
-      "positionX": 60,
+      "positionX": 57.04130968602629,
       "titleSize": 24,
       "customDateText": "數百年前(暫定)",
       "characterTags": [
@@ -616,7 +616,7 @@
       "date": "2026-08-24",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55187092975_0ee9718079_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>弗洛洛在不斷失敗下，趨近崩潰，最終殘星會遞出橄欖枝，並讓弗洛洛看到「特莉絲的虛影」，弗洛洛加入殘星會。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>弗洛洛在不斷失敗下，趨近崩潰，最終殘星會遞出橄欖枝，並讓弗洛洛看到「特莉絲的虛影」，弗洛洛加入殘星會。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55187102680_7e460c3eaa_b.jpg",
         "https://live.staticflickr.com/65535/55186995834_28a820330f_w.jpg"
@@ -624,7 +624,7 @@
       "backgroundColor": "https://live.staticflickr.com/65535/55187107105_c05c8e614f_b.jpg",
       "category": "其他",
       "titleSize": 24,
-      "positionX": 64.03152491401511,
+      "positionX": 58.670606454589816,
       "categoryColor": "#4d0000",
       "customDateText": "數百年前",
       "characterTags": [
@@ -642,7 +642,7 @@
       "date": "2026-08-24",
       "mediaType": "youtube",
       "mediaUrl": "https://youtu.be/tL2Zeu_3SUM",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>清宵於兩百餘年前本欲前往重州，卻迷路抵達玄方地界，於此暫居修行，於意外中救下鈴坊，此時鈴坊與若雲尚且年幼。當時抵禦殘像乃是仰賴機關術天才木禺設計的\"淵城\"。後鈴坊加入了定玄衛，而若雲則入了稷庭且開發了雲帛機騎。當時鳴式有復甦跡象，為防患未然，歲主心起了建設玄方城的計畫，若雲等一眾稷庭人同歲主心開始建設玄方城。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>清宵於兩百餘年前本欲前往重州，卻迷路抵達玄方地界，於此暫居修行，於意外中救下鈴坊，此時鈴坊與若雲尚且年幼。當時抵禦殘像乃是仰賴機關術天才木禺設計的\"淵城\"。後鈴坊加入了定玄衛，而若雲則入了稷庭且開發了雲帛機騎。當時鳴式有復甦跡象，為防患未然，歲主心起了建設玄方城的計畫，若雲等一眾稷庭人同歲主心開始建設玄方城。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55486148093_d588192009_b.jpg",
         "https://live.staticflickr.com/65535/55485127067_c0bd4c293f_b.jpg",
@@ -652,7 +652,7 @@
       "backgroundColor": "https://live.staticflickr.com/65535/55486058401_99b66415d8_b.jpg",
       "category": "角色",
       "titleSize": 24,
-      "positionX": 70.087626816917,
+      "positionX": 68.90509821901884,
       "characterTags": [
         "清宵"
       ],
@@ -673,7 +673,7 @@
       "date": "2026-08-24",
       "mediaType": "image",
       "mediaUrl": "https://live.staticflickr.com/65535/55486571790_e806b49d9f_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>村女阿清放牧時拾得《金瞳異人劍法》，自習其劍法數年劍法小成，得於殘像潮滅村時倖存，後行俠鄉間，拜入修仙者靜微門下習修行之法，得名清宵。</strong></p>",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>村女阿清放牧時拾得《金瞳異人劍法》，自習其劍法數年劍法小成，得於殘像潮滅村時倖存，後行俠鄉間，拜入修仙者靜微門下習修行之法，得名清宵。</strong></span></p>",
       "referenceImages": [
         "https://live.staticflickr.com/65535/55485232397_f35fcf255d_b.jpg",
         "https://live.staticflickr.com/65535/55486219726_9507cf78c2_b.jpg",
@@ -682,7 +682,7 @@
       "backgroundColor": "https://live.staticflickr.com/65535/55486641595_d840a68b93_b.jpg",
       "category": "角色",
       "titleSize": 24,
-      "positionX": 45.64199173853679,
+      "positionX": 41.65884517798715,
       "categoryColor": "#ffffff",
       "characterTags": [
         "清宵"
@@ -698,28 +698,214 @@
       "title": "雲\"淵\"之役",
       "date": "2026-08-25",
       "mediaType": "image",
-      "mediaUrl": "https://live.staticflickr.com/65535/55487278945_08b0778e58_b.jpg",
-      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>兩百年前，無相燹主瞄準了玄方城即將竣工的時機，朝玄方地界發動了奇襲。大規模的殘像潮自雲陵谷往淵城，史稱雲淵之役。此一役淵城岌岌可危，清宵為斷禍源前往雲陵谷，琢鈞堂的刃偶和玄方玄衛無法抵禦如此巨量殘像潮，鈴坊死於抵禦殘像潮中，一眾工匠率人前往淵城核心引爆淵城阻斷殘像潮攻勢，包含若雲等參與者皆亡於該行動，部分工匠被歲主心轉為天人永久守護玄方城，玄翎雀相伴守護最終也絕跡於玄方地界。待清宵回歸淵城已毀僅留廢墟。而木禺在此戰役中覺醒獲得共鳴能力，開始了他的實驗。</strong><span style=\"color: rgb(255, 0, 0);\"><strong>Rip鈴坊、若雲、工匠們</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
+      "mediaUrl": "https://live.staticflickr.com/65535/55487278945_80ed0f9322_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>兩百年前，無相燹主瞄準了玄方城即將竣工的時機，朝玄方地界發動了奇襲。大規模的殘像潮自雲陵谷往淵城，史稱雲淵之役。此一役淵城岌岌可危，清宵為斷禍源前往雲陵谷。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>琢鈞堂的刃偶和玄方玄衛無法抵禦如此巨量殘像潮，鈴坊死於抵禦殘像潮中，一眾工匠率人前往淵城核心引爆淵城阻斷殘像潮攻勢，包含若雲等參與者皆亡於該行動，玄翎雀相伴守護最終也絕跡於玄方地界。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>\"心\"為保護夢州人民強行修復文明之匣，致歲主新月狐衰竭，部分工匠被\"心\"轉為天人加速玄方城落成，最終玄方城落成化解此次劫難。待清宵回歸淵城已毀僅留廢墟。衰竭的心月狐不斷散失頻率最終消亡。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>而木禺在此戰役中覺醒獲得共鳴能力，開始了他的實驗。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"color: rgb(255, 0, 0); font-size: 20px;\"><strong>Rip鈴坊、若雲、工匠們</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"></p>",
       "referenceImages": [
-        "https://live.staticflickr.com/65535/55487110694_0718f542c4_b.jpg"
+        "https://live.staticflickr.com/65535/55487110694_f0c524e55b_b.jpg",
+        "https://live.staticflickr.com/65535/55497564367_6c37e56c20_b.jpg",
+        "https://live.staticflickr.com/65535/55498941430_2eeb92aff6_b.jpg\"",
+        "https://live.staticflickr.com/65535/55497678512_1d8e3706c4_b.jpg"
       ],
       "backgroundColor": "https://live.staticflickr.com/65535/55487006618_f2e622044a_b.jpg",
       "category": "瑝瓏",
-      "positionX": 71.00019011735425,
+      "positionX": 94.08351766487348,
       "titleSize": 24,
       "customDateText": "兩百年前",
       "categoryColor": "#865935",
       "regionTags": [
-        "玄方城"
+        "玄方城",
+        "瑝瓏"
       ],
       "characterTags": [
-        "清宵"
+        "心月狐",
+        "心"
       ],
       "mainStoryTags": [
         "主線3.5",
         "主線3.6"
       ],
       "referenceText": "主線3.5、主線3.6"
+    },
+    {
+      "id": "1791838963568",
+      "title": "心月狐共鳴者璇情死亡",
+      "date": "2026-10-12",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55585633551_13a989d21e_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>心月狐經文明之匣演算，得知要顧全大局需放棄夢州邊陲。其共鳴者璇情為保護夢州邊陲完成撤退，利用夢州隘口之險，以自身為餌獨自拖住殘像大軍直至力竭。<br>待心月狐趕至，璇情動之以情說服心月狐嘗試必然失敗的\"二次共鳴\"，璇情犧牲自身為夢州人民爭取了三天時間，成功掩護夢州人民完成撤退，但其死亡對文明之匣與心月狐造成了莫大的創傷。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>之後，心月狐便決心建造玄方城。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"color: rgb(255, 0, 0); font-size: 20px;\"><strong>Rip璇情</strong></span></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55586115755_1442f10818_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55585670396_21f599544c_b.jpg",
+      "category": "瑝瓏",
+      "positionX": 65.85851217663135,
+      "titleSize": 24,
+      "characterTags": [
+        "心月狐"
+      ],
+      "regionTags": [
+        "瑝瓏",
+        "夢州"
+      ],
+      "mainStoryTags": [
+        "3.7"
+      ],
+      "categoryColor": "#865935",
+      "customDateText": "兩百多年前",
+      "referenceText": "3.7奇譚任務"
+    },
+    {
+      "id": "1791842498653",
+      "title": "心月狐遭暗殺/心誕生",
+      "date": "2026-10-12",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55584783587_2b6f6416c0_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>心月狐下定決心，違背歲主法則建造玄方城以保夢州平安，舉行會議於稷庭與琢鈞堂之間選一者做為玄方城的負責工匠，將能接觸到歲主核心技術，並告知建城者有去無回。兩者均接受條件，但心月狐最終考量稷庭為求知不顧後果的危險性，選擇稷庭滿足其聞道夕死的願望。<br><br>共鳴者死亡傷及根本衰弱的心月狐在會後，遭長期潛伏升至諦天鑒州監的殘星會會監\"蛇菰\"與克里斯多弗、弗洛洛等多名會監聯手暗殺而重傷，在緊急時刻使用權能分了分身\"心\"，使其將文明之匣帶走避免落入殘星會之手。</strong></span></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55588708760_73a7c2fa7d_b.jpg",
+        "https://live.staticflickr.com/65535/55588412898_c0a3fd16e5_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55586244285_fd52c80afe_b.jpg",
+      "category": "瑝瓏",
+      "titleSize": 24,
+      "customDateText": "兩百多年前",
+      "positionX": 80.85751579526176,
+      "categoryColor": "#865935",
+      "characterTags": [
+        "弗洛洛",
+        "心月狐"
+      ],
+      "mainStoryTags": [
+        "3.7"
+      ],
+      "regionTags": [
+        "瑝瓏",
+        "夢州"
+      ],
+      "referenceText": "主線3.7"
+    },
+    {
+      "id": "1791891809239",
+      "title": "乘宵山殘像潮/漂救下玄渺",
+      "date": "2026-10-13",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55199359427_edf94b1670_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>歲主與眠龍庭降臨於乘宵山，此時歲主角已經身負傷。稷庭人曾為調查時序之能，曾來乘宵山調查，後虹鎮人同意其研究時序之能，但需修建保護歲主的機關，因此有了溯流儀及扣天關遺址。</strong></span></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"> </p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>角鎮守乘宵山抵擋虹鎮殘像潮，傷上加傷使時序能外溢造成乘宵山時序問題，致使乘宵山人出山需承受代償。推測漂泊者也於此殘像潮救玄渺真人，玄渺真人後成為瑝瓏隱士大家，四處遊歷授業，並於晚年收長離為徒。</strong></span></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55200660145_5985fd878d_b.jpg",
+        "https://live.staticflickr.com/65535/55200675575_c21711b3d6_b.jpg",
+        "https://live.staticflickr.com/65535/55200647199_369e7479d9_b.jpg",
+        "https://live.staticflickr.com/65535/55199350147_31d8825cb5_c.jpg",
+        "https://live.staticflickr.com/65535/55201043265_0f51645e09_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55162759854_3ac0e1b556_b.jpg",
+      "category": "瑝瓏",
+      "positionX": 71.94550967889838,
+      "titleSize": 24,
+      "characterTags": [
+        "漂泊者",
+        "長離"
+      ],
+      "regionTags": [
+        "瑝瓏"
+      ],
+      "categoryColor": "#865935",
+      "mainStoryTags": [
+        "主線1.4"
+      ],
+      "customDateText": "今州建州數十年前",
+      "referenceText": "主線1.1、長離伴星"
+    },
+    {
+      "id": "1791907074942",
+      "title": "今州建州/\"雲\"淵之役",
+      "date": "2026-10-13",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55498718389_d996077b64_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><span style=\"font-size: 20px;\"><strong>兩百年前，雲陵谷抵擋進攻玄方城的大批包含無冠者、雲閃之鱗等可怕殘像的鳴式大軍，在清宵協助下守軍依然節節敗退，最終在漂泊者與角介入下扭轉戰局，史稱\"雲陵谷戰役\"又與淵城戰役合稱雲淵之役。</strong></span><br><span style=\"font-size: 20px;\"><strong>此戰勝後同年，今州建城。</strong></span></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55498718563_1b2985816f_b.jpg",
+        "https://live.staticflickr.com/65535/55487008131_826bce313a_b.jpg",
+        "https://live.staticflickr.com/65535/55210530932_25d043836e_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55211415286_6811bd858b_b.jpg",
+      "category": "瑝瓏",
+      "positionX": 98.97138792103434,
+      "titleSize": 24,
+      "categoryColor": "#865935",
+      "characterTags": [
+        "漂泊者",
+        "清宵"
+      ],
+      "regionTags": [
+        "瑝瓏"
+      ],
+      "mainStoryTags": [
+        "主線1.0",
+        "主線3.5",
+        "主線3.6"
+      ],
+      "customDateText": "兩百年前",
+      "referenceText": "主線1.0、主線3.5、主線3.6、主線3.7"
+    },
+    {
+      "id": "1791935424971",
+      "title": "長離拜玄渺為師",
+      "date": "2026-10-13",
+      "mediaType": "youtube",
+      "mediaUrl": "https://www.youtube.com/watch?v=E_QQCxSBBe8",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>今州建州後，殘像潮不斷。</strong></p><p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>長離村子因殘像潮毀滅，後獨自流浪，一路見悲鳴不止，生靈塗炭，拜入玄渺門下得清平之願。繼玄渺之傳後苦讀，求知願為天下帶來太平。不能以離火燃盡世間紛擾悲患，便做傳火之人，將太平之願傳承。學成後前往明庭，明庭一代足以載入史冊的長史，悄然誕生。</strong></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55225206756_b1187d18f3_b.jpg",
+        "https://live.staticflickr.com/65535/55225197076_6d65f33ff4_w.jpg",
+        "https://live.staticflickr.com/65535/55211361406_5d7fe01a4d_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55225221631_06eeefefa3_b.jpg",
+      "category": "角色",
+      "positionX": 99.45059088732461,
+      "titleSize": 24,
+      "customDateText": "今州建州後",
+      "categoryColor": "#ffffff",
+      "characterTags": [
+        "長離"
+      ],
+      "regionTags": [
+        "今州"
+      ],
+      "mainStoryTags": [
+        "主線1.1"
+      ],
+      "referenceText": "主線1.1、長離伴星"
+    },
+    {
+      "id": "1791940249610",
+      "title": "鎖冥平定惡瘴",
+      "date": "2026-10-14",
+      "mediaType": "image",
+      "mediaUrl": "https://live.staticflickr.com/65535/55587227112_961ab8205f_b.jpg",
+      "content": "<p style=\"font-family: monospace; font-size: 20px; font-weight: bold;\"><strong>歲主心月狐遭刺殺後，夢州出現了名為\"惡瘴\"的海蝕現象，覆於人面侵蝕吸人魂魄。為除惡瘴，鎖冥與九名夥伴創立了\"禁鎖十契\"。剿滅惡瘴的過程中，一至九契皆死亡，僅鎖冥存活。鎖冥將九名伙伴與惡瘴封印進了她與夥伴研發的\"玄朱鎖\"。在尋得心月狐殘存頻率時，將六契的頻率釋放改保存了心月狐的頻率。</strong><br>後<strong>由\"心\"推薦</strong>接任州監，掃除了\"蛇菰\"的餘孽。<br><span style=\"color: rgb(245, 0, 0);\"><strong>Rip十契成員</strong></span></p>",
+      "referenceImages": [
+        "https://live.staticflickr.com/65535/55588320738_ae93f685a9_b.jpg",
+        "https://live.staticflickr.com/65535/55588245196_5ef139a522_b.jpg"
+      ],
+      "backgroundColor": "https://live.staticflickr.com/65535/55588328733_95905f3439_b.jpg",
+      "category": "瑝瓏",
+      "positionX": 88.4768429592772,
+      "categoryColor": "#865935",
+      "titleSize": 24,
+      "customDateText": "兩百多年前",
+      "regionTags": [
+        "夢州",
+        "瑝瓏"
+      ],
+      "characterTags": [
+        "鎖冥",
+        "心月狐"
+      ],
+      "mainStoryTags": [
+        "主線3.7"
+      ],
+      "referenceText": "主線3.7"
     }
   ],
   "categoryOrder": [
@@ -731,5 +917,6 @@
     "虛質穿越",
     "其他"
   ],
-  "transparentBackground": true
+  "transparentBackground": true,
+  "timelineLength": 144
 }
