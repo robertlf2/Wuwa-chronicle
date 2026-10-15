@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from "react";
 import { TimelineEvent, TimelineData } from "../types";
+import { getEffectiveTimelineUnits } from "../lib/timelineScale";
 import { format, parseISO, isValid } from "date-fns";
 import {
   ChevronLeft,
@@ -275,12 +276,14 @@ export function TimelineView({
   const maxDate = Math.max(...dates, new Date().getTime());
   const dateRange = maxDate - minDate || 1;
 
+  const effectiveTimelineUnits = useMemo(() => getEffectiveTimelineUnits(data), [data]);
+
   // Preserve the original positionX-based chronology on mobile. Widen the
   // entire time coordinate system instead of compressing every card into 390px.
   // The width is calculated from the closest neighbouring cards in each lane.
   // Axis ticks, connectors and event buttons therefore keep the same x scale.
   const mobileTimelineWidth = (() => {
-    let requiredWidth = 2400;
+    let requiredWidth = Math.ceil(2400 * (effectiveTimelineUnits / 100));
     for (const category of categories) {
       const eventsInLane = sortedEvents
         .filter((event) => event.category === category)
@@ -295,7 +298,7 @@ export function TimelineView({
       for (let i = 0; i < eventsInLane.length - 1; i++) {
         const left = eventsInLane[i];
         const right = eventsInLane[i + 1];
-        const gapPercent = right.x - left.x;
+        const gapPercent = ((right.x - left.x) / effectiveTimelineUnits) * 100;
         if (gapPercent <= 0) continue;
         // Mobile node: up to ~88px of title + ~30px of chrome + 16px gap.
         const titleWidth = Math.min(88, left.event.title.length * 12);
@@ -303,7 +306,7 @@ export function TimelineView({
         requiredWidth = Math.max(requiredWidth, (cardWidth + 16) * 100 / gapPercent);
       }
     }
-    return Math.ceil(Math.min(8000, requiredWidth) / 100) * 100;
+    return Math.ceil(Math.min(24000, requiredWidth) / 100) * 100;
   })();
 
   const activeIndex = sortedEvents.findIndex((e) => e.id === activeEventId);
@@ -464,7 +467,7 @@ export function TimelineView({
 
     observer.observe(scrollContainer);
     return () => observer.disconnect();
-  }, [data.events.length, laneHeight, focusMode]);
+  }, [data.events.length, laneHeight, focusMode, effectiveTimelineUnits]);
 
   const COLORS = [
     "#fb923c",
@@ -1090,7 +1093,7 @@ export function TimelineView({
           >
             <div
               className="min-w-fit flex-1 flex flex-col relative pb-0 overflow-hidden min-h-0"
-              style={{ width: isMobileLayout ? `${mobileTimelineWidth}px` : "180vw" }}
+              style={{ width: isMobileLayout ? `${mobileTimelineWidth}px` : `${(effectiveTimelineUnits / 100) * 180}vw` }}
             >
               {/* Vertically Scrollable Lanes Container */}
               <div 
@@ -1121,7 +1124,7 @@ export function TimelineView({
                       <div
                         key={`guide-${label.id}`}
                         className="absolute top-0 bottom-0 w-[2px] bg-cyan-400/25 shadow-[0_0_8px_rgba(34,211,238,0.4)]"
-                        style={{ left: `${label.positionX}%` }}
+                        style={{ left: `${(Math.max(0, label.positionX) / effectiveTimelineUnits) * 100}%` }}
                       />
                     ))}
                   </div>
@@ -1152,14 +1155,15 @@ export function TimelineView({
                           const eventTime = new Date(event.date).getTime();
                           leftPerc = ((eventTime - minDate) / dateRange) * 90 + 5;
                         }
-                        leftPerc = Math.max(1, Math.min(99, leftPerc));
+                        leftPerc = Math.max(0, leftPerc);
+                        const percX = (leftPerc / effectiveTimelineUnits) * 100;
 
                         const absY = laneIndex * laneHeight + laneHeight / 2;
                         const percY =
                           dimensions.height > 0
                             ? (absY / dimensions.height) * 100
                             : 0;
-                        return { x: leftPerc, y: percY };
+                        return { x: percX, y: percY };
                       };
 
                       const getEventCardWidth = (eventId: string | undefined): number => {
@@ -1315,11 +1319,11 @@ export function TimelineView({
                       };
 
                       const rawStartCoords = getAttachmentCoords(d.startEventId, d.startAttachment, false, getEventCoords(d.endEventId)) || {
-                        x: d.startX,
+                        x: (d.startX / effectiveTimelineUnits) * 100,
                         y: d.startY,
                       };
                       const rawEndCoords = getAttachmentCoords(d.endEventId, d.endAttachment, true, getEventCoords(d.startEventId)) || {
-                        x: d.endX,
+                        x: (d.endX / effectiveTimelineUnits) * 100,
                         y: d.endY,
                       };
 
@@ -1330,7 +1334,7 @@ export function TimelineView({
 
                       const cAbsX =
                         d.controlX !== undefined
-                          ? toAbsX(d.controlX)
+                          ? toAbsX((d.controlX / effectiveTimelineUnits) * 100)
                           : (rawStartAbsX + rawEndAbsX) / 2;
                       const cAbsY =
                         d.controlY !== undefined
@@ -1476,7 +1480,7 @@ export function TimelineView({
                                     : "z-10 hover:scale-[1.02]",
                                 )}
                                 style={{
-                                  left: `${Math.max(1, leftPerc)}%`, // At least a tiny margin
+                                  left: `${Math.max(0.5, (leftPerc / effectiveTimelineUnits) * 100)}%`, // At least a tiny margin
                                 }}
                               >
                                 {/* Vertical white/light line extending down to bottom axis */}
@@ -1570,7 +1574,7 @@ export function TimelineView({
                     <div
                       key={label.id}
                       className="absolute flex flex-col items-center -translate-x-1/2 pb-1.5"
-                      style={{ left: `${label.positionX}%` }}
+                      style={{ left: `${(Math.max(0, label.positionX) / effectiveTimelineUnits) * 100}%` }}
                     >
                       <div className="w-[2px] h-3 bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] mb-1 leading-none"></div>
                       <span className="landscape-axis-text text-xs sm:text-sm text-cyan-300 font-mono font-extrabold tracking-wider whitespace-nowrap drop-shadow-[0_0_6px_rgba(34,211,238,0.7)]">

@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { TimelineData, TimelineEvent, AxisLabel, Drawing } from '../types';
 import { cn } from '../lib/utils';
-import { Plus, X, MousePointer2, PencilLine, Trash2, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Plus, X, MousePointer2, PencilLine, Trash2, GripVertical, ChevronUp, ChevronDown, ArrowRightCircle } from 'lucide-react';
+import { getEffectiveTimelineUnits, expandTimelineRight, calculateMaxPosition } from '../lib/timelineScale';
 
 interface VisualTimelineEditorProps {
   data: TimelineData;
@@ -17,7 +18,9 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
   const [draggingLabelId, setDraggingLabelId] = useState<string | null>(null);
   const [draggedCategory, setDraggedCategory] = useState<string | null>(null);
   const [dragOverCategory, setDragOverCategory] = useState<string | null>(null);
-  const zoomScale = 180;
+
+  const effectiveTimelineUnits = useMemo(() => getEffectiveTimelineUnits(data), [data]);
+  const zoomScale = useMemo(() => (effectiveTimelineUnits / 100) * 180, [effectiveTimelineUnits]);
 
   const [activeTool, setActiveTool] = useState<'move' | 'draw'>('move');
   const [drawingId, setDrawingId] = useState<string | null>(null);
@@ -54,7 +57,7 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
 
     observer.observe(scrollContainer);
     return () => observer.disconnect();
-  }, [data.events.length]);
+  }, [data.events.length, effectiveTimelineUnits]);
 
   const dates = data.events.map(e => new Date(e.date).getTime());
   const minDate = Math.min(...dates, new Date('1970-01-01').getTime());
@@ -87,11 +90,12 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
       const eventTime = new Date(event.date).getTime();
       leftPerc = ((eventTime - minDate) / dateRange) * 90 + 5;
     }
-    leftPerc = Math.max(1, Math.min(99, leftPerc));
+    leftPerc = Math.max(0, leftPerc);
+    const percX = (leftPerc / effectiveTimelineUnits) * 100;
     
     const absY = laneIndex * 36 + 18;
     const percY = dimensions.height > 0 ? (absY / dimensions.height) * 100 : 0;
-    return { x: leftPerc, y: percY };
+    return { x: percX, y: percY };
   };
 
   const getEventCardWidth = (eventId: string | undefined): number => {
@@ -443,15 +447,16 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
         const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
         const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
 
-        const percentageX = (x / rect.width) * 100;
-        const percentageY = (y / rect.height) * 100;
+        const currentUnits = getEffectiveTimelineUnits(data);
+        const coordX = (x / (rect.width || 1)) * currentUnits;
+        const percentageY = (y / (rect.height || 1)) * 100;
 
         const drawing = data.drawings?.find(d => d.id === id);
         if (drawing) {
           setDraggingHandle({ 
             id, 
             type: 'whole', 
-            refX: percentageX, 
+            refX: coordX, 
             refY: percentageY, 
             initialDrawing: drawing 
           });
@@ -523,28 +528,45 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
     if (!innerContainer) return;
     
     const rect = innerContainer.getBoundingClientRect();
-    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    // Strictly lock left edge at 0 (never triggers leftward expansion)
+    const x = Math.max(0, e.clientX - rect.left);
     const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
 
-    const percentageX = (x / rect.width) * 100;
-    const percentageY = (y / rect.height) * 100;
+    const currentUnits = getEffectiveTimelineUnits(data);
+    const coordX = (x / (rect.width || 1)) * currentUnits;
+    const percentageY = (y / (rect.height || 1)) * 100;
+    const percX = (coordX / currentUnits) * 100;
+
+    // Check if dragging near right edge (>= 90% of current scale) to extend rightward +20%
+    let nextTimelineLength = data.timelineLength;
+    if (coordX >= currentUnits * 0.9) {
+      nextTimelineLength = Math.round(currentUnits * 1.2 * 10) / 10;
+    }
 
     if (activeTool === 'draw' && drawStartEventId) {
-      setCurrentMousePos({ x: percentageX, y: percentageY });
+      setCurrentMousePos({ x: percX, y: percentageY });
       return;
     }
 
     if (activeTool === 'move') {
       if (draggingEventId) {
         const updatedEvents = data.events.map(ev => 
-          ev.id === draggingEventId ? { ...ev, positionX: percentageX } : ev
+          ev.id === draggingEventId ? { ...ev, positionX: coordX } : ev
         );
-        onUpdateData({ ...data, events: updatedEvents });
+        onUpdateData({ 
+          ...data, 
+          timelineLength: nextTimelineLength ? Math.max(data.timelineLength || 100, nextTimelineLength) : data.timelineLength,
+          events: updatedEvents 
+        });
       } else if (draggingLabelId && data.axisLabels) {
         const updatedLabels = data.axisLabels.map(label => 
-          label.id === draggingLabelId ? { ...label, positionX: percentageX } : label
+          label.id === draggingLabelId ? { ...label, positionX: coordX } : label
         );
-        onUpdateData({ ...data, axisLabels: updatedLabels });
+        onUpdateData({ 
+          ...data, 
+          timelineLength: nextTimelineLength ? Math.max(data.timelineLength || 100, nextTimelineLength) : data.timelineLength,
+          axisLabels: updatedLabels 
+        });
       } else if (draggingHandle && data.drawings) {
         let hoverEventId: string | undefined = undefined;
         let attachment: 'left' | 'center' | 'right' | undefined = undefined;
@@ -570,7 +592,7 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
             if (draggingHandle.type === 'start') {
               return { 
                 ...d, 
-                startX: percentageX, 
+                startX: coordX, 
                 startY: percentageY, 
                 startEventId: hoverEventId,
                 startAttachment: hoverEventId ? attachment : undefined
@@ -579,41 +601,49 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
             if (draggingHandle.type === 'end') {
               return { 
                 ...d, 
-                endX: percentageX, 
+                endX: coordX, 
                 endY: percentageY, 
                 endEventId: hoverEventId,
                 endAttachment: hoverEventId ? attachment : undefined
               };
             }
             if (draggingHandle.type === 'control') {
-              return { ...d, controlX: percentageX, controlY: percentageY };
+              return { ...d, controlX: coordX, controlY: percentageY };
             }
             if (draggingHandle.type === 'whole') {
-              const dx = percentageX - draggingHandle.refX;
+              const dx = coordX - draggingHandle.refX;
               const dy = percentageY - draggingHandle.refY;
               const init = draggingHandle.initialDrawing;
               const cX = init.controlX !== undefined ? init.controlX : (init.startX + init.endX) / 2;
               const cY = init.controlY !== undefined ? init.controlY : (init.startY + init.endY) / 2;
               return {
                 ...d,
-                startX: init.startX + dx,
+                startX: Math.max(0, init.startX + dx),
                 startY: init.startY + dy,
-                endX: init.endX + dx,
+                endX: Math.max(0, init.endX + dx),
                 endY: init.endY + dy,
-                controlX: cX + dx,
+                controlX: Math.max(0, cX + dx),
                 controlY: cY + dy
               };
             }
           }
           return d;
         });
-        onUpdateData({ ...data, drawings: updatedDrawings });
+        onUpdateData({ 
+          ...data, 
+          timelineLength: nextTimelineLength ? Math.max(data.timelineLength || 100, nextTimelineLength) : data.timelineLength,
+          drawings: updatedDrawings 
+        });
       }
     } else if (activeTool === 'draw' && drawingId && data.drawings) {
       const updatedDrawings = data.drawings.map(d => 
-        d.id === drawingId ? { ...d, endX: percentageX, endY: percentageY } : d
+        d.id === drawingId ? { ...d, endX: coordX, endY: percentageY } : d
       );
-      onUpdateData({ ...data, drawings: updatedDrawings });
+      onUpdateData({ 
+        ...data, 
+        timelineLength: nextTimelineLength ? Math.max(data.timelineLength || 100, nextTimelineLength) : data.timelineLength,
+        drawings: updatedDrawings 
+      });
     }
   }, [draggingEventId, draggingLabelId, drawingId, activeTool, data, onUpdateData, draggingHandle, drawStartEventId]);
 
@@ -683,9 +713,12 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
   }, [draggingEventId, draggingLabelId, drawingId, draggingHandle, drawStartEventId, handleMouseMove, handleMouseUp]);
 
   const addLabel = () => {
+    const currentUnits = getEffectiveTimelineUnits(data);
+    const maxX = calculateMaxPosition(data);
+    const newPositionX = maxX > 0 ? Math.min(currentUnits * 0.95, Math.round((maxX + 5) * 10) / 10) : 50;
     const newLabels = [
       ...(data.axisLabels || []), 
-      { id: crypto.randomUUID(), text: 'New Time', positionX: 50 }
+      { id: crypto.randomUUID(), text: 'New Time', positionX: newPositionX }
     ];
     onUpdateData({ ...data, axisLabels: newLabels });
   };
@@ -772,9 +805,22 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
               <PencilLine size={14} /> Draw
             </button>
           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-800/40 px-2.5 py-1.5 rounded select-none">
+              長度: {effectiveTimelineUnits}% (無上限)
+            </span>
+            <button
+              type="button"
+              onClick={() => onUpdateData(expandTimelineRight(data))}
+              className="bg-orange-500/20 hover:bg-orange-500/35 text-orange-400 border border-orange-500/30 px-3 py-2 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+              title="向右增加 20% 長度（左側固定，不影響已編輯事件）"
+            >
+              <ArrowRightCircle size={14} /> +20% 往右延伸
+            </button>
+          </div>
           <button 
             onClick={addLabel}
-            className="bg-orange-500/20 hover:bg-orange-500/40 text-orange-400 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors"
+            className="bg-orange-500/20 hover:bg-orange-500/40 text-orange-400 px-4 py-2 rounded text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-colors cursor-pointer"
           >
             <Plus size={14} /> Add Axis Label
           </button>
@@ -818,7 +864,7 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                   <div
                     key={`guide-${label.id}`}
                     className="absolute top-0 bottom-0 w-[2px] bg-cyan-400/25 shadow-[0_0_8px_rgba(34,211,238,0.4)]"
-                    style={{ left: `${label.positionX}%` }}
+                    style={{ left: `${(Math.max(0, label.positionX) / effectiveTimelineUnits) * 100}%` }}
                   />
                 ))}
               </div>
@@ -834,15 +880,15 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                 const toAbsX = (perc: number) => Math.max(0, (perc / 100) * dimensions.width);
                 const toAbsY = (perc: number) => Math.max(0, (perc / 100) * dimensions.height);
 
-                const rawStartCoords = getAttachmentCoords(d.startEventId, d.startAttachment, false, getEventCoords(d.endEventId)) || { x: d.startX, y: d.startY };
-                const rawEndCoords = getAttachmentCoords(d.endEventId, d.endAttachment, true, getEventCoords(d.startEventId)) || { x: d.endX, y: d.endY };
+                const rawStartCoords = getAttachmentCoords(d.startEventId, d.startAttachment, false, getEventCoords(d.endEventId)) || { x: (d.startX / effectiveTimelineUnits) * 100, y: d.startY };
+                const rawEndCoords = getAttachmentCoords(d.endEventId, d.endAttachment, true, getEventCoords(d.startEventId)) || { x: (d.endX / effectiveTimelineUnits) * 100, y: d.endY };
 
                 const rawStartAbsX = toAbsX(rawStartCoords.x);
                 const rawStartAbsY = toAbsY(rawStartCoords.y);
                 const rawEndAbsX = toAbsX(rawEndCoords.x);
                 const rawEndAbsY = toAbsY(rawEndCoords.y);
 
-                const cAbsX = d.controlX !== undefined ? toAbsX(d.controlX) : (rawStartAbsX + rawEndAbsX) / 2;
+                const cAbsX = d.controlX !== undefined ? toAbsX((d.controlX / effectiveTimelineUnits) * 100) : (rawStartAbsX + rawEndAbsX) / 2;
                 const cAbsY = d.controlY !== undefined ? toAbsY(d.controlY) : (dimensions.height > 0 ? Math.min(rawStartAbsY, rawEndAbsY) - 20 : rawStartAbsY - 20);
 
                 const ctrlPoint = { x: cAbsX, y: cAbsY };
@@ -953,15 +999,15 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                 const toAbsX = (perc: number) => Math.max(0, (perc / 100) * dimensions.width);
                 const toAbsY = (perc: number) => Math.max(0, (perc / 100) * dimensions.height);
 
-                const rawStartCoords = getAttachmentCoords(d.startEventId, d.startAttachment, false, getEventCoords(d.endEventId)) || { x: d.startX, y: d.startY };
-                const rawEndCoords = getAttachmentCoords(d.endEventId, d.endAttachment, true, getEventCoords(d.startEventId)) || { x: d.endX, y: d.endY };
+                const rawStartCoords = getAttachmentCoords(d.startEventId, d.startAttachment, false, getEventCoords(d.endEventId)) || { x: (d.startX / effectiveTimelineUnits) * 100, y: d.startY };
+                const rawEndCoords = getAttachmentCoords(d.endEventId, d.endAttachment, true, getEventCoords(d.startEventId)) || { x: (d.endX / effectiveTimelineUnits) * 100, y: d.endY };
 
                 const rawStartAbsX = toAbsX(rawStartCoords.x);
                 const rawStartAbsY = toAbsY(rawStartCoords.y);
                 const rawEndAbsX = toAbsX(rawEndCoords.x);
                 const rawEndAbsY = toAbsY(rawEndCoords.y);
 
-                const cAbsX = d.controlX !== undefined ? toAbsX(d.controlX) : (rawStartAbsX + rawEndAbsX) / 2;
+                const cAbsX = d.controlX !== undefined ? toAbsX((d.controlX / effectiveTimelineUnits) * 100) : (rawStartAbsX + rawEndAbsX) / 2;
                 const cAbsY = d.controlY !== undefined ? toAbsY(d.controlY) : (dimensions.height > 0 ? Math.min(rawStartAbsY, rawEndAbsY) - 20 : rawStartAbsY - 20);
 
                 const ctrlPoint = { x: cAbsX, y: cAbsY };
@@ -979,7 +1025,7 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                 const computedEndX = dimensions.width > 0 ? (arrowEndX / dimensions.width) * 100 : d.endX;
                 const computedEndY = dimensions.height > 0 ? (arrowEndY / dimensions.height) * 100 : d.endY;
 
-                const cX = d.controlX !== undefined ? d.controlX : (computedStartX + computedEndX) / 2;
+                const cX = d.controlX !== undefined ? (d.controlX / effectiveTimelineUnits) * 100 : (computedStartX + computedEndX) / 2;
                 const cY = d.controlY !== undefined ? d.controlY : (computedStartY + computedEndY) / 2;
 
                 return (
@@ -1141,7 +1187,7 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                                 activeTool === 'move' && "cursor-grab active:cursor-grabbing z-30 hover:scale-105",
                                 activeTool === 'draw' && "cursor-pointer z-40 hover:scale-[1.08] drop-shadow-[0_0_10px_rgba(251,146,60,0.4)]"
                               )}
-                              style={{ left: `${Math.max(1, Math.min(99, leftPerc))}%` }}
+                              style={{ left: `${(Math.max(0.5, leftPerc) / effectiveTimelineUnits) * 100}%` }}
                             >
                               {/* Vertical white/light line extending down to bottom axis */}
                               <div 
@@ -1237,7 +1283,7 @@ export function VisualTimelineEditor({ data, onUpdateData }: VisualTimelineEdito
                         ? "cursor-grab active:cursor-grabbing hover:brightness-125 select-none" 
                         : "pointer-events-none"
                     )}
-                    style={{ left: `${Math.max(0, Math.min(100, label.positionX))}%` }}
+                    style={{ left: `${(Math.max(0, label.positionX) / effectiveTimelineUnits) * 100}%` }}
                   >
                     {/* Tiny pulsing indicator dot to represent draggable hook in move mode */}
                     {activeTool === 'move' && (

@@ -51,4 +51,5 @@ export interface TimelineData {
   axisLabels?: AxisLabel[];
   drawings?: Drawing[];
   categoryOrder?: string[];
+  timelineLength?: number;
 }

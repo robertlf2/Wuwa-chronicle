@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { TimelineData, TimelineEvent, AxisLabel } from '../types';
 import { RichTextEditor } from './RichTextEditor';
-import { Plus, Trash2, Save, MoveLeft, MoveRight, Download, Upload, LogOut, LogIn } from 'lucide-react';
+import { Plus, Trash2, Save, MoveLeft, MoveRight, Download, Upload, LogOut, LogIn, ArrowRightCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VisualTimelineEditor } from './VisualTimelineEditor';
+import { getEffectiveTimelineUnits, expandTimelineRight, calculateMaxPosition } from '../lib/timelineScale';
 // Simple password gate configuration without Firebase auth login
 
 
@@ -88,12 +89,31 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
     if (activeEventIndex === -1) return;
     const newEvents = [...data.events];
     newEvents[activeEventIndex] = { ...newEvents[activeEventIndex], [field]: value };
-    setData({ ...data, events: newEvents });
+    
+    let updatedLength = data.timelineLength;
+    if (field === 'positionX' && typeof value === 'number' && !isNaN(value)) {
+      const currentUnits = getEffectiveTimelineUnits({ ...data, events: newEvents });
+      if (value >= currentUnits * 0.9) {
+        updatedLength = Math.round(currentUnits * 1.2 * 10) / 10;
+      }
+    }
+    setData({ 
+      ...data, 
+      timelineLength: updatedLength ? Math.max(data.timelineLength || 100, updatedLength) : data.timelineLength,
+      events: newEvents 
+    });
   };
-
 
   const addNewEvent = () => {
     const newId = Date.now().toString();
+    const maxX = calculateMaxPosition(data);
+    const newPositionX = maxX > 0 ? Math.round((maxX + 6) * 10) / 10 : 10;
+    const currentUnits = getEffectiveTimelineUnits(data);
+    let nextLength = data.timelineLength || 100;
+    if (newPositionX >= currentUnits * 0.9) {
+      nextLength = Math.round(currentUnits * 1.2 * 10) / 10;
+    }
+
     const newEvent: TimelineEvent = {
       id: newId,
       title: 'New Event',
@@ -103,9 +123,14 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
       content: '<p style="font-family: monospace; font-size: 20px; font-weight: bold;">New event content</p>',
       referenceImages: [],
       backgroundColor: '#ffffff',
-      category: 'General'
+      category: data.events[data.events.length - 1]?.category || data.events[0]?.category || 'General',
+      positionX: newPositionX,
     };
-    setData({ ...data, events: [...data.events, newEvent] });
+    setData({ 
+      ...data, 
+      timelineLength: Math.max(data.timelineLength || 100, nextLength),
+      events: [...data.events, newEvent] 
+    });
     setSelectedEventId(newId);
   };
 
@@ -455,6 +480,29 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
                     Use Transparent Background (啓用透明背景)
                   </label>
                 </div>
+
+                <div className="pt-4 border-t border-white/5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block">
+                      Timeline Length (時間軸總長度與延伸)
+                    </label>
+                    <span className="text-xs font-mono font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
+                      {getEffectiveTimelineUnits(data)}% (無上限)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setData(prev => expandTimelineRight(prev))}
+                      className="px-3 py-1.5 bg-orange-500/20 hover:bg-orange-500/40 text-orange-400 text-xs font-bold rounded-lg border border-orange-500/30 transition-all flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
+                    >
+                      <ArrowRightCircle size={14} /> +20% 往右延伸時間軸
+                    </button>
+                    <p className="text-[11px] text-gray-400 leading-tight">
+                      左側起點嚴格固定為 0，僅向右延伸 20%，所有既有事件與連線位置均不受影響。當在視覺編輯器或後台新增/移動事件接近右邊緣時亦會自動擴展。
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -581,11 +629,13 @@ export function AdminPanel({ data: initialData, onSave }: AdminPanelProps) {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block mb-1">Position X (Sort Order)</label>
+                  <label className="text-[10px] text-gray-500 uppercase font-bold tracking-widest block mb-1">Position X (時間軸位置，無上限)</label>
                   <input 
                     type="number" 
-                    value={activeEvent.positionX || 0} 
-                    onChange={e => handleEventChange('positionX', parseFloat(e.target.value))}
+                    step="any"
+                    min="0"
+                    value={activeEvent.positionX ?? 0} 
+                    onChange={e => handleEventChange('positionX', parseFloat(e.target.value) || 0)}
                     className="w-full bg-black/40 border border-white/10 rounded px-3 py-2 text-sm text-white focus:border-orange-500 outline-none font-mono"
                   />
                 </div>
